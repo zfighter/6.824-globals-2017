@@ -44,47 +44,52 @@ func schedule(jobName string, mapFiles []string, nReduce int, phase jobPhase, re
 		i++
 	}
 	var working sync.WaitGroup
-	for len(taskChan) > 0 {
-		/*
-			if len(registerChan) == 0 {
-				debug("Scheduler sleep 1 second.\n")
+	for {
+		for len(taskChan) > 0 {
+			/*
+				if len(registerChan) == 0 {
+					debug("Scheduler sleep 1 second.\n")
+					time.Sleep(time.Second)
+					continue
+				}
+			*/
+			worker := <-registerChan
+			if worker == "" {
 				time.Sleep(time.Second)
 				continue
 			}
-		*/
-		worker := <-registerChan
-		if worker == "" {
-			time.Sleep(time.Second)
-			continue
-		}
-		taskNo := <-taskChan
-		debug("debug: try to assign task %d to woker=%s\n", taskNo, worker)
-		args := new(DoTaskArgs)
-		args.JobName = jobName
-		if phase == mapPhase {
-			args.File = mapFiles[taskNo]
-		}
-		args.Phase = phase
-		args.TaskNumber = taskNo
-		args.NumOtherPhase = n_other
-		working.Add(1)
-		go func() {
-			ok := call(worker, "Worker.DoTask", args, new(struct{}))
-			if ok == false {
-				fmt.Printf("Assign pahse-%s-task-%d to worker %s failed.\n", phase, args.TaskNumber, worker)
-				taskChan <- args.TaskNumber
-				fmt.Printf("give task %d back to taskChannel.\n", args.TaskNumber)
-			} else {
-				fmt.Printf("phase-%s-task-%d is done.\n", phase, args.TaskNumber)
+			taskNo := <-taskChan
+			debug("debug: try to assign task %d to woker=%s\n", taskNo, worker)
+			args := new(DoTaskArgs)
+			args.JobName = jobName
+			if phase == mapPhase {
+				args.File = mapFiles[taskNo]
 			}
-			defer working.Done()
-			registerChan <- worker
-			debug("phase-%s-task-%d is done, worker:%s is free.\n", phase, args.TaskNumber, worker)
-
-		}()
+			args.Phase = phase
+			args.TaskNumber = taskNo
+			args.NumOtherPhase = n_other
+			working.Add(1)
+			go func() {
+				ok := call(worker, "Worker.DoTask", args, new(struct{}))
+				if ok == false {
+					fmt.Printf("Assign pahse-%s-task-%d to worker %s failed.\n", phase, args.TaskNumber, worker)
+					taskChan <- args.TaskNumber
+					fmt.Printf("give task %d back to taskChannel.\n", args.TaskNumber)
+				} else {
+					fmt.Printf("phase-%s-task-%d is done.\n", phase, args.TaskNumber)
+				}
+				working.Done()
+				registerChan <- worker
+				debug("phase-%s-task-%d is done, worker:%s is free.\n", phase, args.TaskNumber, worker)
+			}()
+		}
+		debug("all task are assigned.\n")
+		working.Wait()
+		if len(taskChan) == 0 {
+			break
+		}
 	}
 	debug("Schedule: loop is done.\n")
-	working.Wait()
 	close(taskChan)
 	fmt.Printf("Schedule: %v phase done\n", phase)
 }
