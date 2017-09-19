@@ -17,13 +17,15 @@ package raft
 //   in the same server.
 //
 
+import "fmt"
+import "math/rand"
 import "sync"
-import "labrpc"
+import "sync/atomic"
+import "time"
+import "github.com/6.824/labrpc"
 
 // import "bytes"
 // import "encoding/gob"
-
-
 
 //
 // as each Raft peer becomes aware that successive log entries are
@@ -49,7 +51,22 @@ type Raft struct {
 	// Your data here (2A, 2B, 2C).
 	// Look at the paper's Figure 2 for a description of what
 	// state a Raft server must maintain.
+	isVoting    bool
+	isStopping  bool
+	isLeader    bool
+	currentTerm int
+	voteFor     int   // index of peer
+	logs        []int // using slices
 
+	commitIndex int64
+	lastApplied int64
+
+	// timer
+	lastTick int64
+
+	// only for leader
+	nextIndex  map[int]int64 // peer id -> appliedIndex
+	matchIndex map[int]int64 // peer id -> highest index
 }
 
 // return currentTerm and whether this server
@@ -59,6 +76,10 @@ func (rf *Raft) GetState() (int, bool) {
 	var term int
 	var isleader bool
 	// Your code here (2A).
+	rf.mu.Lock()
+	term = rf.currentTerm
+	isleader = rf.isLeader
+	rf.mu.Unlock()
 	return term, isleader
 }
 
@@ -93,8 +114,36 @@ func (rf *Raft) readPersist(data []byte) {
 	}
 }
 
+// AppendEntry RPC
+type AppendEntryArgs struct {
+}
 
+type AppendEntryReply struct {
+	Term    int
+	Success bool
+}
 
+func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
+	fmt.Printf("peer-%d receives msg.\n", rf.me)
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	rf.lastTick = time.Now().UnixNano()
+	fmt.Printf("peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
+	if rf.isVoting {
+		fmt.Printf("peer-%d is voting. do not append.\n", rf.me)
+		// to reply
+		reply.Term = rf.currentTerm
+		reply.Success = false
+		return
+	}
+	reply.Term = rf.currentTerm
+	reply.Success = true
+}
+
+func (rf *Raft) sendAppendEntry(server int, args *AppendEntryArgs, reply *AppendEntryReply) bool {
+	ok := rf.peers[server].Call("Raft.AppendEntry", args, reply)
+	return ok
+}
 
 //
 // example RequestVote RPC arguments structure.
@@ -102,6 +151,10 @@ func (rf *Raft) readPersist(data []byte) {
 //
 type RequestVoteArgs struct {
 	// Your data here (2A, 2B).
+	Term         int
+	Candidate    int
+	LastLogIndex int64
+	LastLogTerm  int
 }
 
 //
@@ -110,6 +163,8 @@ type RequestVoteArgs struct {
 //
 type RequestVoteReply struct {
 	// Your data here (2A).
+	Term      int
+	VoteGrant bool
 }
 
 //
@@ -117,6 +172,55 @@ type RequestVoteReply struct {
 //
 func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here (2A, 2B).
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	rf.lastTick = time.Now().UnixNano()
+	rf.isLeader = false
+	currTerm := rf.currentTerm
+	if args == nil {
+		fmt.Printf("args is null.\n")
+		reply.Term = currTerm
+		reply.VoteGrant = false
+		return
+	}
+	termOfCandidate := args.Term
+	candidateId := args.Candidate
+	if termOfCandidate < currTerm {
+		reply.Term = currTerm
+		reply.VoteGrant = false
+		return
+	} else if termOfCandidate == currTerm {
+		if rf.voteFor != -1 && rf.voteFor != candidateId {
+			fmt.Printf("peer-%d has grant to peer-%d in term %d\n", rf.me, rf.voteFor, currTerm)
+			reply.Term = -1
+			reply.VoteGrant = false
+			return
+		}
+	}
+	fmt.Printf("Candidate peer-%d's term %d is larger than peer-%d's term %d\n", candidateId, termOfCandidate, rf.me, currTerm)
+	candiLastLogIndex := args.LastLogIndex
+	candiLastLogTerm := args.LastLogTerm
+	var localLastLogIndex int64 = int64(len(rf.logs) - 1)
+	var localLastLogTerm int = -1
+	if localLastLogIndex >= 0 {
+		localLastLogTerm = rf.logs[localLastLogIndex]
+	}
+	if localLastLogIndex > candiLastLogIndex ||
+		(localLastLogIndex == candiLastLogIndex &&
+			localLastLogTerm > candiLastLogTerm) {
+		reply.Term = -1
+		reply.VoteGrant = false
+		return
+	}
+	// can grant the request
+	rf.voteFor = candidateId
+	rf.currentTerm = termOfCandidate
+	if rf.isLeader {
+		rf.isLeader = false
+	}
+	reply.Term = currTerm
+	reply.VoteGrant = true
+	return
 }
 
 //
@@ -153,7 +257,6 @@ func (rf *Raft) sendRequestVote(server int, args *RequestVoteArgs, reply *Reques
 	return ok
 }
 
-
 //
 // the service using Raft (e.g. a k/v server) wants to start
 // agreement on the next command to be appended to Raft's log. if this
@@ -174,7 +277,6 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 
 	// Your code here (2B).
 
-
 	return index, term, isLeader
 }
 
@@ -186,6 +288,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 //
 func (rf *Raft) Kill() {
 	// Your code here, if desired.
+	rf.isStopping = true
 }
 
 //
@@ -207,10 +310,136 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.me = me
 
 	// Your initialization code here (2A, 2B, 2C).
+	rf.isVoting = true
+	rf.isStopping = false
+	rf.isLeader = false
+	rf.currentTerm = 0
+	rf.voteFor = -1
+	rf.logs = make([]int, 0)
+	rf.commitIndex = -1
+	rf.lastApplied = -1
+	rf.nextIndex = make(map[int]int64)
+	rf.matchIndex = make(map[int]int64)
+	atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
 
+	go func() {
+		for !rf.isStopping {
+			if rf.isLeader {
+				var req = new(AppendEntryArgs)
+				for i := 0; i < len(rf.peers); i++ {
+					if i == rf.me {
+						continue
+					}
+					server := i
+					go func() {
+						fmt.Printf("leader-%d send heartbeat to peer-%d\n", rf.me, server)
+						rep := new(AppendEntryReply)
+						ok := rf.sendAppendEntry(server, req, rep)
+						if !ok {
+							// retry?
+						} else {
+							fmt.Printf("leader-%d has sent heartbeat to peer-%d\n", rf.me, server)
+							rf.mu.Lock()
+							if rep != nil && rf.currentTerm < rep.Term {
+								fmt.Printf("leader-%d's term %d is smaller than peer-%d's term %d. Turn to follower\n", rf.me, rf.currentTerm, server, rep.Term)
+								rf.currentTerm = rep.Term
+								rf.isLeader = false
+							}
+							rf.mu.Unlock()
+						}
+					}()
+				}
+				time.Sleep(999 * time.Millisecond)
+			} else {
+				sleepDuration := 2000 - int(time.Now().UnixNano()-atomic.LoadInt64(&rf.lastTick))/1000000
+				fmt.Printf("peer-%d want to sleep %d\n", rf.me, sleepDuration)
+				if sleepDuration <= 0 {
+					rf.mu.Lock()
+					rf.isVoting = true
+					rf.currentTerm += 1
+					reqTerm := rf.currentTerm
+					rf.mu.Unlock()
+					logIndex := int64(len(rf.logs) - 1)
+					var logTerm = 0
+					if logIndex >= 0 {
+						fmt.Printf("peer-%d get logIndex=%d", rf.me, logIndex)
+						logTerm = rf.logs[logIndex]
+					}
+					reps := make([]*RequestVoteReply, len(peers))
+					var voting sync.WaitGroup
+					for i := 0; i < len(peers); i++ {
+						fmt.Printf("peer-%d wants to send vote request to peer-%d\n", rf.me, i)
+						if i == rf.me {
+							localReply := new(RequestVoteReply)
+							localReply.Term = rf.currentTerm
+							localReply.VoteGrant = true
+							reps[i] = localReply
+							continue
+						}
+						voting.Add(1)
+						server := i
+						go func() {
+							fmt.Printf("peer-%d sends vote request to peer-%d\n", rf.me, server)
+							var req RequestVoteArgs
+							req.Term = rf.currentTerm
+							req.Candidate = rf.me
+							req.LastLogIndex = logIndex
+							req.LastLogTerm = logTerm
+							fmt.Printf("peer-%d begin to vote. request=(%d, %d, %d)\n", req.Candidate, req.Term, req.LastLogIndex, req.LastLogTerm)
+							var rep = new(RequestVoteReply)
+							// rep.term = -1
+							// rep.voteGrant = false
+							ok := rf.sendRequestVote(server, &req, rep)
+							if ok {
+								reps[server] = rep
+							} else {
+								// considering retry.
+							}
+							voting.Done()
+						}()
+					}
+					voting.Wait()
+					var voteForMe = 0
+					for i := 0; i < len(reps); i++ {
+						rep := reps[i]
+						if rep != nil && rep.VoteGrant {
+							fmt.Printf("in peer-%d, peer-%d grant\n", rf.me, i)
+							voteForMe += 1
+							if voteForMe >= (len(rf.peers)/2)+1 {
+								fmt.Printf("peer-%d win.\n", rf.me)
+								rf.mu.Lock()
+								if reqTerm == rf.currentTerm {
+									rf.isLeader = true
+								}
+								rf.mu.Unlock()
+								break
+							}
+						} else if rep != nil {
+							if rep.Term > rf.currentTerm {
+								fmt.Printf("peer-%d update term from %d to %d\n", rf.currentTerm, rep.Term)
+								rf.currentTerm = rep.Term
+							}
+						} else {
+							fmt.Printf("reply from peer-%d is null.\n", i)
+						}
+					}
+					rf.mu.Lock()
+					rf.isVoting = false
+					rf.mu.Unlock()
+				} else {
+					realSleepTime := sleepDuration + rand.Intn(100)
+					b := time.Now()
+					time.Sleep(time.Duration(realSleepTime) * time.Millisecond)
+					a := time.Now()
+					fmt.Printf("duration: %v\n", a.Sub(b))
+					fmt.Printf("peer-%d has sleep %d.\n", rf.me, realSleepTime)
+				}
+			}
+		}
+	}()
 
 	return rf
 }
