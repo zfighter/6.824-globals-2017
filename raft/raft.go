@@ -374,51 +374,35 @@ func Make(peers []*labrpc.ClientEnd, me int,
 						logTerm = rf.logs[logIndex]
 					}
 					var voteForMe int32 = 0
+					var waitVote sync.WaitGroup
 					for i := 0; i < len(peers); i++ {
+						waitVote.Add(1)
 						fmt.Printf("peer-%d wants to send vote request to peer-%d\n", rf.me, i)
 						if i == rf.me {
 							// put the judge logic to a function
 							atomic.AddInt32(&voteForMe, 1)
-							if voteForMe >= int32((len(rf.peers)/2)+1) {
-								rf.mu.Lock()
-								if reqTerm == rf.currentTerm {
-									fmt.Printf("peer-%d win.\n", rf.me)
-									rf.isLeader = true
-								} else {
-									fmt.Printf("peer-%d win, but term is expired.\n", rf.me)
-								}
-								rf.mu.Unlock()
-							}
+							waitVote.Done()
 							continue
 						}
 						server := i
 						go func() {
 							fmt.Printf("peer-%d sends vote request to peer-%d\n", rf.me, server)
 							var req RequestVoteArgs
-							req.Term = rf.currentTerm
+							req.Term = reqTerm
 							req.Candidate = rf.me
 							req.LastLogIndex = logIndex
 							req.LastLogTerm = logTerm
 							fmt.Printf("peer-%d begin to vote. request=(%d, %d, %d)\n", req.Candidate, req.Term, req.LastLogIndex, req.LastLogTerm)
 							var rep = new(RequestVoteReply)
+
 							// rep.term = -1
 							// rep.voteGrant = false
 							ok := rf.sendRequestVote(server, &req, rep)
 							if ok {
 								fmt.Printf("peer-%d received vote response from peer-%d.\n", req.Candidate, server)
 								if rep != nil && rep.VoteGrant {
-									atomic.AddInt32(&voteForMe, 1)
 									fmt.Printf("in peer-%d, peer-%d grant, count=%d.\n", rf.me, server, voteForMe)
-									if voteForMe >= int32((len(rf.peers)/2)+1) {
-										rf.mu.Lock()
-										if reqTerm == rf.currentTerm {
-											fmt.Printf("peer-%d win.\n", rf.me)
-											rf.isLeader = true
-										} else {
-											fmt.Printf("peer-%d win, but term is expired.\n", rf.me)
-										}
-										rf.mu.Unlock()
-									}
+									atomic.AddInt32(&voteForMe, 1)
 								} else if rep != nil {
 									if rep.Term > rf.currentTerm {
 										fmt.Printf("peer-%d update term from %d to %d\n", rf.currentTerm, rep.Term)
@@ -433,18 +417,40 @@ func Make(peers []*labrpc.ClientEnd, me int,
 								// considering retry.
 								fmt.Printf("peer-%d received null vote response from peer-%d.\n", req.Candidate, server)
 							}
+							waitVote.Done()
 						}()
+					}
+					doneChan := make(chan struct{})
+					go func() {
+						defer close(doneChan)
+						waitVote.Wait()
+					}()
+					var isTimeout = false
+					select {
+					case <-doneChan:
+						isTimeout = false
+					case <-time.After(time.Duration(1000) * time.Millisecond):
+						isTimeout = true
+					}
+					if voteForMe >= int32(len(peers)/2+1) {
+						fmt.Printf("peer-%d win, vote granted.\n", rf.me)
+						rf.mu.Lock()
+						rf.isLeader = true
+						rf.mu.Unlock()
+					} else {
+						fmt.Printf("peer-%d vote failed, timeout=%t\n", rf.me, isTimeout)
 					}
 					rf.mu.Lock()
 					rf.isVoting = false
 					rf.mu.Unlock()
+				} else {
+					realSleepTime := sleepDuration + rand.Intn(100)
+					b := time.Now()
+					time.Sleep(time.Duration(realSleepTime) * time.Millisecond)
+					a := time.Now()
+					fmt.Printf("duration: %v\n", a.Sub(b))
+					fmt.Printf("peer-%d has sleep %d.\n", rf.me, realSleepTime)
 				}
-				realSleepTime := sleepDuration + rand.Intn(100)
-				b := time.Now()
-				time.Sleep(time.Duration(realSleepTime) * time.Millisecond)
-				a := time.Now()
-				fmt.Printf("duration: %v\n", a.Sub(b))
-				fmt.Printf("peer-%d has sleep %d.\n", rf.me, realSleepTime)
 			}
 		}
 	}()
