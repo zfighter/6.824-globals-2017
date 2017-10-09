@@ -1,0 +1,4442 @@
+peer-0 want to sleep 1000
+peer-1 want to sleep 1000
+peer-2 want to sleep 1000
+Test (2B): basic agreement ...
+peer-4 want to sleep 1000
+Before start, cmd=100peer-3 want to sleep 1000
+Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+duration: 1.048197706s
+peer-2 has sleep 1047.
+peer-2 want to sleep -48
+peer-2 get logIndex=0
+peer-2 wants to send vote request to peer-0
+peer-2 wants to send vote request to peer-1
+peer-2 wants to send vote request to peer-2
+peer-2 wants to send vote request to peer-3
+peer-2 wants to send vote request to peer-4
+peer-2 sends vote request to peer-0
+peer-2 sends vote request to peer-1
+peer-2 begin to vote. request=(1, 0, 0)
+peer-2 begin to vote. request=(1, 0, 0)
+peer-2 sends vote request to peer-4
+peer-2 begin to vote. request=(1, 0, 0)
+peer-2 sends vote request to peer-3
+peer-2 begin to vote. request=(1, 0, 0)
+Candidate peer-2's term 1 is larger than peer-3's term 0
+Candidate peer-2's term 1 is larger than peer-4's term 0
+Candidate peer-2's term 1 is larger than peer-1's term 0
+peer-2 received vote response from peer-3.
+in peer-2, peer-3 grant, count=1.
+Candidate peer-2's term 1 is larger than peer-0's term 0
+peer-2 received vote response from peer-4.
+in peer-2, peer-4 grant, count=2.
+peer-2 received vote response from peer-1.
+in peer-2, peer-1 grant, count=3.
+peer-2 received vote response from peer-0.
+in peer-2, peer-0 grant, count=4.
+peer-2 win, vote granted.
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-0
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468150216509276
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468150216536183
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468150216714189
+leader-2 has sent heartbeat to peer-4
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468150216741602
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+duration: 1.060173155s
+peer-4 has sleep 1059.
+peer-4 want to sleep 990
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 0, 0, 100}
+After start, index=1
+Send append request to peer-4!
+Send append request to peer-1!
+Send append request to peer-2!
+Send append request to peer-0!
+Send append request to peer-3!
+peer-4 receives msg.
+peer-3 receives msg.
+peer-4 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 100}].
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 100}].
+peer-3 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 100}].
+Has sent request to peer-4? true
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 100}].
+peer-1 receives msg.
+Has sent request to peer-3? true
+Has sent request to peer-0? true
+peer-1 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 100}].
+Has sent request to peer-2? true
+Has sent request to peer-1? true
+duration: 1.081804876s
+peer-3 has sleep 1081.
+peer-3 want to sleep 969
+duration: 1.08208164s
+peer-0 has sleep 1081.
+peer-0 want to sleep 969
+duration: 1.08766577s
+peer-1 has sleep 1087.
+peer-1 want to sleep 963
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468150716789068
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468150716851887
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468150716892556
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468150716933778
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-4
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-3
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468151216359049
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468151216406609
+leader-2 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468151216723471
+leader-2 has sent heartbeat to peer-1
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468151217041799
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+duration: 1.009687461s
+peer-4 has sleep 1008.
+peer-4 want to sleep 981
+duration: 995.652398ms
+peer-3 has sleep 994.
+peer-3 want to sleep 973
+duration: 1.009477663s
+peer-0 has sleep 1009.
+peer-0 want to sleep 959
+duration: 1.02097514s
+peer-1 has sleep 1019.
+peer-1 want to sleep 942
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+peer-4 receives msg.
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468151716591657
+Receive hearbeat, peer-4 set lastTick to 1507468151716569710
+leader-2 has sent heartbeat to peer-3
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468151716826593
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468151716845999
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468152215615319
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468152215635443
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468152215772149
+leader-2 has sent heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468152215967525
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+duration: 981.330027ms
+peer-4 has sleep 981.
+peer-4 want to sleep 998
+duration: 970.2813ms
+peer-0 has sleep 970.
+peer-0 want to sleep 988
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 1, 1, 100}
+After start, index=2
+Send append request to peer-4!
+Send append request to peer-1!
+Send append request to peer-3!
+Send append request to peer-2!
+peer-3 receives msg.
+peer-2 receives msg.
+peer-3 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 100} {1 100}].
+peer-4 receives msg.
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 100} {1 100}].
+Send append request to peer-0!
+peer-2 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 100} {1 100}].
+Has sent request to peer-3? true
+peer-4 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 100} {1 100}].
+Has sent request to peer-1? true
+Has sent request to peer-2? true
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 100} {1 100}].
+Has sent request to peer-4? true
+Has sent request to peer-0? true
+duration: 1.00507387s
+peer-1 has sleep 1004.
+peer-1 want to sleep 936
+duration: 1.067312814s
+peer-3 has sleep 1067.
+peer-3 want to sleep 905
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+peer-0 receives msg.
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468152715704979
+Receive hearbeat, peer-0 set lastTick to 1507468152715688714
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468152715815670
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468152715855332
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+peer-4 receives msg.
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468153215123704
+Receive hearbeat, peer-4 set lastTick to 1507468153215114009
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468153215196462
+leader-2 send heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-3
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468153215430650
+leader-2 has sent heartbeat to peer-0
+duration: 916.213695ms
+peer-3 has sleep 916.
+peer-3 want to sleep 988
+duration: 1.016954756s
+peer-0 has sleep 1016.
+peer-0 want to sleep 970
+duration: 1.011087283s
+peer-1 has sleep 1010.
+peer-1 want to sleep 924
+duration: 1.088109489s
+peer-4 has sleep 1087.
+peer-4 want to sleep 909
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468153715163128
+peer-1 receives msg.
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468153715230177
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468153715312731
+Receive hearbeat, peer-1 set lastTick to 1507468153715208831
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468154215000868
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468154215027414
+peer-4 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468154215079470
+Receive hearbeat, peer-4 set lastTick to 1507468154215063716
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-0
+duration: 931.027748ms
+peer-1 has sleep 930.
+peer-1 want to sleep 993
+duration: 1.008161901s
+peer-0 has sleep 1007.
+peer-0 want to sleep 962
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 2, 1, 100}
+After start, index=3
+Send append request to peer-4!
+Send append request to peer-2!
+Send append request to peer-3!
+Send append request to peer-1!
+peer-4 receives msg.
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 100} {1 100} {1 100}].
+peer-3 receives msg.
+peer-3 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 100} {1 100} {1 100}].
+Send append request to peer-0!
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 100} {1 100} {1 100}].
+Has sent request to peer-2? true
+peer-4 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 100} {1 100} {1 100}].
+Has sent request to peer-3? true
+Has sent request to peer-1? true
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 100} {1 100} {1 100}].
+Has sent request to peer-4? true
+Has sent request to peer-0? true
+duration: 1.033748647s
+peer-3 has sleep 1033.
+peer-3 want to sleep 954
+duration: 1.00515943s
+peer-4 has sleep 1004.
+peer-4 want to sleep 904
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468154715340000
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468154715360773
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468154715395125
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468154715437767
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468155214668844
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468155214724664
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468155214756408
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468155214892390
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+duration: 991.153335ms
+peer-0 has sleep 990.
+peer-0 want to sleep 970
+duration: 952.204862ms
+peer-4 has sleep 951.
+peer-4 want to sleep 951
+duration: 1.013154779s
+peer-3 has sleep 1012.
+peer-3 want to sleep 940
+duration: 1.059985062s
+peer-1 has sleep 1059.
+peer-1 want to sleep 933
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468155714296074
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468155714317861
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468155714364975
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468155714387125
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-4
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468156214531903
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468156214559973
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468156214618675
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468156214660740
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 3, 1, 100}
+After start, index=4
+Send append request to peer-4!
+Send append request to peer-0!
+Send append request to peer-2!
+Send append request to peer-1!
+Send append request to peer-3!
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 100} {1 100} {1 100} {1 100}].
+peer-2 receives msg.
+peer-4 receives msg.
+peer-2 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 100} {1 100} {1 100} {1 100}].
+peer-4 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 100} {1 100} {1 100} {1 100}].
+Has sent request to peer-0? true
+peer-3 receives msg.
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 100} {1 100} {1 100} {1 100}].
+Has sent request to peer-2? true
+peer-3 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 100} {1 100} {1 100} {1 100}].
+Has sent request to peer-4? true
+Has sent request to peer-1? true
+Has sent request to peer-3? true
+duration: 1.017657296s
+peer-0 has sleep 1017.
+peer-0 want to sleep 952
+duration: 1.03811163s
+peer-4 has sleep 1038.
+peer-4 want to sleep 913
+duration: 1.028459587s
+peer-3 has sleep 1028.
+peer-3 want to sleep 912
+duration: 1.023305199s
+peer-1 has sleep 1023.
+peer-1 want to sleep 909
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468156714783124
+peer-3 receives msg.
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468156714858353
+Receive hearbeat, peer-3 set lastTick to 1507468156714833748
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468156714931348
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468157214947084
+peer-0 receives msg.
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468157214991904
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468157215078029
+Receive hearbeat, peer-0 set lastTick to 1507468157214978207
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-4
+duration: 920.384462ms
+peer-3 has sleep 920.
+peer-3 want to sleep 991
+duration: 967.879838ms
+peer-0 has sleep 967.
+peer-0 want to sleep 985
+duration: 955.159044ms
+peer-4 has sleep 954.
+peer-4 want to sleep 958
+duration: 997.16202ms
+peer-1 has sleep 996.
+peer-1 want to sleep 912
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468157714876866
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468157714925129
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468157714946607
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468157714975571
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-3
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468158214332083
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468158214367028
+Receive hearbeat, peer-1 set lastTick to 1507468158214304625
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468158214431217
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+duration: 1.015163788s
+peer-0 has sleep 1014.
+peer-0 want to sleep 969
+duration: 1.022150474s
+peer-3 has sleep 1022.
+peer-3 want to sleep 969
+duration: 949.929689ms
+peer-1 has sleep 949.
+peer-1 want to sleep 961
+duration: 1.015159054s
+peer-4 has sleep 1014.
+peer-4 want to sleep 943
+Before start, cmd=100Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=100Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=100Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=100Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=100Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 4, 1, 100}
+After start, index=5
+Send append request to peer-4!
+Send append request to peer-0!
+Send append request to peer-1!
+Send append request to peer-2!
+peer-4 receives msg.
+peer-4 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 100} {1 100} {1 100} {1 100} {1 100}].
+Send append request to peer-3!
+peer-1 receives msg.
+peer-2 receives msg.
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 100} {1 100} {1 100} {1 100} {1 100}].
+peer-2 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 100} {1 100} {1 100} {1 100} {1 100}].
+Has sent request to peer-4? true
+peer-1 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 100} {1 100} {1 100} {1 100} {1 100}].
+peer-3 receives msg.
+Has sent request to peer-0? true
+Has sent request to peer-2? true
+peer-3 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 100} {1 100} {1 100} {1 100} {1 100}].
+Has sent request to peer-1? true
+Has sent request to peer-3? true
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-1
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468158714425923
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468158714450610
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468158714490464
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468158714533323
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-0 receives msg.
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468159214665764
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468159214713269
+Receive hearbeat, peer-0 set lastTick to 1507468159214654551
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468159214849092
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-3
+duration: 957.085413ms
+peer-4 has sleep 956.
+peer-4 want to sleep 986
+duration: 987.359876ms
+peer-1 has sleep 987.
+peer-1 want to sleep 974
+duration: 1.000828801s
+peer-0 has sleep 1000.
+peer-0 want to sleep 968
+duration: 1.054729995s
+peer-3 has sleep 1054.
+peer-3 want to sleep 914
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468159714801206
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468159714858666
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468159714912052
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468159714957046
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-4
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+peer-4 receives msg.
+leader-2 send heartbeat to peer-0
+Receive hearbeat, peer-4 set lastTick to 1507468160215252947
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468160215305403
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468160215376116
+leader-2 has sent heartbeat to peer-4
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468160215429136
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+duration: 947.286517ms
+peer-3 has sleep 947.
+peer-3 want to sleep 967
+duration: 1.032173998s
+peer-0 has sleep 1031.
+peer-0 want to sleep 937
+--- FAIL: TestBasicAgree2B (11.12s)
+	config.go:433: one(100) failed to reach agreement
+peer-0 want to sleep 1000
+peer-1 want to sleep 1000
+Test (2B): agreement despite follower disconnection ...
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+peer-2 want to sleep 1000
+duration: 1.077171509s
+peer-4 has sleep 1076.
+duration: 1.068470936s
+peer-1 has sleep 1068.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+duration: 1.014471815s
+peer-3 has sleep 1014.
+duration: 1.016159209s
+peer-0 has sleep 1015.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+duration: 1.024372711s
+peer-0 has sleep 1024.
+peer-0 want to sleep -24
+peer-0 get logIndex=0
+peer-0 wants to send vote request to peer-0
+peer-0 wants to send vote request to peer-1
+peer-0 wants to send vote request to peer-2
+peer-0 sends vote request to peer-2
+peer-0 begin to vote. request=(1, 0, 0)
+peer-0 sends vote request to peer-1
+peer-0 begin to vote. request=(1, 0, 0)
+Candidate peer-0's term 1 is larger than peer-2's term 0
+Candidate peer-0's term 1 is larger than peer-1's term 0
+peer-0 received vote response from peer-2.
+in peer-0, peer-2 grant, count=1.
+peer-0 received vote response from peer-1.
+in peer-0, peer-1 grant, count=2.
+peer-0 win, vote granted.
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468161314295305
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468161314317141
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+duration: 1.054147722s
+peer-2 has sleep 1053.
+peer-2 want to sleep 971
+duration: 1.059756727s
+peer-1 has sleep 1059.
+peer-1 want to sleep 966
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? true
+Peer-0 is the leader, starting to make an agreement.
+Peer-0, append request: {1, 0, 0, 101}
+After start, index=1
+Send append request to peer-2!
+Send append request to peer-1!
+Send append request to peer-0!
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 101}].
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 101}].
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 101}].
+Has sent request to peer-2? true
+Has sent request to peer-0? true
+Has sent request to peer-1? true
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468161814642338
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468161814675819
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468162314779108
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468162314816131
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+duration: 987.958482ms
+peer-1 has sleep 987.
+peer-1 want to sleep 978
+duration: 1.028728276s
+peer-2 has sleep 1028.
+peer-2 want to sleep 943
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468162814210846
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468162814260456
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468163314484143
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468163314515693
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? true
+Peer-0 is the leader, starting to make an agreement.
+Peer-0, append request: {1, 1, 1, 101}
+After start, index=2
+Send append request to peer-2!
+Send append request to peer-1!
+Send append request to peer-0!
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 101} {1 101}].
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 101} {1 101}].
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 101} {1 101}].
+Has sent request to peer-1? true
+Has sent request to peer-0? true
+Has sent request to peer-2? true
+duration: 1.068111861s
+peer-1 has sleep 1067.
+peer-1 want to sleep 910
+duration: 1.043186744s
+peer-2 has sleep 1042.
+peer-2 want to sleep 899
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468163814010474
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468163814066815
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468164314610501
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468164314649410
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+duration: 910.431897ms
+peer-1 has sleep 910.
+peer-1 want to sleep 999
+duration: 904.354142ms
+peer-2 has sleep 904.
+peer-2 want to sleep 995
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468164814790377
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468164814834252
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468165315134372
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468165315246712
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+duration: 1.033684741s
+peer-2 has sleep 1033.
+peer-2 want to sleep 962
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? true
+Peer-0 is the leader, starting to make an agreement.
+Peer-0, append request: {1, 2, 1, 101}
+After start, index=3
+Send append request to peer-2!
+Send append request to peer-1!
+Send append request to peer-0!
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 101} {1 101} {1 101}].
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 101} {1 101} {1 101}].
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 101} {1 101} {1 101}].
+Has sent request to peer-2? true
+Has sent request to peer-0? true
+Has sent request to peer-1? true
+duration: 1.08809424s
+peer-1 has sleep 1087.
+peer-1 want to sleep 912
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468165815272135
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468165815330120
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468166314970882
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468166315004103
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+duration: 965.730891ms
+peer-2 has sleep 965.
+peer-2 want to sleep 996
+duration: 968.164615ms
+peer-1 has sleep 967.
+peer-1 want to sleep 943
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468166814397495
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468166814449479
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+peer-1 receives msg.
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468167314505422
+Receive hearbeat, peer-1 set lastTick to 1507468167314487002
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+duration: 954.157794ms
+peer-1 has sleep 953.
+peer-1 want to sleep 989
+duration: 1.04820812s
+peer-2 has sleep 1047.
+peer-2 want to sleep 947
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? true
+Peer-0 is the leader, starting to make an agreement.
+Peer-0, append request: {1, 3, 1, 101}
+After start, index=4
+Send append request to peer-2!
+Send append request to peer-1!
+Send append request to peer-0!
+peer-1 receives msg.
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101}].
+peer-1 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101}].
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101}].
+Has sent request to peer-1? true
+Has sent request to peer-0? true
+Has sent request to peer-2? true
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468167814745141
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468167814816141
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468168314934353
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468168314982530
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+duration: 994.050968ms
+peer-1 has sleep 994.
+peer-1 want to sleep 995
+duration: 1.003145515s
+peer-2 has sleep 1003.
+peer-2 want to sleep 944
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468168815185260
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468168815231698
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468169315008620
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468169315050186
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+duration: 973.159179ms
+peer-2 has sleep 972.
+peer-2 want to sleep 971
+duration: 1.062198916s
+peer-1 has sleep 1061.
+peer-1 want to sleep 933
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? true
+Peer-0 is the leader, starting to make an agreement.
+Peer-0, append request: {1, 4, 1, 101}
+After start, index=5
+Send append request to peer-2!
+Send append request to peer-0!
+Send append request to peer-1!
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101} {1 101}].
+peer-2 receives msg.
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101} {1 101}].
+peer-2 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101} {1 101}].
+Has sent request to peer-0? true
+Has sent request to peer-1? true
+Has sent request to peer-2? true
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468169814425744
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468169814462915
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468170314289376
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468170314345762
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+duration: 935.63271ms
+peer-1 has sleep 935.
+peer-1 want to sleep 996
+duration: 1.032844812s
+peer-2 has sleep 1032.
+peer-2 want to sleep 938
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468170814507063
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468170814550615
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468171314678140
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468171314729017
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+duration: 985.205873ms
+peer-2 has sleep 984.
+peer-2 want to sleep 953
+duration: 1.080199309s
+peer-1 has sleep 1079.
+peer-1 want to sleep 916
+--- FAIL: TestFailAgree2B (11.14s)
+	config.go:433: one(101) failed to reach agreement
+peer-0 want to sleep 1000
+peer-1 want to sleep 1000
+peer-2 want to sleep 1000
+peer-3 want to sleep 1000
+peer-4 want to sleep 1000
+Test (2B): no agreement if too many followers disconnect ...
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+duration: 1.017214138s
+peer-2 has sleep 1016.
+duration: 993.206736ms
+peer-1 has sleep 992.
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+duration: 1.002268432s
+peer-0 has sleep 1002.
+peer-0 want to sleep -2
+peer-0 get logIndex=0
+peer-0 wants to send vote request to peer-0
+peer-0 wants to send vote request to peer-1
+peer-0 wants to send vote request to peer-2
+peer-0 wants to send vote request to peer-3
+peer-0 wants to send vote request to peer-4
+peer-0 sends vote request to peer-1
+peer-0 sends vote request to peer-4
+peer-0 begin to vote. request=(1, 0, 0)
+peer-0 sends vote request to peer-3
+peer-0 begin to vote. request=(1, 0, 0)
+peer-0 begin to vote. request=(1, 0, 0)
+peer-0 sends vote request to peer-2
+peer-0 begin to vote. request=(1, 0, 0)
+Candidate peer-0's term 1 is larger than peer-4's term 0
+Candidate peer-0's term 1 is larger than peer-3's term 0
+Candidate peer-0's term 1 is larger than peer-2's term 0
+Candidate peer-0's term 1 is larger than peer-1's term 0
+peer-0 received vote response from peer-3.
+in peer-0, peer-3 grant, count=1.
+peer-0 received vote response from peer-4.
+in peer-0, peer-4 grant, count=2.
+peer-0 received vote response from peer-2.
+in peer-0, peer-2 grant, count=3.
+peer-0 received vote response from peer-1.
+in peer-0, peer-1 grant, count=4.
+peer-0 win, vote granted.
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-3
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468172430984628
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468172431006487
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468172431020946
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468172431042527
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-3
+duration: 1.01922888s
+peer-1 has sleep 1018.
+peer-1 want to sleep 985
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? true
+Peer-0 is the leader, starting to make an agreement.
+Peer-0, append request: {1, 0, 0, 10}
+After start, index=1
+Send append request to peer-1!
+Send append request to peer-4!
+Send append request to peer-2!
+Send append request to peer-3!
+peer-1 receives msg.
+Send append request to peer-0!
+peer-4 receives msg.
+peer-4 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 10}].
+peer-3 receives msg.
+peer-2 receives msg.
+peer-3 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 10}].
+peer-2 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 10}].
+Has sent request to peer-4? true
+peer-1 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 10}].
+Has sent request to peer-2? true
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 10}].
+Has sent request to peer-3? true
+Has sent request to peer-1? true
+Has sent request to peer-0? true
+duration: 1.048358615s
+peer-2 has sleep 1047.
+peer-2 want to sleep 955
+duration: 1.079157754s
+peer-4 has sleep 1077.
+peer-4 want to sleep 925
+duration: 1.094696248s
+peer-3 has sleep 1094.
+peer-3 want to sleep 909
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-3
+peer-3 receives msg.
+peer-4 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468172930771096
+Receive hearbeat, peer-4 set lastTick to 1507468172930773192
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468172930860494
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468172930941824
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-3
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468173430256019
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468173430387705
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468173430439284
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468173430481628
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-1
+duration: 945.453219ms
+peer-4 has sleep 945.
+peer-4 want to sleep 978
+duration: 932.46287ms
+peer-3 has sleep 932.
+peer-3 want to sleep 976
+duration: 1.048508955s
+peer-1 has sleep 1048.
+peer-1 want to sleep 936
+duration: 1.051071145s
+peer-2 has sleep 1051.
+peer-2 want to sleep 903
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468173929347284
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468173929399698
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468173929422631
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468173929445731
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-3
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-2
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468174429397379
+leader-0 has sent heartbeat to peer-4
+leader-0 send heartbeat to peer-3
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468174429611160
+leader-0 has sent heartbeat to peer-3
+leader-0 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468174429812504
+leader-0 has sent heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468174430392847
+leader-0 has sent heartbeat to peer-2
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? true
+Peer-0 is the leader, starting to make an agreement.
+Peer-0, append request: {1, 1, 1, 10}
+After start, index=2
+Send append request to peer-4!
+Send append request to peer-0!
+Send append request to peer-3!
+Send append request to peer-2!
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 10} {1 10}].
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 10} {1 10}].
+Has sent request to peer-0? true
+Send append request to peer-1!
+Has sent request to peer-2? true
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 10} {1 10}].
+peer-3 receives msg.
+peer-3 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 10} {1 10}].
+Has sent request to peer-1? true
+Has sent request to peer-3? true
+peer-4 receives msg.
+peer-4 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 10} {1 10}].
+Has sent request to peer-4? true
+duration: 970.05671ms
+peer-1 has sleep 969.
+peer-1 want to sleep 965
+duration: 1.013356399s
+peer-3 has sleep 1013.
+peer-3 want to sleep 962
+duration: 944.146376ms
+peer-2 has sleep 944.
+peer-2 want to sleep 959
+duration: 1.032036067s
+peer-4 has sleep 1031.
+peer-4 want to sleep 945
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-2
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468174928674200
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468174928687617
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468174928706003
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468174928727016
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-3
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468175428903956
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468175428946279
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468175429130721
+leader-0 has sent heartbeat to peer-2
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468175429149775
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-1
+duration: 996.167876ms
+peer-3 has sleep 995.
+peer-3 want to sleep 965
+duration: 1.003169527s
+peer-2 has sleep 1002.
+peer-2 want to sleep 955
+duration: 1.024463659s
+peer-1 has sleep 1024.
+peer-1 want to sleep 939
+duration: 1.036113057s
+peer-4 has sleep 1036.
+peer-4 want to sleep 909
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-3
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468175928558288
+leader-0 has sent heartbeat to peer-4
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468175928751208
+leader-0 send heartbeat to peer-2
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468175928802915
+leader-0 has sent heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468175928995342
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-2
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468176428606261
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468176428654523
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468176428733560
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468176428775783
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-1
+duration: 967.614181ms
+peer-3 has sleep 967.
+peer-3 want to sleep 997
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? true
+Peer-0 is the leader, starting to make an agreement.
+Peer-0, append request: {1, 2, 1, 10}
+After start, index=3
+Send append request to peer-1!
+Send append request to peer-0!
+Send append request to peer-2!
+peer-2 receives msg.
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 10} {1 10} {1 10}].
+peer-1 receives msg.
+Send append request to peer-3!
+Send append request to peer-4!
+Has sent request to peer-0? true
+peer-2 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 10} {1 10} {1 10}].
+peer-3 receives msg.
+peer-3 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 10} {1 10} {1 10}].
+peer-4 receives msg.
+peer-4 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 10} {1 10} {1 10}].
+Has sent request to peer-2? true
+peer-1 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 10} {1 10} {1 10}].
+Has sent request to peer-3? true
+Has sent request to peer-4? true
+Has sent request to peer-1? true
+duration: 975.331067ms
+peer-1 has sleep 975.
+peer-1 want to sleep 964
+duration: 955.791514ms
+peer-4 has sleep 955.
+peer-4 want to sleep 953
+duration: 1.034713781s
+peer-2 has sleep 1033.
+peer-2 want to sleep 920
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-2
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468176927883176
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468176927918524
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468176927997320
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468176928033460
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-4
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468177427931142
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468177427994380
+leader-0 send heartbeat to peer-4
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468177428214718
+leader-0 has sent heartbeat to peer-2
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468177428304226
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-4
+duration: 956.821562ms
+peer-4 has sleep 956.
+peer-4 want to sleep 995
+duration: 1.004422164s
+peer-3 has sleep 1004.
+peer-3 want to sleep 992
+duration: 1.004035865s
+peer-1 has sleep 1004.
+peer-1 want to sleep 959
+duration: 973.153561ms
+peer-2 has sleep 972.
+peer-2 want to sleep 946
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-4
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468177927148308
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468177927216074
+peer-4 receives msg.
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468177927282490
+Receive hearbeat, peer-4 set lastTick to 1507468177927256806
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-4
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468178426984000
+peer-4 receives msg.
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468178427045824
+leader-0 has sent heartbeat to peer-2
+Receive hearbeat, peer-4 set lastTick to 1507468178427023117
+leader-0 has sent heartbeat to peer-3
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468178427195666
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-1
+duration: 998.082959ms
+peer-3 has sleep 997.
+peer-3 want to sleep 993
+duration: 971.196307ms
+peer-2 has sleep 971.
+peer-2 want to sleep 973
+duration: 1.039157092s
+peer-4 has sleep 1038.
+peer-4 want to sleep 955
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? true
+Peer-0 is the leader, starting to make an agreement.
+Peer-0, append request: {1, 3, 1, 10}
+After start, index=4
+Send append request to peer-4!
+Send append request to peer-0!
+Send append request to peer-2!
+Send append request to peer-3!
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 10} {1 10} {1 10} {1 10}].
+peer-3 receives msg.
+Send append request to peer-1!
+peer-4 receives msg.
+peer-4 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 10} {1 10} {1 10} {1 10}].
+peer-3 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 10} {1 10} {1 10} {1 10}].
+Has sent request to peer-2? true
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 10} {1 10} {1 10} {1 10}].
+peer-1 receives msg.
+Has sent request to peer-4? true
+peer-1 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 10} {1 10} {1 10} {1 10}].
+Has sent request to peer-3? true
+Has sent request to peer-0? true
+Has sent request to peer-1? true
+duration: 1.057264652s
+peer-1 has sleep 1057.
+peer-1 want to sleep 901
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-2
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468178926286707
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468178926327399
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468178926360077
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468178926405263
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-1
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468179426589342
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468179426631996
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468179426678577
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468179426729876
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-3
+duration: 989.156077ms
+peer-2 has sleep 988.
+peer-2 want to sleep 984
+duration: 1.04517561s
+peer-3 has sleep 1044.
+peer-3 want to sleep 947
+duration: 1.012734295s
+peer-4 has sleep 1012.
+peer-4 want to sleep 941
+duration: 988.493603ms
+peer-1 has sleep 988.
+peer-1 want to sleep 912
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468179926735489
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468179926761230
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468179926798900
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468179926829410
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-1
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468180426701919
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468180426745837
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468180426923679
+leader-0 has sent heartbeat to peer-1
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468180427038050
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-4
+duration: 994.781877ms
+peer-2 has sleep 994.
+peer-2 want to sleep 989
+duration: 957.845007ms
+peer-3 has sleep 957.
+peer-3 want to sleep 989
+Before start, cmd=10Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=10Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=10Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=10Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=10Is peer-0 the leader? true
+Peer-0 is the leader, starting to make an agreement.
+Peer-0, append request: {1, 4, 1, 10}
+Send append request to peer-4!
+After start, index=5
+Send append request to peer-2!
+Send append request to peer-1!
+Send append request to peer-3!
+peer-4 receives msg.
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 10} {1 10} {1 10} {1 10} {1 10}].
+peer-4 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 10} {1 10} {1 10} {1 10} {1 10}].
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 10} {1 10} {1 10} {1 10} {1 10}].
+Send append request to peer-0!
+Has sent request to peer-1? true
+peer-3 receives msg.
+Has sent request to peer-4? true
+peer-3 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 10} {1 10} {1 10} {1 10} {1 10}].
+Has sent request to peer-2? true
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 10} {1 10} {1 10} {1 10} {1 10}].
+Has sent request to peer-3? true
+Has sent request to peer-0? true
+duration: 1.027160762s
+peer-4 has sleep 1026.
+peer-4 want to sleep 915
+duration: 1.002068571s
+peer-1 has sleep 1002.
+peer-1 want to sleep 909
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468180926289557
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468180926307023
+peer-3 receives msg.
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468180926338649
+Receive hearbeat, peer-3 set lastTick to 1507468180926324531
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-3
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-4
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468181426576225
+peer-1 receives msg.
+peer-3 receives msg.
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468181426621836
+Receive hearbeat, peer-3 set lastTick to 1507468181426610143
+Receive hearbeat, peer-1 set lastTick to 1507468181426595054
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-1
+duration: 1.022190621s
+peer-2 has sleep 1021.
+peer-2 want to sleep 967
+duration: 969.15814ms
+peer-4 has sleep 968.
+peer-4 want to sleep 945
+duration: 1.001102178s
+peer-1 has sleep 1000.
+peer-1 want to sleep 908
+duration: 1.087950822s
+peer-3 has sleep 1087.
+peer-3 want to sleep 901
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-3
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468181926815519
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468181926859109
+peer-1 receives msg.
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468181927061626
+Receive hearbeat, peer-1 set lastTick to 1507468181927035141
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-1
+leader-0 send heartbeat to peer-4
+leader-0 send heartbeat to peer-1
+leader-0 send heartbeat to peer-2
+leader-0 send heartbeat to peer-3
+peer-3 receives msg.
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468182426997669
+peer-2 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468182426987579
+Receive hearbeat, peer-2 set lastTick to 1507468182427036117
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468182427145816
+leader-0 has sent heartbeat to peer-4
+leader-0 has sent heartbeat to peer-3
+leader-0 has sent heartbeat to peer-2
+leader-0 has sent heartbeat to peer-1
+duration: 969.159438ms
+peer-3 has sleep 968.
+peer-3 want to sleep 932
+duration: 1.050173701s
+peer-2 has sleep 1049.
+peer-2 want to sleep 917
+duration: 1.029224202s
+peer-4 has sleep 1029.
+peer-4 want to sleep 916
+--- FAIL: TestFailNoAgree2B (11.09s)
+	config.go:433: one(10) failed to reach agreement
+peer-0 want to sleep 1000
+peer-1 want to sleep 1000
+Test (2B): concurrent Start()s ...
+peer-2 want to sleep 1000
+duration: 1.005426607s
+peer-1 has sleep 1005.
+duration: 970.197327ms
+peer-3 has sleep 969.
+duration: 989.200041ms
+peer-2 has sleep 988.
+duration: 1.010161247s
+peer-4 has sleep 1010.
+duration: 1.002121861s
+peer-1 has sleep 1002.
+peer-1 want to sleep -2
+peer-1 get logIndex=0
+peer-1 wants to send vote request to peer-0
+peer-1 wants to send vote request to peer-1
+peer-1 wants to send vote request to peer-2
+peer-1 sends vote request to peer-0
+peer-1 begin to vote. request=(1, 0, 0)
+peer-1 sends vote request to peer-2
+peer-1 begin to vote. request=(1, 0, 0)
+Candidate peer-1's term 1 is larger than peer-0's term 0
+Candidate peer-1's term 1 is larger than peer-2's term 0
+peer-1 received vote response from peer-0.
+in peer-1, peer-0 grant, count=1.
+peer-1 received vote response from peer-2.
+in peer-1, peer-2 grant, count=2.
+peer-1 win, vote granted.
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468183525067520
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468183525090953
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.027155526s
+peer-0 has sleep 1026.
+peer-0 want to sleep 976
+duration: 1.081883981s
+peer-2 has sleep 1081.
+peer-2 want to sleep 921
+leader-1 send heartbeat to peer-2
+Is peer-1 the leader? true
+Peer-1 is the leader, starting to make an agreement.
+Peer-1, append request: {1, 0, 0, 1}
+Send append request to peer-0!
+leader-1 send heartbeat to peer-0
+Is peer-1 the leader? true
+Peer-1 is the leader, starting to make an agreement.
+Peer-1, append request: {1, 0, 0, 104}
+Is peer-1 the leader? true
+Peer-1 is the leader, starting to make an agreement.
+Peer-1, append request: {1, 0, 0, 100}
+Is peer-1 the leader? true
+Peer-1 is the leader, starting to make an agreement.
+Peer-1, append request: {1, 0, 0, 101}
+Is peer-1 the leader? true
+peer-2 receives msg.
+Send append request to peer-0!
+Send append request to peer-0!
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468184025320966
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 1}].
+leader-1 has sent heartbeat to peer-0
+Peer-1 is the leader, starting to make an agreement.
+Peer-1, append request: {1, 0, 0, 102}
+peer-0 receives msg.
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Send append request to peer-0!
+peer-0 receives msg.
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Has sent request to peer-0? true
+Send append request to peer-2!
+Has sent request to peer-0? true
+Send append request to peer-1!
+Has sent request to peer-0? true
+Send append request to peer-1!
+peer-0 receives msg.
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468184025257795
+peer-1 receives msg.
+Send append request to peer-2!
+peer-1 receives msg.
+Is peer-1 the leader? true
+Peer-1 is the leader, starting to make an agreement.
+Peer-1, append request: {1, 0, 0, 103}
+Send append request to peer-2!
+leader-1 has sent heartbeat to peer-2
+Has sent request to peer-0? true
+Send append request to peer-1!
+Send append request to peer-0!
+peer-2 receives msg.
+Send append request to peer-1!
+peer-2 receives msg.
+peer-1 receives msg.
+Send append request to peer-2!
+peer-1 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 102}].
+peer-0 receives msg.
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Has sent request to peer-1? true
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+peer-1 receives msg.
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Send append request to peer-1!
+Send append request to peer-1!
+Has sent request to peer-1? true
+Send append request to peer-2!
+Has sent request to peer-1? true
+Has sent request to peer-0? true
+peer-2 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 104}].
+peer-1 receives msg.
+Send append request to peer-2!
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Has sent request to peer-2? true
+peer-1 receives msg.
+Send append request to peer-0!
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Has sent request to peer-2? true
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+peer-2 receives msg.
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Has sent request to peer-1? true
+peer-2 receives msg.
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+peer-0 receives msg.
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Has sent request to peer-2? true
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Has sent request to peer-2? true
+peer-2 receives msg.
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Has sent request to peer-2? true
+Args: PrevLogTerm=0, PrevLogIndex=0; local: PrevLogIndex=1
+Has sent request to peer-0? true
+Has sent request to peer-1? true
+Has sent request to peer-1? true
+Has sent request to peer-2? true
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468184524756303
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468184524807388
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 988.051237ms
+peer-2 has sleep 987.
+peer-2 want to sleep 933
+duration: 1.056141283s
+peer-0 has sleep 1055.
+peer-0 want to sleep 920
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468185024785979
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468185024813187
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468185525097508
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468185525137205
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.00423049s
+peer-2 has sleep 1003.
+peer-2 want to sleep 929
+duration: 1.014162495s
+peer-0 has sleep 1013.
+peer-0 want to sleep 906
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468186024293286
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468186024339832
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468186524600317
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468186524631760
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 925.231655ms
+peer-0 has sleep 925.
+peer-0 want to sleep 980
+duration: 1.016175709s
+peer-2 has sleep 1015.
+peer-2 want to sleep 912
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468187024891724
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468187024913384
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468187525033657
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468187525083790
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 965.157873ms
+peer-2 has sleep 964.
+peer-2 want to sleep 947
+duration: 1.062153914s
+peer-0 has sleep 1061.
+peer-0 want to sleep 918
+leader-1 send heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468188025195106
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468188025237486
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468188525385149
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468188525421121
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.022643135s
+peer-2 has sleep 1022.
+peer-2 want to sleep 925
+duration: 1.0035241s
+peer-0 has sleep 1003.
+peer-0 want to sleep 915
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468189025589614
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468189025639890
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468189525856380
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468189525927315
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 936.14845ms
+peer-2 has sleep 935.
+peer-2 want to sleep 989
+duration: 1.003159028s
+peer-0 has sleep 1002.
+peer-0 want to sleep 912
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468190026047846
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468190026091117
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468190525200209
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468190525225969
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 941.161038ms
+peer-0 has sleep 940.
+peer-0 want to sleep 970
+duration: 1.038813956s
+peer-2 has sleep 1038.
+peer-2 want to sleep 949
+leader-1 send heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468191025488486
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468191025561026
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468191525643469
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468191525684222
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 989.158075ms
+peer-0 has sleep 988.
+peer-0 want to sleep 981
+duration: 1.034150979s
+peer-2 has sleep 1033.
+peer-2 want to sleep 916
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468192025776982
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468192025880512
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468192526068683
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468192526112142
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 984.580016ms
+peer-0 has sleep 984.
+peer-0 want to sleep 997
+duration: 941.159518ms
+peer-2 has sleep 940.
+peer-2 want to sleep 975
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468193026169694
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468193026247597
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468193526455080
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468193526484752
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 988.159029ms
+peer-2 has sleep 987.
+peer-2 want to sleep 987
+duration: 1.045163609s
+peer-0 has sleep 1044.
+peer-0 want to sleep 952
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468194026622110
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468194026661311
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468194526931933
+Receive hearbeat, peer-2 set lastTick to 1507468194526915355
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 968.45853ms
+peer-0 has sleep 968.
+peer-0 want to sleep 984
+duration: 1.02016694s
+peer-2 has sleep 1019.
+peer-2 want to sleep 967
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468195027240350
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468195027360010
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468195526702514
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468195526761953
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.007420904s
+peer-2 has sleep 1007.
+peer-2 want to sleep 959
+duration: 1.024191903s
+peer-0 has sleep 1023.
+peer-0 want to sleep 959
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468196026947884
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468196026982896
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468196527101375
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468196527120034
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.01063521s
+peer-0 has sleep 1010.
+peer-0 want to sleep 949
+duration: 1.046151797s
+peer-2 has sleep 1045.
+peer-2 want to sleep 914
+leader-1 send heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468197027353763
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468197027415530
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468197527704691
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468197527735014
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 954.521895ms
+peer-2 has sleep 954.
+peer-2 want to sleep 960
+duration: 1.026099391s
+peer-0 has sleep 1025.
+peer-0 want to sleep 923
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468198027584605
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468198027606645
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468198527954082
+Receive hearbeat, peer-0 set lastTick to 1507468198527926568
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 968.158819ms
+peer-0 has sleep 967.
+peer-0 want to sleep 955
+duration: 1.012002198s
+peer-2 has sleep 1011.
+peer-2 want to sleep 948
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468199028191375
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468199028223387
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468199528358478
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468199528383013
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 953.893093ms
+peer-2 has sleep 953.
+peer-2 want to sleep 994
+duration: 1.020157118s
+peer-0 has sleep 1019.
+peer-0 want to sleep 936
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468200028535829
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468200028556520
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468200528891424
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468200529006952
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 937.631547ms
+peer-0 has sleep 937.
+peer-0 want to sleep 998
+duration: 1.081368164s
+peer-2 has sleep 1077.
+peer-2 want to sleep 913
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468201033084256
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468201033108847
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+duration: 919.831007ms
+peer-2 has sleep 915.
+peer-2 want to sleep 497
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468201536495803
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468201536533902
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 1.090720809s
+peer-0 has sleep 1088.
+peer-0 want to sleep 915
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468202039855839
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468202039899714
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 560.197381ms
+peer-2 has sleep 555.
+peer-2 want to sleep 944
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468202544023059
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468202544041378
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 987.16001ms
+peer-0 has sleep 982.
+peer-0 want to sleep 935
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468203046906178
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468203046970662
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 980.159022ms
+peer-2 has sleep 975.
+peer-2 want to sleep 971
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468203551100699
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468203551166573
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.017801872s
+peer-0 has sleep 1013.
+peer-0 want to sleep 925
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468204051611653
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468204051635171
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.027660699s
+peer-2 has sleep 1025.
+peer-2 want to sleep 947
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468204554915828
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468204554979818
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 947.533112ms
+peer-0 has sleep 947.
+peer-0 want to sleep 981
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468205055031031
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468205055071671
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 971.161347ms
+peer-2 has sleep 970.
+peer-2 want to sleep 980
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468205555283155
+Receive hearbeat, peer-2 set lastTick to 1507468205555265785
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 1.024052992s
+peer-0 has sleep 1023.
+peer-0 want to sleep 957
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468206055406716
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468206055462785
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 989.161229ms
+peer-2 has sleep 988.
+peer-2 want to sleep 991
+leader-1 send heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468206555384814
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468206555408937
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 1.001229347s
+peer-0 has sleep 1000.
+peer-0 want to sleep 956
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468207055668997
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468207055713607
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.060178447s
+peer-2 has sleep 1059.
+peer-2 want to sleep 931
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468207555947240
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468207555965392
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 1.023161103s
+peer-0 has sleep 1022.
+peer-0 want to sleep 933
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468208056094867
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468208056122090
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 942.161301ms
+peer-2 has sleep 941.
+peer-2 want to sleep 989
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468208555597451
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468208555636693
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 969.165565ms
+peer-0 has sleep 968.
+peer-0 want to sleep 963
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468209055853480
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468209055894842
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.029221376s
+peer-2 has sleep 1029.
+peer-2 want to sleep 959
+leader-1 send heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468209556087541
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468209556118523
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 967.712952ms
+peer-0 has sleep 967.
+peer-0 want to sleep 996
+leader-1 send heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468210055022499
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468210055056054
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 1.022159764s
+peer-2 has sleep 1021.
+peer-2 want to sleep 936
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468210555365169
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468210555434401
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 1.053414614s
+peer-0 has sleep 1053.
+peer-0 want to sleep 942
+leader-1 send heartbeat to peer-0
+leader-1 send heartbeat to peer-2
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468211054760618
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468211054805632
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 952.226648ms
+peer-2 has sleep 951.
+peer-2 want to sleep 984
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468211554724660
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468211554771136
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.014220323s
+peer-0 has sleep 1013.
+peer-0 want to sleep 927
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468212054518191
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468212054554496
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.024201871s
+peer-2 has sleep 1023.
+peer-2 want to sleep 959
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468212554783598
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468212554809229
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 958.199205ms
+peer-0 has sleep 957.
+peer-0 want to sleep 969
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468213055042117
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468213055074047
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 973.034973ms
+peer-2 has sleep 972.
+peer-2 want to sleep 986
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468213555182723
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468213555204290
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 969.307199ms
+peer-0 has sleep 969.
+peer-0 want to sleep 1000
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+Receive hearbeat, peer-2 set lastTick to 1507468214055430700
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468214055459375
+leader-1 has sent heartbeat to peer-2
+leader-1 has sent heartbeat to peer-0
+duration: 1.046164006s
+peer-2 has sleep 1045.
+peer-2 want to sleep 941
+leader-1 send heartbeat to peer-2
+leader-1 send heartbeat to peer-0
+peer-2 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468214555720587
+Receive hearbeat, peer-2 set lastTick to 1507468214555698959
+leader-1 has sent heartbeat to peer-0
+leader-1 has sent heartbeat to peer-2
+duration: 1.021199121s
+peer-0 has sleep 1020.
+peer-0 want to sleep 979
+--- FAIL: TestConcurrentStarts2B (32.25s)
+	config.go:375: only 0 decided for index 1; wanted 3
+peer-0 want to sleep 1000
+peer-1 want to sleep 1000
+Test (2B): rejoin of partitioned leader ...
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+peer-2 want to sleep 1000
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+duration: 1.024465619s
+peer-2 has sleep 1024.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+duration: 1.05020562s
+peer-0 has sleep 1049.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+duration: 1.011178815s
+peer-2 has sleep 1010.
+peer-2 want to sleep -11
+peer-2 get logIndex=0
+peer-2 wants to send vote request to peer-0
+peer-2 wants to send vote request to peer-1
+peer-2 wants to send vote request to peer-2
+peer-2 sends vote request to peer-1
+peer-2 begin to vote. request=(1, 0, 0)
+peer-2 sends vote request to peer-0
+peer-2 begin to vote. request=(1, 0, 0)
+Candidate peer-2's term 1 is larger than peer-1's term 0
+Candidate peer-2's term 1 is larger than peer-0's term 0
+peer-2 received vote response from peer-1.
+in peer-2, peer-1 grant, count=1.
+peer-2 received vote response from peer-0.
+in peer-2, peer-0 grant, count=2.
+peer-2 win, vote granted.
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468215790259146
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468215790287577
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 0, 0, 101}
+After start, index=1
+Send append request to peer-2!
+Send append request to peer-0!
+Send append request to peer-1!
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 101}].
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 101}].
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 101}].
+Has sent request to peer-2? true
+Has sent request to peer-0? true
+Has sent request to peer-1? true
+duration: 1.04742526s
+peer-1 has sleep 1047.
+peer-1 want to sleep 965
+duration: 1.085205387s
+peer-0 has sleep 1084.
+peer-0 want to sleep 928
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468216290074176
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468216290116581
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468216789231627
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468216789239007
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+duration: 990.554367ms
+peer-0 has sleep 990.
+peer-0 want to sleep 936
+duration: 1.030381238s
+peer-1 has sleep 1030.
+peer-1 want to sleep 934
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468217288832273
+leader-2 has sent heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468217289514906
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468217788261992
+leader-2 has sent heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468217788573746
+leader-2 has sent heartbeat to peer-1
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 1, 1, 101}
+After start, index=2
+Send append request to peer-2!
+Send append request to peer-0!
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 101} {1 101}].
+Has sent request to peer-2? true
+Send append request to peer-1!
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 101} {1 101}].
+Has sent request to peer-1? true
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 101} {1 101}].
+Has sent request to peer-0? true
+duration: 954.367757ms
+peer-1 has sleep 954.
+peer-1 want to sleep 979
+duration: 966.111787ms
+peer-0 has sleep 965.
+peer-0 want to sleep 969
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468218288238993
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468218288271665
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-0 receives msg.
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468218787976166
+Receive hearbeat, peer-0 set lastTick to 1507468218787955311
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+duration: 1.02740082s
+peer-1 has sleep 1027.
+peer-1 want to sleep 951
+duration: 1.025972724s
+peer-0 has sleep 1025.
+peer-0 want to sleep 942
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+peer-1 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468219288364635
+Receive hearbeat, peer-1 set lastTick to 1507468219288333057
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468219788599434
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468219788638215
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 2, 1, 101}
+After start, index=3
+Send append request to peer-2!
+Send append request to peer-1!
+Send append request to peer-0!
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 101} {1 101} {1 101}].
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 101} {1 101} {1 101}].
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 101} {1 101} {1 101}].
+Has sent request to peer-2? true
+Has sent request to peer-1? true
+Has sent request to peer-0? true
+duration: 1.008284703s
+peer-0 has sleep 1008.
+peer-0 want to sleep 935
+duration: 1.047160347s
+peer-1 has sleep 1046.
+peer-1 want to sleep 904
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468220287975580
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468220288051966
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468220788200092
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468220788258537
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+duration: 935.396559ms
+peer-0 has sleep 935.
+peer-0 want to sleep 999
+duration: 961.155158ms
+peer-1 has sleep 960.
+peer-1 want to sleep 942
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468221288206463
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468221288289055
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468221787895823
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468221787918453
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+duration: 1.028652566s
+peer-0 has sleep 1028.
+peer-0 want to sleep 970
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 3, 1, 101}
+After start, index=4
+Send append request to peer-2!
+Send append request to peer-0!
+Send append request to peer-1!
+peer-2 receives msg.
+peer-1 receives msg.
+peer-2 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101}].
+peer-1 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101}].
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101}].
+Has sent request to peer-2? true
+Has sent request to peer-1? true
+Has sent request to peer-0? true
+duration: 1.03507118s
+peer-1 has sleep 1034.
+peer-1 want to sleep 907
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468222288180555
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468222288221607
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468222788377954
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468222788420273
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+duration: 1.002155499s
+peer-0 has sleep 1001.
+peer-0 want to sleep 968
+duration: 984.661252ms
+peer-1 has sleep 984.
+peer-1 want to sleep 922
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468223288175551
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468223288228926
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468223789543753
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468223789583084
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+duration: 943.007973ms
+peer-1 has sleep 942.
+peer-1 want to sleep 981
+Before start, cmd=101Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=101Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=101Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 4, 1, 101}
+After start, index=5
+Send append request to peer-2!
+Send append request to peer-1!
+Send append request to peer-0!
+peer-0 receives msg.
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101} {1 101}].
+peer-0 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101} {1 101}].
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 101} {1 101} {1 101} {1 101} {1 101}].
+Has sent request to peer-2? true
+Has sent request to peer-0? true
+Has sent request to peer-1? true
+duration: 1.054165463s
+peer-0 has sleep 1054.
+peer-0 want to sleep 915
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468224289822677
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468224289866928
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468224789312541
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468224789358569
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+duration: 977.574245ms
+peer-0 has sleep 977.
+peer-0 want to sleep 937
+duration: 1.080041625s
+peer-1 has sleep 1080.
+peer-1 want to sleep 900
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468225289382051
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468225289406803
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468225789698854
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468225789790073
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+--- FAIL: TestRejoin2B (11.05s)
+	config.go:433: one(101) failed to reach agreement
+peer-0 want to sleep 1000
+peer-1 want to sleep 1000
+peer-2 want to sleep 1000
+peer-3 want to sleep 1000
+Test (2B): leader backs up quickly over incorrect follower logs ...
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+peer-4 want to sleep 1000
+duration: 984.760947ms
+peer-0 has sleep 984.
+duration: 993.15694ms
+peer-1 has sleep 992.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? false
+Peer-2 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+duration: 1.004174805s
+peer-2 has sleep 1003.
+peer-2 want to sleep -4
+peer-2 get logIndex=0
+peer-2 wants to send vote request to peer-0
+peer-2 wants to send vote request to peer-1
+peer-2 wants to send vote request to peer-2
+peer-2 wants to send vote request to peer-3
+peer-2 wants to send vote request to peer-4
+peer-2 sends vote request to peer-0
+peer-2 sends vote request to peer-3
+peer-2 sends vote request to peer-1
+peer-2 begin to vote. request=(1, 0, 0)
+peer-2 begin to vote. request=(1, 0, 0)
+peer-2 begin to vote. request=(1, 0, 0)
+peer-2 sends vote request to peer-4
+peer-2 begin to vote. request=(1, 0, 0)
+Candidate peer-2's term 1 is larger than peer-3's term 0
+Candidate peer-2's term 1 is larger than peer-1's term 0
+Candidate peer-2's term 1 is larger than peer-4's term 0
+Candidate peer-2's term 1 is larger than peer-0's term 0
+peer-2 received vote response from peer-1.
+in peer-2, peer-1 grant, count=1.
+peer-2 received vote response from peer-3.
+in peer-2, peer-3 grant, count=2.
+peer-2 received vote response from peer-4.
+in peer-2, peer-4 grant, count=3.
+peer-2 received vote response from peer-0.
+in peer-2, peer-0 grant, count=4.
+peer-2 win, vote granted.
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-0
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468226837987765
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468226838006676
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468226838029129
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468226838068691
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+duration: 1.01205588s
+peer-1 has sleep 1011.
+peer-1 want to sleep 994
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 0, 0, 4493988860614313135}
+After start, index=1
+Send append request to peer-4!
+Send append request to peer-2!
+Send append request to peer-3!
+Send append request to peer-1!
+peer-3 receives msg.
+peer-3 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 4493988860614313135}].
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 4493988860614313135}].
+peer-2 receives msg.
+peer-4 receives msg.
+peer-4 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 4493988860614313135}].
+peer-2 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 4493988860614313135}].
+Has sent request to peer-3? true
+Send append request to peer-0!
+Has sent request to peer-1? true
+Has sent request to peer-4? true
+Has sent request to peer-2? true
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=2, logs=[{0 <nil>} {1 4493988860614313135}].
+Has sent request to peer-0? true
+duration: 1.057158614s
+peer-4 has sleep 1056.
+peer-4 want to sleep 948
+duration: 1.08851728s
+peer-0 has sleep 1088.
+peer-0 want to sleep 917
+duration: 1.088352759s
+peer-3 has sleep 1088.
+peer-3 want to sleep 917
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468227338364767
+peer-0 receives msg.
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468227338419470
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468227338499928
+Receive hearbeat, peer-0 set lastTick to 1507468227338404560
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468227838680950
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468227838722095
+leader-2 has sent heartbeat to peer-0
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468227838898215
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468227838930830
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-1
+duration: 955.784211ms
+peer-4 has sleep 955.
+peer-4 want to sleep 993
+duration: 1.014045256s
+peer-1 has sleep 1013.
+peer-1 want to sleep 980
+duration: 970.161895ms
+peer-3 has sleep 969.
+peer-3 want to sleep 948
+duration: 974.639722ms
+peer-0 has sleep 974.
+peer-0 want to sleep 943
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468228338844823
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468228338873580
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468228338899094
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468228338955551
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-4 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468228838977593
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468228839011494
+Receive hearbeat, peer-4 set lastTick to 1507468228838968344
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468228839065537
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-3
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 1, 1, 4493988860614313135}
+After start, index=2
+Send append request to peer-4!
+Send append request to peer-0!
+Send append request to peer-3!
+Send append request to peer-2!
+peer-3 receives msg.
+peer-0 receives msg.
+peer-3 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135}].
+peer-0 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135}].
+Send append request to peer-1!
+peer-4 receives msg.
+peer-4 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135}].
+Has sent request to peer-0? true
+Has sent request to peer-3? true
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135}].
+Has sent request to peer-4? true
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=3, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135}].
+Has sent request to peer-2? true
+Has sent request to peer-1? true
+duration: 1.001353826s
+peer-3 has sleep 1001.
+peer-3 want to sleep 947
+duration: 1.068382484s
+peer-4 has sleep 1068.
+peer-4 want to sleep 925
+duration: 1.061857414s
+peer-1 has sleep 1061.
+peer-1 want to sleep 919
+duration: 1.038222403s
+peer-0 has sleep 1038.
+peer-0 want to sleep 905
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468229338656798
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468229338703432
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468229338749915
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468229338792902
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468229838115406
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468229838153311
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468229838329894
+peer-1 receives msg.
+leader-2 has sent heartbeat to peer-3
+Receive hearbeat, peer-1 set lastTick to 1507468229838701751
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+duration: 966.611313ms
+peer-3 has sleep 964.
+peer-3 want to sleep 979
+duration: 989.053743ms
+peer-1 has sleep 989.
+peer-1 want to sleep 929
+duration: 1.020540616s
+peer-4 has sleep 1018.
+peer-4 want to sleep 904
+duration: 1.001190749s
+peer-0 has sleep 1001.
+peer-0 want to sleep 903
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-0
+peer-4 receives msg.
+peer-1 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468230340562962
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468230340584544
+Receive hearbeat, peer-1 set lastTick to 1507468230340543222
+Receive hearbeat, peer-4 set lastTick to 1507468230340506404
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468230841465764
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468230841495197
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468230841544488
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468230841574509
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+duration: 924.591588ms
+peer-4 has sleep 924.
+peer-4 want to sleep 982
+duration: 962.330031ms
+peer-1 has sleep 961.
+peer-1 want to sleep 969
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 2, 1, 4493988860614313135}
+After start, index=3
+Send append request to peer-4!
+Send append request to peer-1!
+Send append request to peer-3!
+Send append request to peer-0!
+Send append request to peer-2!
+peer-3 receives msg.
+peer-3 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+peer-4 receives msg.
+peer-4 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+Has sent request to peer-3? true
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=4, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+Has sent request to peer-1? true
+Has sent request to peer-0? true
+Has sent request to peer-4? true
+Has sent request to peer-2? true
+duration: 966.822723ms
+peer-0 has sleep 963.
+peer-0 want to sleep 940
+duration: 1.070135404s
+peer-3 has sleep 1065.
+peer-3 want to sleep 912
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468231343238938
+peer-1 receives msg.
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468231343312342
+Receive hearbeat, peer-1 set lastTick to 1507468231343298062
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468231343372938
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-4
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468231843316883
+peer-1 receives msg.
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468231843387960
+Receive hearbeat, peer-1 set lastTick to 1507468231843357406
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468231843458358
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-0
+duration: 1.004237938s
+peer-4 has sleep 1004.
+peer-4 want to sleep 980
+duration: 998.977957ms
+peer-1 has sleep 998.
+peer-1 want to sleep 972
+duration: 972.780127ms
+peer-3 has sleep 972.
+peer-3 want to sleep 941
+duration: 1.001250267s
+peer-0 has sleep 1001.
+peer-0 want to sleep 940
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468232342776836
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468232342805359
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468232342831401
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468232342879455
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468232843165648
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468232843218713
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468232843272579
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468232843314266
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-4
+duration: 1.000122204s
+peer-4 has sleep 1000.
+peer-4 want to sleep 979
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 3, 1, 4493988860614313135}
+After start, index=4
+Send append request to peer-4!
+Send append request to peer-1!
+Send append request to peer-3!
+Send append request to peer-2!
+Send append request to peer-0!
+peer-4 receives msg.
+peer-0 receives msg.
+peer-0 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+peer-2 receives msg.
+peer-2 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+peer-3 receives msg.
+peer-3 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+Has sent request to peer-0? true
+peer-4 append entry to logs, logs' length=5, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+Has sent request to peer-1? true
+Has sent request to peer-2? true
+Has sent request to peer-3? true
+Has sent request to peer-4? true
+duration: 996.180606ms
+peer-3 has sleep 995.
+peer-3 want to sleep 945
+duration: 1.004490232s
+peer-0 has sleep 1004.
+peer-0 want to sleep 935
+duration: 1.051242752s
+peer-1 has sleep 1051.
+peer-1 want to sleep 921
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468233343278932
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468233343324228
+peer-0 receives msg.
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468233343389981
+Receive hearbeat, peer-0 set lastTick to 1507468233343364009
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-0
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468233842557068
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468233842575981
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468233842598846
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468233842769145
+leader-2 has sent heartbeat to peer-0
+duration: 997.156657ms
+peer-3 has sleep 996.
+peer-3 want to sleep 947
+duration: 978.744241ms
+peer-1 has sleep 978.
+peer-1 want to sleep 941
+duration: 1.03929508s
+peer-4 has sleep 1039.
+peer-4 want to sleep 939
+duration: 1.017174564s
+peer-0 has sleep 1016.
+peer-0 want to sleep 918
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-3
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468234342939882
+peer-3 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468234342989099
+Receive hearbeat, peer-3 set lastTick to 1507468234342972251
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468234343034140
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+duration: 941.035068ms
+peer-1 has sleep 941.
+peer-1 want to sleep 501
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468234843155290
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468234843182937
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468234843201984
+Receive hearbeat, peer-1 set lastTick to 1507468234843147352
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-1
+duration: 963.528794ms
+peer-3 has sleep 963.
+peer-3 want to sleep 984
+duration: 978.024827ms
+duration: 956.182469ms
+peer-0 has sleep 955.
+peer-0 want to sleep 962
+peer-4 has sleep 978.
+peer-4 want to sleep 962
+Before start, cmd=4493988860614313135Is peer-3 the leader? false
+Peer-3 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-4 the leader? false
+Peer-4 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-0 the leader? false
+Peer-0 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-1 the leader? false
+Peer-1 is not the leader, return false.
+Before start, cmd=4493988860614313135Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 4, 1, 4493988860614313135}
+After start, index=5
+Send append request to peer-1!
+Send append request to peer-4!
+Send append request to peer-2!
+Send append request to peer-3!
+peer-4 receives msg.
+peer-4 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+peer-2 receives msg.
+peer-1 receives msg.
+peer-1 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+peer-2 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+Send append request to peer-0!
+Has sent request to peer-4? true
+peer-3 receives msg.
+peer-3 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+Has sent request to peer-1? true
+Has sent request to peer-2? true
+peer-0 receives msg.
+Has sent request to peer-3? true
+peer-0 append entry to logs, logs' length=6, logs=[{0 <nil>} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135} {1 4493988860614313135}].
+Has sent request to peer-0? true
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468235342759638
+peer-0 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468235342726988
+Receive hearbeat, peer-0 set lastTick to 1507468235342796654
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468235342938440
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-4
+duration: 535.155192ms
+peer-1 has sleep 534.
+peer-1 want to sleep 965
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-3
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468235842333078
+peer-0 receives msg.
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468235842402591
+Receive hearbeat, peer-0 set lastTick to 1507468235842388804
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468235842461179
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+duration: 966.233529ms
+peer-0 has sleep 966.
+peer-0 want to sleep 995
+duration: 1.045586501s
+peer-3 has sleep 1045.
+peer-3 want to sleep 937
+duration: 1.047085223s
+peer-4 has sleep 1047.
+peer-4 want to sleep 914
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468236341807640
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468236341842862
+peer-4 receives msg.
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468236341918077
+Receive hearbeat, peer-4 set lastTick to 1507468236341888730
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-4
+duration: 975.159525ms
+peer-1 has sleep 974.
+peer-1 want to sleep 989
+leader-2 send heartbeat to peer-4
+leader-2 send heartbeat to peer-3
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468236841998541
+peer-3 receives msg.
+Receive hearbeat, peer-3 set lastTick to 1507468236842027621
+peer-4 receives msg.
+Receive hearbeat, peer-4 set lastTick to 1507468236842073870
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468236842107419
+leader-2 has sent heartbeat to peer-3
+leader-2 has sent heartbeat to peer-4
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+duration: 929.157752ms
+peer-4 has sleep 928.
+duration: 1.01005716s
+peer-0 has sleep 1010.
+peer-0 want to sleep 984
+peer-4 want to sleep 984
+duration: 956.58127ms
+peer-3 has sleep 956.
+peer-3 want to sleep 980
+--- FAIL: TestBackup2B (11.08s)
+	config.go:433: one(4493988860614313135) failed to reach agreement
+peer-0 want to sleep 1000
+peer-1 want to sleep 1000
+Test (2B): RPC counts aren't too high ...
+peer-2 want to sleep 1000
+duration: 1.029789892s
+peer-1 has sleep 1029.
+duration: 981.151502ms
+peer-3 has sleep 980.
+duration: 1.025152682s
+peer-4 has sleep 1024.
+duration: 1.047147659s
+peer-0 has sleep 1046.
+duration: 1.03615994s
+peer-2 has sleep 1035.
+peer-2 want to sleep -36
+peer-2 get logIndex=0
+peer-2 wants to send vote request to peer-0
+peer-2 wants to send vote request to peer-1
+peer-2 wants to send vote request to peer-2
+peer-2 sends vote request to peer-1
+peer-2 begin to vote. request=(1, 0, 0)
+peer-2 sends vote request to peer-0
+peer-2 begin to vote. request=(1, 0, 0)
+Candidate peer-2's term 1 is larger than peer-1's term 0
+Candidate peer-2's term 1 is larger than peer-0's term 0
+peer-2 received vote response from peer-1.
+in peer-2, peer-1 grant, count=1.
+peer-2 received vote response from peer-0.
+in peer-2, peer-0 grant, count=2.
+peer-2 win, vote granted.
+leader-2 send heartbeat to peer-0
+leader-2 send heartbeat to peer-1
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468237946359639
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468237946444622
+leader-2 has sent heartbeat to peer-0
+leader-2 has sent heartbeat to peer-1
+duration: 1.074086256s
+peer-1 has sleep 1073.
+peer-1 want to sleep 964
+duration: 1.085160021s
+peer-0 has sleep 1084.
+peer-0 want to sleep 952
+leader-2 send heartbeat to peer-1
+leader-2 send heartbeat to peer-0
+peer-1 receives msg.
+Receive hearbeat, peer-1 set lastTick to 1507468238445705039
+peer-0 receives msg.
+Receive hearbeat, peer-0 set lastTick to 1507468238445754891
+leader-2 has sent heartbeat to peer-1
+leader-2 has sent heartbeat to peer-0
+Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 0, 0, 1}
+Is peer-2 the leader? true
+Peer-2 is the leader, starting to make an agreement.
+Peer-2, append request: {1, 0, 0, 1543032390}
+--- FAIL: TestCount2B (2.01s)
+	test_test.go:450: Start() failed
+FAIL
+exit status 1
+FAIL	github.com/6.824/raft	89.756s

@@ -55,8 +55,8 @@ type Raft struct {
 	isStopping  bool
 	isLeader    bool
 	currentTerm int
-	voteFor     int   // index of peer
-	logs        []int // using slices
+	voteFor     int        // index of peer
+	logs        []LogEntry // using slices
 
 	commitIndex int64
 	lastApplied int64
@@ -67,6 +67,11 @@ type Raft struct {
 	// only for leader
 	nextIndex  map[int]int64 // peer id -> appliedIndex
 	matchIndex map[int]int64 // peer id -> highest index
+}
+
+type LogEntry struct {
+	term    int
+	command interface{}
 }
 
 // return currentTerm and whether this server
@@ -116,6 +121,12 @@ func (rf *Raft) readPersist(data []byte) {
 
 // AppendEntry RPC
 type AppendEntryArgs struct {
+	Term         int
+	LeaderId     int
+	PrevLogIndex int64
+	PrevLogTerm  int
+	Entry        interface{}
+	LeaderCommit int64
 }
 
 type AppendEntryReply struct {
@@ -127,14 +138,44 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	fmt.Printf("peer-%d receives msg.\n", rf.me)
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
-	rf.lastTick = time.Now().UnixNano()
-	fmt.Printf("peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
+	if args.Entry == nil {
+		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
+		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
+		reply.Term = rf.currentTerm
+		reply.Success = false
+		return
+	}
 	if rf.isVoting {
 		fmt.Printf("peer-%d is voting. do not append.\n", rf.me)
 		// to reply
 		reply.Term = rf.currentTerm
 		reply.Success = false
 		return
+	}
+	localTerm := rf.currentTerm
+	if localTerm > args.Term {
+		reply.Success = false
+		reply.Term = localTerm
+		return
+	}
+	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex != int64(len(rf.logs)-1) || args.PrevLogTerm != rf.logs[args.PrevLogIndex].term {
+		fmt.Printf("Args: PrevLogTerm=%d, PrevLogIndex=%d; local: PrevLogIndex=%d\n", args.PrevLogTerm, args.PrevLogIndex, len(rf.logs)-1)
+		reply.Term = localTerm
+		reply.Success = false
+		return
+	}
+	var index = args.PrevLogIndex + 1
+	if index < int64(len(rf.logs)) && rf.logs[index].term != args.Term {
+		fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Term, index, rf.logs[index].term)
+		rf.logs = rf.logs[0 : index-1]
+	}
+	var newLogEntry = LogEntry{}
+	newLogEntry.term = args.Term
+	newLogEntry.command = args.Entry
+	rf.logs = append(rf.logs, newLogEntry)
+	fmt.Printf("peer-%d append entry to logs, logs' length=%d, logs=%v.\n", rf.me, len(rf.logs), rf.logs)
+	if args.LeaderCommit > rf.commitIndex {
+		rf.commitIndex = args.LeaderCommit
 	}
 	reply.Term = rf.currentTerm
 	reply.Success = true
@@ -203,7 +244,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	var localLastLogIndex int64 = int64(len(rf.logs) - 1)
 	var localLastLogTerm int = -1
 	if localLastLogIndex >= 0 {
-		localLastLogTerm = rf.logs[localLastLogIndex]
+		localLastLogTerm = rf.logs[localLastLogIndex].term
 	}
 	if localLastLogIndex > candiLastLogIndex ||
 		(localLastLogIndex == candiLastLogIndex &&
@@ -276,7 +317,41 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	isLeader := true
 
 	// Your code here (2B).
-
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	currIndex := int64(len(rf.logs) - 1)
+	fmt.Printf("Is peer-%d the leader? %t\n", rf.me, rf.isLeader)
+	if rf.isLeader {
+		fmt.Printf("Peer-%d is the leader, starting to make an agreement.\n", rf.me)
+		isLeader = true
+		var req = new(AppendEntryArgs)
+		req.Term = rf.currentTerm
+		req.LeaderId = rf.me
+		req.PrevLogIndex = currIndex
+		if currIndex >= 0 {
+			req.PrevLogTerm = rf.logs[currIndex].term
+		} else {
+			req.PrevLogTerm = 0
+		}
+		req.LeaderCommit = rf.commitIndex
+		req.Entry = command
+		fmt.Printf("Peer-%d, append request: {%d, %d, %d, %v}\n", rf.me, req.Term, req.PrevLogIndex, req.PrevLogTerm, req.Entry)
+		for i := 0; i < len(rf.peers); i++ {
+			server := i
+			go func() {
+				fmt.Printf("Send append request to peer-%d!\n", server)
+				var rep = new(AppendEntryReply)
+				ok := rf.sendAppendEntry(server, req, rep)
+				fmt.Printf("Has sent request to peer-%d? %t\n", server, ok)
+			}()
+		}
+		currIndex = currIndex + 1
+	} else {
+		fmt.Printf("Peer-%d is not the leader, return false.\n", rf.me)
+		isLeader = false
+	}
+	term = rf.currentTerm
+	index = int(currIndex)
 	return index, term, isLeader
 }
 
@@ -315,7 +390,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.isLeader = false
 	rf.currentTerm = 0
 	rf.voteFor = -1
-	rf.logs = make([]int, 0)
+	rf.logs = make([]LogEntry, 1)
 	rf.commitIndex = -1
 	rf.lastApplied = -1
 	rf.nextIndex = make(map[int]int64)
@@ -366,12 +441,12 @@ func Make(peers []*labrpc.ClientEnd, me int,
 					rf.isVoting = true
 					rf.currentTerm += 1
 					reqTerm := rf.currentTerm
-					rf.mu.Unlock()
 					logIndex := int64(len(rf.logs) - 1)
+					rf.mu.Unlock()
 					var logTerm = 0
 					if logIndex >= 0 {
-						fmt.Printf("peer-%d get logIndex=%d", rf.me, logIndex)
-						logTerm = rf.logs[logIndex]
+						fmt.Printf("peer-%d get logIndex=%d\n", rf.me, logIndex)
+						logTerm = rf.logs[logIndex].term
 					}
 					var voteForMe int32 = 0
 					var waitVote sync.WaitGroup
@@ -444,6 +519,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 					rf.isVoting = false
 					rf.mu.Unlock()
 				} else {
+					rf.isVoting = false
 					realSleepTime := sleepDuration + rand.Intn(100)
 					b := time.Now()
 					time.Sleep(time.Duration(realSleepTime) * time.Millisecond)
