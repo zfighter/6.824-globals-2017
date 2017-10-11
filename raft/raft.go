@@ -336,16 +336,52 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		req.LeaderCommit = rf.commitIndex
 		req.Entry = command
 		fmt.Printf("Peer-%d, append request: {%d, %d, %d, %v}\n", rf.me, req.Term, req.PrevLogIndex, req.PrevLogTerm, req.Entry)
+		var appendDone int32 = 0
+		var waitAppend sync.WaitGroup
 		for i := 0; i < len(rf.peers); i++ {
 			server := i
+			waitAppend.Add(1)
 			go func() {
 				fmt.Printf("Send append request to peer-%d!\n", server)
 				var rep = new(AppendEntryReply)
 				ok := rf.sendAppendEntry(server, req, rep)
+				if ok {
+					if rep != nil && rep.Success {
+						atomic.AddInt32(&appendDone, 1)
+					} else if rep != nil {
+						if rep.Term > rf.currentTerm {
+							rf.isLeader = false
+							rf.currentTerm = rep.Term
+						}
+					} else {
+						fmt.Printf("Peer-%d received a null reply.\n", rf.me)
+					}
+				} else {
+					fmt.Printf("Peer-%d sent appendEntry request failed.", rf.me)
+				}
+				waitAppend.Done()
 				fmt.Printf("Has sent request to peer-%d? %t\n", server, ok)
 			}()
 		}
-		currIndex = currIndex + 1
+		doneChan := make(chan struct{})
+		go func() {
+			defer close(doneChan)
+			waitAppend.Wait()
+		}()
+		var isTimeout = false
+		select {
+		case <-doneChan:
+			isTimeout = false
+		case <-time.After(time.Duration(1000) * time.Millisecond):
+			isTimeout = true
+		}
+		if appendDone >= int32(len(rf.peers)/2+1) {
+			currIndex = currIndex + 1
+			fmt.Printf("peer-%d has append on most peers.\n", rf.me)
+			rf.commitIndex = currIndex
+		} else {
+			fmt.Printf("peer-%d append failed, timeout=%t\n", rf.me, isTimeout)
+		}
 	} else {
 		fmt.Printf("Peer-%d is not the leader, return false.\n", rf.me)
 		isLeader = false
