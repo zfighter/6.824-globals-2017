@@ -58,15 +58,15 @@ type Raft struct {
 	voteFor     int        // index of peer
 	logs        []LogEntry // using slices
 
-	commitIndex int64
-	lastApplied int64
+	commitIndex int
+	lastApplied int
 
 	// timer
 	lastTick int64
 
 	// only for leader
-	nextIndex  map[int]int64 // peer id -> appliedIndex
-	matchIndex map[int]int64 // peer id -> highest index
+	nextIndex  map[int]int // peer id -> appliedIndex
+	matchIndex map[int]int // peer id -> highest index
 }
 
 type LogEntry struct {
@@ -123,10 +123,10 @@ func (rf *Raft) readPersist(data []byte) {
 type AppendEntryArgs struct {
 	Term         int
 	LeaderId     int
-	PrevLogIndex int64
+	PrevLogIndex int
 	PrevLogTerm  int
 	Entry        interface{}
-	LeaderCommit int64
+	LeaderCommit int
 }
 
 type AppendEntryReply struct {
@@ -158,14 +158,14 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		reply.Term = localTerm
 		return
 	}
-	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex != int64(len(rf.logs)-1) || args.PrevLogTerm != rf.logs[args.PrevLogIndex].term {
+	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex != len(rf.logs)-1 || args.PrevLogTerm != rf.logs[args.PrevLogIndex].term {
 		fmt.Printf("Args: PrevLogTerm=%d, PrevLogIndex=%d; local: PrevLogIndex=%d\n", args.PrevLogTerm, args.PrevLogIndex, len(rf.logs)-1)
 		reply.Term = localTerm
 		reply.Success = false
 		return
 	}
 	var index = args.PrevLogIndex + 1
-	if index < int64(len(rf.logs)) && rf.logs[index].term != args.Term {
+	if index < len(rf.logs) && rf.logs[index].term != args.Term {
 		fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Term, index, rf.logs[index].term)
 		rf.logs = rf.logs[0 : index-1]
 	}
@@ -194,7 +194,7 @@ type RequestVoteArgs struct {
 	// Your data here (2A, 2B).
 	Term         int
 	Candidate    int
-	LastLogIndex int64
+	LastLogIndex int
 	LastLogTerm  int
 }
 
@@ -241,7 +241,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	fmt.Printf("Candidate peer-%d's term %d is larger than peer-%d's term %d\n", candidateId, termOfCandidate, rf.me, currTerm)
 	candiLastLogIndex := args.LastLogIndex
 	candiLastLogTerm := args.LastLogTerm
-	var localLastLogIndex int64 = int64(len(rf.logs) - 1)
+	var localLastLogIndex int = len(rf.logs) - 1
 	var localLastLogTerm int = -1
 	if localLastLogIndex >= 0 {
 		localLastLogTerm = rf.logs[localLastLogIndex].term
@@ -319,7 +319,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	// Your code here (2B).
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
-	currIndex := int64(len(rf.logs) - 1)
+	currIndex := len(rf.logs) - 1
 	fmt.Printf("Is peer-%d the leader? %t\n", rf.me, rf.isLeader)
 	if rf.isLeader {
 		fmt.Printf("Peer-%d is the leader, starting to make an agreement.\n", rf.me)
@@ -351,7 +351,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		isLeader = false
 	}
 	term = rf.currentTerm
-	index = int(currIndex)
+	index = currIndex
 	return index, term, isLeader
 }
 
@@ -393,12 +393,35 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.logs = make([]LogEntry, 1)
 	rf.commitIndex = -1
 	rf.lastApplied = -1
-	rf.nextIndex = make(map[int]int64)
-	rf.matchIndex = make(map[int]int64)
+	rf.nextIndex = make(map[int]int)
+	rf.matchIndex = make(map[int]int)
 	atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
+
+	go func() {
+		fmt.Printf("peer-%d start thread to send applyMsg!\n", rf.me)
+		currentIndex := rf.commitIndex
+		for !rf.isStopping || currentIndex <= rf.commitIndex {
+			fmt.Printf("peer-%d currentIndex=%d.\n", rf.me, currentIndex)
+			logsLength := len(rf.logs)
+			if currentIndex >= logsLength {
+				fmt.Printf("peer-%d's currentIndex(%d) is larger than rf.logs' length(%d)\n", rf.me, currentIndex, logsLength)
+				break
+			}
+			if currentIndex == -1 || currentIndex == rf.commitIndex+1 {
+				time.Sleep(time.Duration(500) * time.Millisecond)
+				continue
+			}
+			msg := ApplyMsg{}
+			msg.Index = currentIndex
+			msg.Command = rf.logs[currentIndex].command
+			applyCh <- msg
+			fmt.Printf("peer-%d has send applyMsg={%d, %v} to channel.\n", rf.me, msg.Index, msg.Command)
+			currentIndex++
+		}
+	}()
 
 	go func() {
 		for !rf.isStopping {
@@ -441,7 +464,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 					rf.isVoting = true
 					rf.currentTerm += 1
 					reqTerm := rf.currentTerm
-					logIndex := int64(len(rf.logs) - 1)
+					logIndex := len(rf.logs) - 1
 					rf.mu.Unlock()
 					var logTerm = 0
 					if logIndex >= 0 {

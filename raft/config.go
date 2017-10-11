@@ -401,7 +401,7 @@ func (cfg *config) one(cmd int, expectedServers int) int {
 			}
 			cfg.mu.Unlock()
 			if rf != nil {
-				fmt.Printf("Before start, cmd=%d", cmd)
+				fmt.Printf("Before start, cmd=%d\n", cmd)
 				index1, _, ok := rf.Start(cmd)
 				if ok {
 					index = index1
