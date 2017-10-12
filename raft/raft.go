@@ -377,8 +377,8 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		}
 		if appendDone >= int32(len(rf.peers)/2+1) {
 			currIndex = currIndex + 1
-			fmt.Printf("peer-%d has append on most peers.\n", rf.me)
 			rf.commitIndex = currIndex
+			fmt.Printf("peer-%d has append on most peers. Current commitIndex=%d\n", rf.me, rf.commitIndex)
 		} else {
 			fmt.Printf("peer-%d append failed, timeout=%t\n", rf.me, isTimeout)
 		}
