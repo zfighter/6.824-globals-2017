@@ -138,6 +138,9 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	fmt.Printf("peer-%d receives msg.\n", rf.me)
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
+	if args.LeaderCommit > rf.commitIndex {
+		rf.commitIndex = args.LeaderCommit
+	}
 	if args.Entry == nil {
 		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
@@ -145,6 +148,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		reply.Success = false
 		return
 	}
+	fmt.Printf("peer-%d receives msg{%d, %d, %d, %d, %v}.\n", rf.me, args.Term, args.PrevLogIndex, args.PrevLogTerm, args.LeaderCommit, args.Entry)
 	if rf.isVoting {
 		fmt.Printf("peer-%d is voting. do not append.\n", rf.me)
 		// to reply
@@ -174,9 +178,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	newLogEntry.command = args.Entry
 	rf.logs = append(rf.logs, newLogEntry)
 	fmt.Printf("peer-%d append entry to logs, logs' length=%d, logs=%v.\n", rf.me, len(rf.logs), rf.logs)
-	if args.LeaderCommit > rf.commitIndex {
-		rf.commitIndex = args.LeaderCommit
-	}
+
 	reply.Term = rf.currentTerm
 	reply.Success = true
 }
@@ -317,28 +319,41 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	isLeader := true
 
 	// Your code here (2B).
-	rf.mu.Lock()
-	defer rf.mu.Unlock()
-	currIndex := len(rf.logs) - 1
 	fmt.Printf("Is peer-%d the leader? %t\n", rf.me, rf.isLeader)
+	currIndex := 0
 	if rf.isLeader {
 		fmt.Printf("Peer-%d is the leader, starting to make an agreement.\n", rf.me)
 		isLeader = true
+		newLogEntry := LogEntry{}
+		rf.mu.Lock()
+		currIndex = len(rf.logs) - 1
+		currTerm := rf.currentTerm
+		newLogEntry.term = currTerm
+		newLogEntry.command = command
+		rf.logs = append(rf.logs, newLogEntry)
+		rf.mu.Unlock()
+		prevIndex := currIndex
+		currIndex++
 		var req = new(AppendEntryArgs)
-		req.Term = rf.currentTerm
+		req.Term = currTerm
 		req.LeaderId = rf.me
-		req.PrevLogIndex = currIndex
-		if currIndex >= 0 {
-			req.PrevLogTerm = rf.logs[currIndex].term
+		req.PrevLogIndex = prevIndex
+		if prevIndex >= 0 {
+			req.PrevLogTerm = rf.logs[prevIndex].term
 		} else {
 			req.PrevLogTerm = 0
 		}
 		req.LeaderCommit = rf.commitIndex
 		req.Entry = command
-		fmt.Printf("Peer-%d, append request: {%d, %d, %d, %v}\n", rf.me, req.Term, req.PrevLogIndex, req.PrevLogTerm, req.Entry)
+		fmt.Printf("Peer-%d, append request: {%d, %d, %d, %d, %v}\n", rf.me, req.Term, req.PrevLogIndex, req.PrevLogTerm, req.LeaderCommit, req.Entry)
 		var appendDone int32 = 0
 		var waitAppend sync.WaitGroup
 		for i := 0; i < len(rf.peers); i++ {
+			if i == rf.me {
+				fmt.Printf("Peer-%d skip itself.\n", i)
+				appendDone++
+				continue
+			}
 			server := i
 			waitAppend.Add(1)
 			go func() {
@@ -376,8 +391,9 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 			isTimeout = true
 		}
 		if appendDone >= int32(len(rf.peers)/2+1) {
-			currIndex = currIndex + 1
+			rf.mu.Lock()
 			rf.commitIndex = currIndex
+			rf.mu.Unlock()
 			fmt.Printf("peer-%d has append on most peers. Current commitIndex=%d\n", rf.me, rf.commitIndex)
 		} else {
 			fmt.Printf("peer-%d append failed, timeout=%t\n", rf.me, isTimeout)
@@ -427,8 +443,8 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.currentTerm = 0
 	rf.voteFor = -1
 	rf.logs = make([]LogEntry, 1)
-	rf.commitIndex = -1
-	rf.lastApplied = -1
+	rf.commitIndex = 0
+	rf.lastApplied = 0
 	rf.nextIndex = make(map[int]int)
 	rf.matchIndex = make(map[int]int)
 	atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
@@ -440,14 +456,19 @@ func Make(peers []*labrpc.ClientEnd, me int,
 		fmt.Printf("peer-%d start thread to send applyMsg!\n", rf.me)
 		currentIndex := rf.commitIndex
 		for !rf.isStopping || currentIndex <= rf.commitIndex {
-			fmt.Printf("peer-%d currentIndex=%d.\n", rf.me, currentIndex)
+			fmt.Printf("Peer-%d try to apply message: currentIndex=%d.\n", rf.me, currentIndex)
 			logsLength := len(rf.logs)
-			if currentIndex >= logsLength {
+			if currentIndex > logsLength {
 				fmt.Printf("peer-%d's currentIndex(%d) is larger than rf.logs' length(%d)\n", rf.me, currentIndex, logsLength)
 				break
 			}
-			if currentIndex == -1 || currentIndex == rf.commitIndex+1 {
+			if currentIndex == logsLength || currentIndex == rf.commitIndex+1 {
+				fmt.Printf("Peer-%d has touch the end.\n", rf.me)
 				time.Sleep(time.Duration(500) * time.Millisecond)
+				continue
+			}
+			if currentIndex == 0 {
+				currentIndex++
 				continue
 			}
 			msg := ApplyMsg{}
@@ -463,6 +484,8 @@ func Make(peers []*labrpc.ClientEnd, me int,
 		for !rf.isStopping {
 			if rf.isLeader {
 				var req = new(AppendEntryArgs)
+				req.Term = rf.currentTerm
+				req.LeaderCommit = rf.commitIndex
 				for i := 0; i < len(rf.peers); i++ {
 					if !rf.isLeader {
 						// check isLeader every time.
