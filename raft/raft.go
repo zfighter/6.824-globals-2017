@@ -161,6 +161,8 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		reply.Success = false
 		reply.Term = localTerm
 		return
+	} else if localTerm < args.Term {
+		rf.currentTerm = args.Term
 	}
 	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex != len(rf.logs)-1 || args.PrevLogTerm != rf.logs[args.PrevLogIndex].term {
 		fmt.Printf("Args: PrevLogTerm=%d, PrevLogIndex=%d; local: PrevLogIndex=%d\n", args.PrevLogTerm, args.PrevLogIndex, len(rf.logs)-1)
@@ -358,21 +360,25 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 			waitAppend.Add(1)
 			go func() {
 				fmt.Printf("Send append request to peer-%d!\n", server)
-				var rep = new(AppendEntryReply)
-				ok := rf.sendAppendEntry(server, req, rep)
-				if ok {
-					if rep != nil && rep.Success {
-						atomic.AddInt32(&appendDone, 1)
-					} else if rep != nil {
-						if rep.Term > rf.currentTerm {
-							rf.isLeader = false
-							rf.currentTerm = rep.Term
+				ok := false
+				for !ok {
+					var rep = new(AppendEntryReply)
+					ok = rf.sendAppendEntry(server, req, rep)
+					if ok {
+						if rep != nil && rep.Success {
+							atomic.AddInt32(&appendDone, 1)
+						} else if rep != nil {
+							if rep.Term > rf.currentTerm {
+								rf.isLeader = false
+								rf.currentTerm = rep.Term
+							}
+						} else {
+							fmt.Printf("Peer-%d received a null reply.\n", rf.me)
 						}
+						break
 					} else {
-						fmt.Printf("Peer-%d received a null reply.\n", rf.me)
+						fmt.Printf("Peer-%d sent appendEntry request failed.", rf.me)
 					}
-				} else {
-					fmt.Printf("Peer-%d sent appendEntry request failed.", rf.me)
 				}
 				waitAppend.Done()
 				fmt.Printf("Has sent request to peer-%d? %t\n", server, ok)
@@ -394,6 +400,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 			rf.mu.Lock()
 			rf.commitIndex = currIndex
 			rf.mu.Unlock()
+			// TODO: apply the command to state machine.
 			fmt.Printf("peer-%d has append on most peers. Current commitIndex=%d\n", rf.me, rf.commitIndex)
 		} else {
 			fmt.Printf("peer-%d append failed, timeout=%t\n", rf.me, isTimeout)
@@ -449,6 +456,13 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.matchIndex = make(map[int]int)
 	atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 
+	// init nextIndex and matchIndex
+	logSize := len(rf.logs)
+	for key := 0; key < len(rf.peers); key++ {
+		rf.nextIndex[key] = logSize
+		rf.matchIndex[key] = 0
+	}
+
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
 
@@ -483,6 +497,11 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	go func() {
 		for !rf.isStopping {
 			if rf.isLeader {
+				// using a thread to check lastLogIndex and IndexMap
+				go func() {
+
+				}()
+				// send heartbeat
 				var req = new(AppendEntryArgs)
 				req.Term = rf.currentTerm
 				req.LeaderCommit = rf.commitIndex
