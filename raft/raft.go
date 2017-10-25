@@ -354,7 +354,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		for i := 0; i < len(rf.peers); i++ {
 			if i == rf.me {
 				fmt.Printf("Peer-%d skip itself.\n", i)
-				appendDone++
+				atomic.AddInt32(&appendDone, 1)
 				continue
 			}
 			server := i
@@ -373,11 +373,11 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 								rf.isLeader = false
 								rf.currentTerm = rep.Term
 							}
-							isChecking := map[server]
+							isChecking := syncLogs[server]
 							if !isChecking {
-							go func() {
-								fmt.Printf("Begin to check.\n");
-							}
+								go func() {
+									fmt.Printf("Begin to check.\n")
+								}()
 							}
 						} else {
 							fmt.Printf("Peer-%d received a null reply.\n", rf.me)
@@ -504,10 +504,6 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	go func() {
 		for !rf.isStopping {
 			if rf.isLeader {
-				// using a thread to check lastLogIndex and IndexMap
-				go func() {
-
-				}()
 				// send heartbeat
 				var req = new(AppendEntryArgs)
 				req.Term = rf.currentTerm
