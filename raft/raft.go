@@ -65,6 +65,7 @@ type Raft struct {
 	lastTick int64
 
 	// only for leader
+	syncLogs   map[int]bool
 	nextIndex  map[int]int // peer id -> appliedIndex
 	matchIndex map[int]int // peer id -> highest index
 }
@@ -372,12 +373,18 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 								rf.isLeader = false
 								rf.currentTerm = rep.Term
 							}
+							isChecking := map[server]
+							if !isChecking {
+							go func() {
+								fmt.Printf("Begin to check.\n");
+							}
+							}
 						} else {
 							fmt.Printf("Peer-%d received a null reply.\n", rf.me)
 						}
 						break
 					} else {
-						fmt.Printf("Peer-%d sent appendEntry request failed.", rf.me)
+						fmt.Printf("Peer-%d sent appendEntry request failed.\n", rf.me)
 					}
 				}
 				waitAppend.Done()
