@@ -361,34 +361,73 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 			waitAppend.Add(1)
 			go func() {
 				fmt.Printf("Send append request to peer-%d!\n", server)
-				ok := false
-				for !ok {
+				isAppendSucc := false
+				for {
 					var rep = new(AppendEntryReply)
-					ok = rf.sendAppendEntry(server, req, rep)
+					ok := rf.sendAppendEntry(server, req, rep)
 					if ok {
 						if rep != nil && rep.Success {
 							atomic.AddInt32(&appendDone, 1)
+							atomic.CompareAndSwap(&nextIndex[server], currIndex, currIndex+1)
+							atomic.CompareAndSwap()
+							isAppendSucc = ture
 						} else if rep != nil {
 							if rep.Term > rf.currentTerm {
 								rf.isLeader = false
 								rf.currentTerm = rep.Term
 							}
-							isChecking := syncLogs[server]
-							if !isChecking {
-								go func() {
-									fmt.Printf("Begin to check.\n")
-								}()
-							}
 						} else {
 							fmt.Printf("Peer-%d received a null reply.\n", rf.me)
 						}
+						fmt.Printf("Has sent request to peer-%d? %t\n", server, ok)
 						break
 					} else {
 						fmt.Printf("Peer-%d sent appendEntry request failed.\n", rf.me)
 					}
 				}
 				waitAppend.Done()
-				fmt.Printf("Has sent request to peer-%d? %t\n", server, ok)
+				fmt.Printf("Need to check index of peer-%d? %t\n", server, isAppendSucc)
+				for {
+					rf.mu.Lock()
+					nextLogIndex := nextIndex[server]
+					isChecking := syncLogs[server]
+					rf.mu.Unlock()
+					if isChecking {
+						break
+					}
+					if currIndex >= nextLogIndex {
+						var rep = new(AppendEntryReply)
+						var syncReq = new(AppnedEntryArgs)
+						syncReq.Term = rf.logs[nextLogIndex]
+						syncReq.LeaderId = rf.me
+						syncReq.PrevLogIndex = nextLogIndex
+						if nextLogIndex >= 0 {
+							req.PrevLogTerm = rf.logs[nextLogIndex].term
+						} else {
+							req.PrevLogTerm = 0
+						}
+						req.LeaderCommit = rf.commitIndex
+						req.Entry = command
+						ok := rf.sendAppendEntry(server, req, rep)
+						if ok {
+							if rep != nil && rep.Success {
+								atomic.AddInt32(&appendDone, 1)
+								isAppendSucc = ture
+							} else if rep != nil {
+								if rep.Term > rf.currentTerm {
+									rf.isLeader = false
+									rf.currentTerm = rep.Term
+								}
+							} else {
+								fmt.Printf("Peer-%d received a null reply.\n", rf.me)
+							}
+							fmt.Printf("Has sent request to peer-%d? %t\n", server, ok)
+							break
+						} else {
+							fmt.Printf("Peer-%d sent appendEntry request failed.\n", rf.me)
+						}
+					}
+				}
 			}()
 		}
 		doneChan := make(chan struct{})
