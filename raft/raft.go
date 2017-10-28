@@ -368,8 +368,12 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 					if ok {
 						if rep != nil && rep.Success {
 							atomic.AddInt32(&appendDone, 1)
-							atomic.CompareAndSwap(&nextIndex[server], currIndex, currIndex+1)
-							atomic.CompareAndSwap()
+							for !atomic.CompareAndSwapInt32(&rf.nextIndex[server], currIndex, currIndex+1) {
+								time.Sleep(time.Duration(10) * time.Millisecond)
+							}
+							for !atomic.CompareAndSwapInt32(&rf.matchIndex[server], prevIndex, currIndex) {
+								time.Sleep(time.Duration(10) * time.Millisecond)
+							}
 							isAppendSucc = ture
 						} else if rep != nil {
 							if rep.Term > rf.currentTerm {
@@ -389,8 +393,10 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 				fmt.Printf("Need to check index of peer-%d? %t\n", server, isAppendSucc)
 				for {
 					rf.mu.Lock()
+					currIndex = len(rf.logs) - 1
 					nextLogIndex := nextIndex[server]
 					isChecking := syncLogs[server]
+					syncLogs[server] = true
 					rf.mu.Unlock()
 					if isChecking {
 						break
@@ -398,25 +404,29 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 					if currIndex >= nextLogIndex {
 						var rep = new(AppendEntryReply)
 						var syncReq = new(AppnedEntryArgs)
-						syncReq.Term = rf.logs[nextLogIndex]
+						syncReq.Term = rf.logs[nextLogIndex].term
 						syncReq.LeaderId = rf.me
-						syncReq.PrevLogIndex = nextLogIndex
-						if nextLogIndex >= 0 {
-							req.PrevLogTerm = rf.logs[nextLogIndex].term
+						syncReq.PrevLogIndex = nextLogIndex - 1
+						if nextLogIndex >= 1 {
+							req.PrevLogTerm = rf.logs[nextLogIndex-1].term
 						} else {
 							req.PrevLogTerm = 0
 						}
 						req.LeaderCommit = rf.commitIndex
-						req.Entry = command
+						req.Entry = rf.logs[nextLogIndex].command
 						ok := rf.sendAppendEntry(server, req, rep)
 						if ok {
 							if rep != nil && rep.Success {
 								atomic.AddInt32(&appendDone, 1)
-								isAppendSucc = ture
+								for !atomic.CompareAndSwapInt32(&rf.nextIndex[server], nextLogIndex, nextLogIndex+1) {
+									time.Sleep(time.Duration(10) * time.Millisecond)
+								}
+								for !atomic.CompareAndSwapInt32(&rf.matchIndex[server], nextLogIndex-1, nextLogIndex) {
+									time.Sleep(time.Duration(10) * time.Millisecond)
+								}
 							} else if rep != nil {
-								if rep.Term > rf.currentTerm {
-									rf.isLeader = false
-									rf.currentTerm = rep.Term
+								for !atomic.CompareAndSwapInt32(&rf.nextIndex[server], nextLogIndex, nextLogIndex-1) {
+									time.Sleep(time.Duration(10) * time.Millisecond)
 								}
 							} else {
 								fmt.Printf("Peer-%d received a null reply.\n", rf.me)
@@ -427,6 +437,9 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 							fmt.Printf("Peer-%d sent appendEntry request failed.\n", rf.me)
 						}
 					}
+					rf.mu.Lock()
+					rf.syncLogs[server] = false
+					rf.mu.Unlock()
 				}
 			}()
 		}
