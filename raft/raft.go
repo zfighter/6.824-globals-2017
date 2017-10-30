@@ -368,12 +368,6 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 					if ok {
 						if rep != nil && rep.Success {
 							atomic.AddInt32(&appendDone, 1)
-							for !atomic.CompareAndSwapInt32(&rf.nextIndex[server], currIndex, currIndex+1) {
-								time.Sleep(time.Duration(10) * time.Millisecond)
-							}
-							for !atomic.CompareAndSwapInt32(&rf.matchIndex[server], prevIndex, currIndex) {
-								time.Sleep(time.Duration(10) * time.Millisecond)
-							}
 							isAppendSucc = ture
 						} else if rep != nil {
 							if rep.Term > rf.currentTerm {
@@ -471,6 +465,98 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	term = rf.currentTerm
 	index = currIndex
 	return index, term, isLeader
+}
+
+func (rf *Raft) createAppendEntryRequest(currentIndex int, currentTerm int) *AppendEntryArgs {
+	if currentIndex <= 0 {
+		return nil
+	}
+	request := new(AppendEntryArgs)
+	request.Term = currentTerm
+	request.LeaderId = rf.me
+	request.Command = rf.logs[currentIndex].command
+	request.LeaderCommit = rf.commitIndex
+	prevLogIndex := currentIndex - 1
+	if prevLogIndex >= 0 {
+		request.PrevLogIndex = prevLogIndex
+		request.PrevLogTerm = rf.logs[prevLogIndex].term
+	} else {
+		request.PrevLogIndex = 0
+		request.PrevLogTerm = 0
+	}
+	return request
+}
+
+func (rf *Raft) appendToServers(currentIndex int, currentTerm int) {
+	doneCh := make(chan int)
+	request := createAppendEntryRequest(currentIndex, currentTerm)
+	for i := 1; i < len(rf.peers); i++ {
+		go func(server int) {
+			for {
+				if request == nil {
+					// log it.
+					fmt.Printf("Peer-%d has received a null request.\n", server)
+					break
+				}
+				isSuccess := appendToServer(server, currentIndex, request)
+				if isSuccess {
+					doneCh <- server
+					break
+				} else {
+					request = createAppendEntryRequest(nextIndex[server], currentTerm)
+				}
+			}
+		}(i)
+	}
+	doneCount := 0
+	hasCommited := false
+	for {
+		select {
+		case server <- doneCh:
+			if server >= 0 && server < len(rf.peers) {
+				doneCount++
+				if doneCount >= len(rf.peers)/2+1 {
+					hasCommited = true
+					break
+				}
+			} else {
+				// log it.
+				fmt.Printf("Leader-%d receieve a error server index=%d", rf.me, server)
+			}
+		case <-time.After(time.Duration(1000) * time.Millisecond):
+			break
+		}
+	}
+	if hasCommited {
+		rf.mu.Lock
+		if currentIndex >= rf.commitIndex {
+			rf.commitIndex = currentIndex
+		}
+		rf.mu.Unlock
+	}
+}
+
+func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntryArgs) bool {
+	if currentIndex >= nextIndex[server] {
+		ok := false
+		for !ok {
+			reply := new(AppendEntriesReply)
+			ok = rf.sendAppendEntry(server, request, reply)
+		}
+		if reply != nil && reply.Success {
+			rf.mu.Lock()
+			if currentIndex >= nextIndex[server] {
+				nextIndex[server] = currentIndex + 1
+			}
+			if currentIndex >= matchIndex[server] {
+				matchIndex[server] = currentIndex
+			}
+			rf.mu.Unlock()
+		}
+		return reply != nil && reply.Success
+	} else {
+		return false
+	}
 }
 
 //
