@@ -700,6 +700,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 						rf.mu.Unlock()
 					} else {
 						fmt.Printf("peer-%d vote failed, timeout=%t\n", rf.me, isTimeout)
+						rf.sleep(500)
 					}
 					rf.mu.Lock()
 					rf.isVoting = false
