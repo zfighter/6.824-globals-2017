@@ -328,15 +328,15 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	fmt.Printf("Is peer-%d the leader? %t\n", rf.me, rf.isLeader)
 	if rf.isLeader {
 		currIndex := 0
-		fmt.Printf("Peer-%d is the leader, starting to make an agreement.\n", rf.me)
+		fmt.Printf("Peer-%d is the leader, starting to make an agreement on command={%v}.\n", rf.me, command)
 		// begin to write log to leaders' memory.
 		newLogEntry := LogEntry{}
 		rf.mu.Lock()
-		currIndex = len(rf.logs) - 1
 		currTerm := rf.currentTerm
 		newLogEntry.term = currTerm
 		newLogEntry.command = command
 		rf.logs = append(rf.logs, newLogEntry)
+		currIndex = len(rf.logs) - 1
 		rf.mu.Unlock()
 		// begin to append log to all followers.
 		hasCommited := rf.appendToServers(currIndex, currTerm)
@@ -354,10 +354,13 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 }
 
 func (rf *Raft) applyToLocalServiceReplica(currentIndex int) bool {
+	applySucc := false
+	if currentIndex >= len(rf.logs) {
+		return applySucc
+	}
 	msg := ApplyMsg{}
 	msg.Index = currentIndex
 	msg.Command = rf.logs[currentIndex].command
-	applySucc := false
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	currentIndex = rf.lastApplied + 1
@@ -369,13 +372,14 @@ func (rf *Raft) applyToLocalServiceReplica(currentIndex int) bool {
 	if applySucc {
 		fmt.Printf("peer-%d has send applyMsg={%d, %v} to channel.\n", rf.me, msg.Index, msg.Command)
 	} else {
-		fmt.Printf("current applied index is changed. expect=%d, actual=%d", currentIndex, msg.Index)
+		fmt.Printf("current applied index is changed. expect=%d, actual=%d\n", currentIndex, msg.Index)
 	}
 	return applySucc
 }
 
 func (rf *Raft) createAppendEntryRequest(currentIndex int, currentTerm int) *AppendEntryArgs {
 	if currentIndex <= 0 {
+		fmt.Printf("Peer-%d receive an illegal currentIndex=%d\n", rf.me, currentIndex)
 		return nil
 	}
 	request := new(AppendEntryArgs)
@@ -391,13 +395,20 @@ func (rf *Raft) createAppendEntryRequest(currentIndex int, currentTerm int) *App
 		request.PrevLogIndex = 0
 		request.PrevLogTerm = 0
 	}
+	fmt.Printf("Peer-%d create a request: {%d, %d, %d, %d, %d, %v}\n", rf.me, currentIndex, request.Term, request.LeaderCommit, request.PrevLogIndex, request.PrevLogTerm, request.Entry)
 	return request
 }
 
 func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 	doneCh := make(chan int)
+	doneCount := 0
+	hasCommited := false
 	request := rf.createAppendEntryRequest(currentIndex, currentTerm)
-	for i := 1; i < len(rf.peers); i++ {
+	for i := 0; rf.isLeader && i < len(rf.peers); i++ {
+		if i == rf.me {
+			doneCount++
+			continue
+		}
 		go func(server int) {
 			for {
 				if request == nil {
@@ -407,34 +418,45 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 				}
 				isSuccess := rf.appendToServer(server, currentIndex, request)
 				if isSuccess {
+					fmt.Printf("Peer-%d has append log to peer-%d successfully, begin to write doneCh.\n", rf.me, server)
 					doneCh <- server
+					fmt.Printf("Peer-%d has append log to peer-%d successfully, writing doneCh is over.\n", rf.me, server)
 					break
 				} else {
-					request = rf.createAppendEntryRequest(rf.nextIndex[server], currentTerm)
+					rf.sleep(50)
+					rf.mu.Lock()
+					nextLogIndex := rf.nextIndex[server] - 1
+					rf.nextIndex[server] = nextLogIndex
+					rf.mu.Unlock()
+					request = rf.createAppendEntryRequest(nextLogIndex, currentTerm)
 				}
 			}
 		}(i)
 	}
-	doneCount := 0
-	hasCommited := false
-	for {
+	stopRunning := false
+	for !stopRunning {
 		select {
 		case server := <-doneCh:
 			if server >= 0 && server < len(rf.peers) {
+				fmt.Printf("Peer-%d confirm peer-%d has done.\n", rf.me, server)
 				doneCount++
 				if doneCount >= len(rf.peers)/2+1 {
+					fmt.Printf("Peer-%d confirm majority.\n", rf.me)
 					hasCommited = true
-					break
+					stopRunning = true
 				}
 			} else {
 				// log it.
-				fmt.Printf("Leader-%d receieve a error server index=%d", rf.me, server)
+				fmt.Printf("Leader-%d receieve a error server index=%d\n", rf.me, server)
 			}
 		case <-time.After(time.Duration(1000) * time.Millisecond):
-			break
+			fmt.Printf("Peer-%d agreement is timeout.\n", rf.me)
+			stopRunning = true
 		}
 	}
+	fmt.Printf("Peer-%d channel select is done.\n", rf.me)
 	if hasCommited {
+		fmt.Printf("Peer-%d has commit currentIndex=%d\n", rf.me, currentIndex)
 		rf.mu.Lock()
 		if currentIndex >= rf.commitIndex {
 			rf.commitIndex = currentIndex
@@ -447,11 +469,13 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntryArgs) bool {
 	if currentIndex >= rf.nextIndex[server] {
 		ok := false
-		reply := new(AppendEntryReply)
-		for !ok {
-			ok = rf.sendAppendEntry(server, request, reply)
+		var reply *AppendEntryReply
+		for !ok && rf.isLeader {
 			reply = new(AppendEntryReply)
+			ok = rf.sendAppendEntry(server, request, reply)
 		}
+		fmt.Printf("Peer-%d has sent request to peer-%d\n", rf.me, server)
+		appendSucc := reply != nil && reply.Success
 		if reply != nil && reply.Success {
 			rf.mu.Lock()
 			if currentIndex >= rf.nextIndex[server] {
@@ -462,6 +486,7 @@ func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntr
 			}
 			rf.mu.Unlock()
 		}
+		fmt.Printf("Peer-%d has received reply from peer-%d, %t\n", rf.me, server, appendSucc)
 		return reply != nil && reply.Success
 	} else {
 		return false
@@ -489,11 +514,11 @@ func (rf *Raft) startApplyService() {
 	go func() {
 		fmt.Printf("peer-%d start thread to send applyMsg!\n", rf.me)
 		currentIndex := 0
-		for !rf.isStopping || currentIndex <= rf.commitIndex {
+		for !rf.isStopping {
 			canApply := false
 			rf.mu.Lock()
 			currentIndex = rf.lastApplied + 1
-			if currentIndex != 0 && currentIndex < rf.commitIndex {
+			if currentIndex != 0 && currentIndex <= rf.commitIndex {
 				canApply = true
 			}
 			rf.mu.Unlock()
@@ -631,7 +656,6 @@ func Make(peers []*labrpc.ClientEnd, me int,
 							req.LastLogTerm = logTerm
 							fmt.Printf("peer-%d begin to vote. request=(%d, %d, %d)\n", req.Candidate, req.Term, req.LastLogIndex, req.LastLogTerm)
 							var rep = new(RequestVoteReply)
-
 							// rep.term = -1
 							// rep.voteGrant = false
 							ok := rf.sendRequestVote(server, &req, rep)
