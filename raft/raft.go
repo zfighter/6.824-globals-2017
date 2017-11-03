@@ -136,9 +136,8 @@ type AppendEntryArgs struct {
 }
 
 type AppendEntryReply struct {
-	Term     int
-	Success  bool
-	IsVoting bool
+	Term    int
+	Success bool
 }
 
 func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
@@ -156,14 +155,15 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		return
 	}
 	fmt.Printf("peer-%d receives msg{%d, %d, %d, %d, %v}.\n", rf.me, args.Term, args.PrevLogIndex, args.PrevLogTerm, args.LeaderCommit, args.Entry)
-	if rf.isVoting {
-		fmt.Printf("peer-%d is voting. do not append.\n", rf.me)
-		// to reply
-		reply.Term = rf.currentTerm
-		reply.Success = false
-		reply.IsVoting = true
-		return
-	}
+	/*
+		if rf.isVoting {
+			fmt.Printf("peer-%d is voting. do not append.\n", rf.me)
+			// to reply
+			reply.Term = rf.currentTerm
+			reply.Success = false
+			return
+		}
+	*/
 	localTerm := rf.currentTerm
 	if localTerm > args.Term {
 		reply.Success = false
