@@ -420,7 +420,8 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 			continue
 		}
 		go func(server int) {
-			for {
+			// make sure nextIndex of the server has matched current commitIndex
+			for rf.nextIndex[server] <= currentIndex {
 				if request == nil {
 					// log it.
 					fmt.Printf("Peer-%d has received a null request.\n", server)
@@ -435,7 +436,6 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 					fmt.Printf("Peer-%d has append log to peer-%d successfully, begin to write doneCh.\n", rf.me, server)
 					doneCh <- server
 					fmt.Printf("Peer-%d has append log to peer-%d successfully, writing doneCh is over.\n", rf.me, server)
-					break
 				} else {
 					rf.sleep(5)
 					rf.mu.Lock()
@@ -541,7 +541,7 @@ func (rf *Raft) startApplyService() {
 			}
 			rf.mu.Unlock()
 			if !canApply {
-				rf.sleep(500)
+				rf.sleep(400)
 				continue
 			}
 			fmt.Printf("Peer-%d try to apply message: currentIndex=%d.\n", rf.me, currentIndex)
@@ -552,7 +552,7 @@ func (rf *Raft) startApplyService() {
 			}
 			applySucc := rf.applyToLocalServiceReplica(currentIndex)
 			if !applySucc {
-				rf.sleep(500)
+				rf.sleep(400)
 			}
 		}
 	}()
