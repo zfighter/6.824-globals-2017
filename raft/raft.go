@@ -166,6 +166,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	*/
 	localTerm := rf.currentTerm
 	if localTerm > args.Term {
+		fmt.Printf("Peer-%d term=%d, leader term=%d\n", rf.me, localTerm, args.Term)
 		reply.Success = false
 		reply.Term = localTerm
 		return
@@ -179,9 +180,16 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		return
 	}
 	var index = args.PrevLogIndex + 1
-	if index < len(rf.logs) && rf.logs[index].Term != args.Entry.Term {
-		fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Term, index, rf.logs[index].Term)
-		rf.logs = rf.logs[0 : index-1]
+	if index < len(rf.logs) {
+		if rf.logs[index].Term == args.Entry.Term {
+			fmt.Printf("Peer-%d matched append log at index=%d\n", rf.me, index)
+			reply.Term = localTerm
+			reply.Success = true
+			return
+		} else {
+			fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Term, index, rf.logs[index].Term)
+			rf.logs = rf.logs[0 : index-1]
+		}
 	}
 	// newLogEntry := new()
 	rf.logs = append(rf.logs, args.Entry)
