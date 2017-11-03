@@ -5,7 +5,7 @@ package raft
 // the service (or tester). see comments below for
 // each of these functions for more details.
 //
-// rf = Make(...)
+// rf = ke(...)
 //   create a new Raft server.
 // rf.Start(command interface{}) (index, term, isleader)
 //   start agreement on a new log entry
@@ -30,7 +30,7 @@ import "github.com/6.824/labrpc"
 //
 // as each Raft peer becomes aware that successive log entries are
 // committed, the peer should send an ApplyMsg to the service (or
-// tester) on the same server, via the applyCh passed to Make().
+// tester) on the same server, via the applyCh passed to ke().
 //
 type ApplyMsg struct {
 	Index       int
@@ -74,8 +74,8 @@ type Raft struct {
 }
 
 type LogEntry struct {
-	term    int
-	command interface{}
+	Term    int
+	Command interface{}
 }
 
 // return currentTerm and whether this server
@@ -129,13 +129,16 @@ type AppendEntryArgs struct {
 	LeaderId     int
 	PrevLogIndex int
 	PrevLogTerm  int
-	Entry        interface{}
+	// LogTerm      int
+	// LogCommand   interface{}
+	Entry        LogEntry
 	LeaderCommit int
 }
 
 type AppendEntryReply struct {
-	Term    int
-	Success bool
+	Term     int
+	Success  bool
+	IsVoting bool
 }
 
 func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
@@ -145,7 +148,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	if args.LeaderCommit > rf.commitIndex {
 		rf.commitIndex = args.LeaderCommit
 	}
-	if args.Entry == nil {
+	if args.Entry.Command == nil {
 		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
 		reply.Term = rf.currentTerm
@@ -158,6 +161,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		// to reply
 		reply.Term = rf.currentTerm
 		reply.Success = false
+		reply.IsVoting = true
 		return
 	}
 	localTerm := rf.currentTerm
@@ -168,21 +172,19 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	} else if localTerm < args.Term {
 		rf.currentTerm = args.Term
 	}
-	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex != len(rf.logs)-1 || args.PrevLogTerm != rf.logs[args.PrevLogIndex].term {
+	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex >= len(rf.logs) || args.PrevLogTerm != rf.logs[args.PrevLogIndex].Term {
 		fmt.Printf("Args: PrevLogTerm=%d, PrevLogIndex=%d; local: PrevLogIndex=%d\n", args.PrevLogTerm, args.PrevLogIndex, len(rf.logs)-1)
 		reply.Term = localTerm
 		reply.Success = false
 		return
 	}
 	var index = args.PrevLogIndex + 1
-	if index < len(rf.logs) && rf.logs[index].term != args.Term {
-		fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Term, index, rf.logs[index].term)
+	if index < len(rf.logs) && rf.logs[index].Term != args.Entry.Term {
+		fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Term, index, rf.logs[index].Term)
 		rf.logs = rf.logs[0 : index-1]
 	}
-	var newLogEntry = LogEntry{}
-	newLogEntry.term = args.Term
-	newLogEntry.command = args.Entry
-	rf.logs = append(rf.logs, newLogEntry)
+	// newLogEntry := new()
+	rf.logs = append(rf.logs, args.Entry)
 	fmt.Printf("peer-%d append entry to logs, logs' length=%d, logs=%v.\n", rf.me, len(rf.logs), rf.logs)
 
 	reply.Term = rf.currentTerm
@@ -252,7 +254,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	var localLastLogIndex int = len(rf.logs) - 1
 	var localLastLogTerm int = -1
 	if localLastLogIndex >= 0 {
-		localLastLogTerm = rf.logs[localLastLogIndex].term
+		localLastLogTerm = rf.logs[localLastLogIndex].Term
 	}
 	if localLastLogIndex > candiLastLogIndex ||
 		(localLastLogIndex == candiLastLogIndex &&
@@ -333,8 +335,8 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		newLogEntry := LogEntry{}
 		rf.mu.Lock()
 		currTerm := rf.currentTerm
-		newLogEntry.term = currTerm
-		newLogEntry.command = command
+		newLogEntry.Term = currTerm
+		newLogEntry.Command = command
 		rf.logs = append(rf.logs, newLogEntry)
 		currIndex = len(rf.logs) - 1
 		rf.mu.Unlock()
@@ -360,7 +362,7 @@ func (rf *Raft) applyToLocalServiceReplica(currentIndex int) bool {
 	}
 	msg := ApplyMsg{}
 	msg.Index = currentIndex
-	msg.Command = rf.logs[currentIndex].command
+	msg.Command = rf.logs[currentIndex].Command
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	currentIndex = rf.lastApplied + 1
@@ -385,12 +387,12 @@ func (rf *Raft) createAppendEntryRequest(currentIndex int, currentTerm int) *App
 	request := new(AppendEntryArgs)
 	request.Term = currentTerm
 	request.LeaderId = rf.me
-	request.Entry = rf.logs[currentIndex].command
+	request.Entry = rf.logs[currentIndex]
 	request.LeaderCommit = rf.commitIndex
 	prevLogIndex := currentIndex - 1
 	if prevLogIndex >= 0 {
 		request.PrevLogIndex = prevLogIndex
-		request.PrevLogTerm = rf.logs[prevLogIndex].term
+		request.PrevLogTerm = rf.logs[prevLogIndex].Term
 	} else {
 		request.PrevLogIndex = 0
 		request.PrevLogTerm = 0
@@ -416,6 +418,10 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 					fmt.Printf("Peer-%d has received a null request.\n", server)
 					break
 				}
+				if !rf.isLeader {
+					fmt.Printf("Peer-%d is not leader, stop to append entries to peer-%d.\n", rf.me, server)
+					break
+				}
 				isSuccess := rf.appendToServer(server, currentIndex, request)
 				if isSuccess {
 					fmt.Printf("Peer-%d has append log to peer-%d successfully, begin to write doneCh.\n", rf.me, server)
@@ -423,11 +429,15 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 					fmt.Printf("Peer-%d has append log to peer-%d successfully, writing doneCh is over.\n", rf.me, server)
 					break
 				} else {
-					rf.sleep(50)
+					rf.sleep(5)
 					rf.mu.Lock()
-					nextLogIndex := rf.nextIndex[server] - 1
-					rf.nextIndex[server] = nextLogIndex
+					nextLogIndex := rf.nextIndex[server]
+					if nextLogIndex <= 1 {
+						nextLogIndex = 1
+					}
+					rf.nextIndex[server] = nextLogIndex - 1
 					rf.mu.Unlock()
+					fmt.Printf("Peer-%d append log to peer-%d failed, try nextIndex=%d\n", rf.me, server, nextLogIndex)
 					request = rf.createAppendEntryRequest(nextLogIndex, currentTerm)
 				}
 			}
@@ -548,7 +558,7 @@ func (rf *Raft) startApplyService() {
 // save its persistent state, and also initially holds the most
 // recent saved state, if any. applyCh is a channel on which the
 // tester or service expects Raft to send ApplyMsg messages.
-// Make() must return quickly, so it should start goroutines
+// ke() must return quickly, so it should start goroutines
 // for any long-running work.
 //
 func Make(peers []*labrpc.ClientEnd, me int,
@@ -633,7 +643,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 					var logTerm = 0
 					if logIndex >= 0 {
 						fmt.Printf("peer-%d get logIndex=%d\n", rf.me, logIndex)
-						logTerm = rf.logs[logIndex].term
+						logTerm = rf.logs[logIndex].Term
 					}
 					var voteForMe int32 = 0
 					var waitVote sync.WaitGroup
