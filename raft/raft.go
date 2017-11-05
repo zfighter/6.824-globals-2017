@@ -460,6 +460,7 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 		}(i)
 	}
 	if rf.isStopping {
+		// false?
 		return false
 	}
 	stopRunning := false
