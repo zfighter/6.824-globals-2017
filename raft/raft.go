@@ -422,7 +422,7 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 		go func(server int) {
 			// make sure nextIndex of the server has matched current commitIndex
 			nextLogIndex := currentIndex
-			for rf.nextIndex[server] <= currentIndex {
+			for !rf.isStopping && rf.nextIndex[server] <= currentIndex {
 				fmt.Printf("Peer-%d try to send append to peer-%d, nextIndex=%d, currentIndex=%d\n", rf.me, server, rf.nextIndex[server], currentIndex)
 				if request == nil {
 					// log it.
@@ -458,6 +458,9 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 				}
 			}
 		}(i)
+	}
+	if rf.isStopping {
+		return false
 	}
 	stopRunning := false
 	for !stopRunning {
@@ -496,9 +499,12 @@ func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntr
 	if currentIndex >= rf.nextIndex[server] {
 		ok := false
 		var reply *AppendEntryReply
-		for !ok && rf.isLeader {
+		for !rf.isStopping && !ok && rf.isLeader {
 			reply = new(AppendEntryReply)
 			ok = rf.sendAppendEntry(server, request, reply)
+		}
+		if rf.isStopping {
+			return false
 		}
 		fmt.Printf("Peer-%d has sent request to peer-%d\n", rf.me, server)
 		appendSucc := reply != nil && reply.Success
