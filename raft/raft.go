@@ -51,6 +51,7 @@ type Raft struct {
 	// Your data here (2A, 2B, 2C).
 	// Look at the paper's Figure 2 for a description of what
 	// state a Raft server must maintain.
+	serverMu    sync.RWMutex
 	isVoting    bool
 	isStopping  bool
 	isLeader    bool
@@ -142,6 +143,8 @@ type AppendEntryReply struct {
 
 func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	fmt.Printf("peer-%d receives msg.\n", rf.me)
+	rf.serverMu.RLock()
+	defer rf.serverMu.RUnlock()
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	if args.LeaderCommit > rf.commitIndex {
@@ -231,6 +234,8 @@ type RequestVoteReply struct {
 //
 func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here (2A, 2B).
+	rf.serverMu.RLock()
+	defer rf.serverMu.RUnlock()
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	rf.lastTick = time.Now().UnixNano()
