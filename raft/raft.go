@@ -143,8 +143,8 @@ type AppendEntryReply struct {
 
 func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	fmt.Printf("peer-%d receives msg.\n", rf.me)
-	rf.serverMu.RLock()
-	defer rf.serverMu.RUnlock()
+	//rf.serverMu.RLock()
+	//defer rf.serverMu.RUnlock()
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	if args.LeaderCommit > rf.commitIndex {
@@ -190,8 +190,8 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 			reply.Success = true
 			return
 		} else {
-			fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Term, index, rf.logs[index].Term)
-			rf.logs = rf.logs[0 : index-1]
+			fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Entry.Term, index, rf.logs[index].Term)
+			rf.logs = rf.logs[0:index]
 		}
 	}
 	// newLogEntry := new()
@@ -234,8 +234,8 @@ type RequestVoteReply struct {
 //
 func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here (2A, 2B).
-	rf.serverMu.RLock()
-	defer rf.serverMu.RUnlock()
+	//rf.serverMu.RLock()
+	//defer rf.serverMu.RUnlock()
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	rf.lastTick = time.Now().UnixNano()
@@ -427,8 +427,13 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 		go func(server int) {
 			// make sure nextIndex of the server has matched current commitIndex
 			nextLogIndex := currentIndex
-			for !rf.isStopping && rf.nextIndex[server] <= currentIndex {
+			for !rf.isStopping {
+				//rf.serverMu.RLock()
+				if rf.nextIndex[server] > currentIndex {
+					break
+				}
 				fmt.Printf("Peer-%d try to send append to peer-%d, nextIndex=%d, currentIndex=%d\n", rf.me, server, rf.nextIndex[server], currentIndex)
+				//rf.serverMu.RUnlock()
 				if request == nil {
 					// log it.
 					fmt.Printf("Peer-%d has received a null request.\n", server)
@@ -439,6 +444,7 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 					break
 				}
 				isSuccess := rf.appendToServer(server, nextLogIndex, request)
+				//rf.serverMu.RLock()
 				if isSuccess {
 					if rf.nextIndex[server] == currentIndex+1 {
 						fmt.Printf("Peer-%d has append log to peer-%d successfully, begin to write doneCh.\n", rf.me, server)
@@ -446,7 +452,6 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 						fmt.Printf("Peer-%d has append log to peer-%d successfully, writing doneCh is over.\n", rf.me, server)
 					}
 				} else {
-					rf.sleep(1)
 					rf.mu.Lock()
 					nextLogIndex = rf.nextIndex[server]
 					if nextLogIndex <= 1 {
@@ -461,6 +466,8 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 					fmt.Printf("Peer-%d append log to peer-%d failed, try nextIndex=%d\n", rf.me, server, nextLogIndex)
 					request = rf.createAppendEntryRequest(nextLogIndex, currentTerm)
 				}
+				//rf.serverMu.RUnlock()
+				rf.sleep(10)
 			}
 		}(i)
 	}
@@ -505,15 +512,16 @@ func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntr
 	if currentIndex >= rf.nextIndex[server] {
 		ok := false
 		var reply *AppendEntryReply
-		for !rf.isStopping && !ok && rf.isLeader {
+		var retryCount = 0
+		for !ok && rf.isLeader && retryCount < 10 {
 			reply = new(AppendEntryReply)
 			ok = rf.sendAppendEntry(server, request, reply)
-		}
-		if rf.isStopping {
-			return false
+			rf.sleep(100 * retryCount)
+			retryCount++
 		}
 		fmt.Printf("Peer-%d has sent request to peer-%d\n", rf.me, server)
 		appendSucc := reply != nil && reply.Success
+		//rf.serverMu.RLock()
 		if reply != nil && reply.Success {
 			rf.mu.Lock()
 			if currentIndex >= rf.nextIndex[server] {
@@ -528,12 +536,13 @@ func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntr
 		} else if reply != nil {
 			rf.mu.Lock()
 			if reply.Term > rf.currentTerm {
+				fmt.Printf("Peer-%d received reply from peer-%d, it's term=%d is larger than currentTerm=%d\n", rf.me, server, reply.Term, rf.currentTerm)
 				rf.currentTerm = reply.Term
 				rf.isLeader = false
-				fmt.Printf("Peer-%d received reply from peer-%d, it's term=%d is larger than currentTerm=%d\n", rf.me, server, reply.Term, rf.currentTerm)
 			}
 			rf.mu.Unlock()
 		}
+		//rf.serverMu.RUnlock()
 		fmt.Printf("Peer-%d has received reply from peer-%d, %t\n", rf.me, server, appendSucc)
 		return reply != nil && reply.Success
 	} else {
@@ -555,7 +564,11 @@ func (rf *Raft) sleep(elapse int) {
 //
 func (rf *Raft) Kill() {
 	// Your code here, if desired.
+	fmt.Printf("Call Kill() of peer-%d, try to stop the raft.\n", rf.me)
+	rf.serverMu.Lock()
+	defer rf.serverMu.Unlock()
 	rf.isStopping = true
+	fmt.Printf("Call Kill() of peer-%d successfully.\n", rf.me)
 }
 
 func (rf *Raft) startApplyService() {
@@ -563,19 +576,21 @@ func (rf *Raft) startApplyService() {
 		fmt.Printf("peer-%d start thread to send applyMsg!\n", rf.me)
 		currentIndex := 0
 		for !rf.isStopping {
+			//rf.serverMu.RLock()
 			canApply := false
 			rf.mu.Lock()
 			currentIndex = rf.lastApplied + 1
 			if currentIndex != 0 && currentIndex <= rf.commitIndex {
 				canApply = true
 			}
+			logsLength := len(rf.logs)
 			rf.mu.Unlock()
+			//rf.serverMu.RUnlock()
 			if !canApply {
 				rf.sleep(400)
 				continue
 			}
 			fmt.Printf("Peer-%d try to apply message: currentIndex=%d.\n", rf.me, currentIndex)
-			logsLength := len(rf.logs)
 			if currentIndex > logsLength {
 				fmt.Printf("peer-%d's currentIndex(%d) is larger than rf.logs' length(%d)\n", rf.me, currentIndex, logsLength)
 				break
