@@ -158,9 +158,9 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 			return
 		}
 	*/
-	// 1.update commitIndex
-	if args.LeaderCommit > rf.commitIndex {
-		rf.commitIndex = args.LeaderCommit
+	if args.Entry.Command == nil {
+		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
+		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
 	}
 	// 2.check currentTerm
 	localTerm := rf.currentTerm
@@ -179,10 +179,12 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		reply.Success = false
 		return
 	}
+	// 1.update commitIndex
+	if args.LeaderCommit > rf.commitIndex {
+		rf.commitIndex = args.LeaderCommit
+	}
 	// 4.check command, if command is nil, it means this request is heartbeat, only check currentTerm and previous log.
 	if args.Entry.Command == nil {
-		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
-		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
 		reply.Term = rf.currentTerm
 		reply.Success = false
 		return
