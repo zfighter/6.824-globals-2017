@@ -158,6 +158,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 			return
 		}
 	*/
+	// 1.update time.
 	if args.Entry.Command == nil {
 		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
@@ -179,18 +180,12 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		reply.Success = false
 		return
 	}
-	// 1.update commitIndex
+	// 4.update commitIndex
 	if args.LeaderCommit > rf.commitIndex {
 		rf.commitIndex = args.LeaderCommit
 	}
-	// 4.check command, if command is nil, it means this request is heartbeat, only check currentTerm and previous log.
-	if args.Entry.Command == nil {
-		reply.Term = rf.currentTerm
-		reply.Success = false
-		return
-	}
 	// 5.check current log entry.
-	var index = args.PrevLogIndex + 1
+	index := args.PrevLogIndex + 1
 	if index < len(rf.logs) {
 		if rf.logs[index].Term == args.Entry.Term {
 			fmt.Printf("Peer-%d matched append log at index=%d\n", rf.me, index)
@@ -203,9 +198,14 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		}
 	}
 	// 6.do append.
-	// newLogEntry := new()
-	rf.logs = append(rf.logs, args.Entry)
-	fmt.Printf("peer-%d append entry to logs, logs' length=%d, logs=%v.\n", rf.me, len(rf.logs), rf.logs)
+	//   check command, if command is nil, it means this request is heartbeat, do not append.
+	if args.Entry.Command != nil {
+		// newLogEntry := new()
+		rf.logs = append(rf.logs, args.Entry)
+		fmt.Printf("Peer-%d append entry to logs, logs' length=%d, logs=%v.\n", rf.me, len(rf.logs), rf.logs)
+	} else {
+		fmt.Printf("Peer-%d do not append heartbeat.\n", rf.me)
+	}
 	// 7.reply.
 	reply.Term = rf.currentTerm
 	reply.Success = true
@@ -571,6 +571,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			break
 		}
 
+		isHeartbeat := request.Entry.Command == nil
 		isSuccess := rf.appendToServer(server, nextLogIndex, request)
 		//rf.serverMu.RLock()
 		if isSuccess {
@@ -610,8 +611,9 @@ func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntr
 		}
 		fmt.Printf("Peer-%d has sent request to peer-%d\n", rf.me, server)
 		appendSucc := reply != nil && reply.Success
+		isHeartbeat := request.Entry.Command == nil
 		//rf.serverMu.RLock()
-		if reply != nil && reply.Success {
+		if reply != nil && reply.Success && !isHeartbeat {
 			rf.mu.Lock()
 			if currentIndex >= rf.nextIndex[server] {
 				rf.nextIndex[server] = currentIndex + 1
