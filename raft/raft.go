@@ -423,7 +423,7 @@ func (rf *Raft) applyToLocalServiceReplica(currentIndex int) bool {
 
 func (rf *Raft) createAppendEntryRequest(currentIndex int, currentTerm int, heartBeat bool) *AppendEntryArgs {
 	currentLen := len(rf.logs)
-	if currentIndex <= 0 || currentIndex > currentLen {
+	if currentIndex <= 0 || (currentIndex >= currentLen && !heartBeat) {
 		fmt.Printf("Peer-%d receive an illegal currentIndex=%d, largest log index=%d\n", rf.me, currentIndex, len(rf.logs))
 		return nil
 	}
@@ -554,43 +554,81 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 
 func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *AppendEntryArgs) bool {
 	nextLogIndex := currentIndex
+	toSyncLogs := false
 	for !rf.isStopping {
 		//rf.serverMu.RLock()
-		if rf.nextIndex[server] > currentIndex {
+		if nextLogIndex > currentIndex {
 			break
 		}
 		fmt.Printf("Peer-%d try to send append to peer-%d, nextIndex=%d, currentIndex=%d\n", rf.me, server, rf.nextIndex[server], currentIndex)
 		//rf.serverMu.RUnlock()
 		if request == nil {
-			// log it.
 			fmt.Printf("Peer-%d has received a null request.\n", server)
+			rf.mu.Lock()
+			rf.syncLogs[server] = false
+			rf.mu.Unlock()
+			fmt.Printf("Peer-%d stop synchronize logs at 3.\n", rf.me)
 			break
 		}
 		if !rf.isLeader {
 			fmt.Printf("Peer-%d is not leader, stop to append entries to peer-%d.\n", rf.me, server)
+			rf.mu.Lock()
+			rf.syncLogs[server] = false
+			rf.mu.Unlock()
+			fmt.Printf("Peer-%d stop synchronize logs at 4.\n", rf.me)
 			break
 		}
-
 		isHeartbeat := request.Entry.Command == nil
 		isSuccess := rf.appendToServer(server, nextLogIndex, request)
 		//rf.serverMu.RLock()
+		currentTerm := 0
 		if isSuccess {
+			// heartbeat should return if this heartbeat is successful.
 			if rf.nextIndex[server] == currentIndex+1 {
+				rf.mu.Lock()
+				rf.syncLogs[server] = false
+				rf.mu.Unlock()
+				fmt.Printf("Peer-%d stop synchronize logs when reach the currentIndex.\n", rf.me)
+				return true
+			} else if isHeartbeat {
 				return true
 			}
+			rf.mu.Lock()
+			nextLogIndex = rf.nextIndex[server]
+			currentTerm = rf.currentTerm
+			rf.mu.Unlock()
 		} else {
 			rf.mu.Lock()
-			nextLogIndex = rf.nextIndex[server] - 1
-			if nextLogIndex >= 1 {
-				rf.nextIndex[server] = nextLogIndex
+			if !rf.syncLogs[server] {
+				rf.syncLogs[server] = true
+				toSyncLogs = true
+				fmt.Printf("Peer-%d begin to synchronize logs to peer-%d.\n", rf.me, server)
+			} else if !toSyncLogs {
+				fmt.Printf("Peer-%d is synchronizing logs to peer-%d, do not synchronize again.\n", rf.me, server)
 			}
-			currentTerm := rf.currentTerm
+			if toSyncLogs {
+				nextLogIndex = rf.nextIndex[server] - 1
+				if nextLogIndex > 1 {
+					rf.nextIndex[server] = nextLogIndex
+				}
+			}
+			currentTerm = rf.currentTerm
 			rf.mu.Unlock()
-			if nextLogIndex == 0 || nextLogIndex > currentIndex {
+			if nextLogIndex == 0 || nextLogIndex > currentIndex || !toSyncLogs {
+				if toSyncLogs {
+					rf.mu.Lock()
+					rf.syncLogs[server] = false
+					rf.mu.Unlock()
+				}
+				fmt.Printf("Peer-%d stop synchronize logs at 5.\n", rf.me)
 				break
 			}
 			fmt.Printf("Peer-%d append log to peer-%d failed, try nextIndex=%d\n", rf.me, server, nextLogIndex)
+		}
+		if currentTerm != 0 {
 			request = rf.createAppendEntryRequest(nextLogIndex, currentTerm, false)
+		} else {
+			request = nil
 		}
 		//rf.serverMu.RUnlock()
 		rf.sleep(10)
@@ -599,46 +637,43 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 }
 
 func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntryArgs) bool {
-	if currentIndex >= rf.nextIndex[server] {
-		ok := false
-		var reply *AppendEntryReply
-		var retryCount = 0
-		for !ok && rf.isLeader && retryCount < 10 {
-			reply = new(AppendEntryReply)
-			ok = rf.sendAppendEntry(server, request, reply)
-			rf.sleep(100 * retryCount)
-			retryCount++
-		}
-		fmt.Printf("Peer-%d has sent request to peer-%d\n", rf.me, server)
-		appendSucc := reply != nil && reply.Success
-		isHeartbeat := request.Entry.Command == nil
-		//rf.serverMu.RLock()
-		if reply != nil && reply.Success && !isHeartbeat {
-			rf.mu.Lock()
-			if currentIndex >= rf.nextIndex[server] {
-				rf.nextIndex[server] = currentIndex + 1
-				fmt.Printf("Peer-%d has set nextIndex[%d] to %d\n", rf.me, server, rf.nextIndex[server])
-			}
-			if currentIndex >= rf.matchIndex[server] {
-				rf.matchIndex[server] = currentIndex
-				fmt.Printf("Peer-%d has set matchIndex[%d] to %d\n", rf.me, server, rf.matchIndex[server])
-			}
-			rf.mu.Unlock()
-		} else if reply != nil {
-			rf.mu.Lock()
-			if reply.Term > rf.currentTerm {
-				fmt.Printf("Peer-%d received reply from peer-%d, it's term=%d is larger than currentTerm=%d\n", rf.me, server, reply.Term, rf.currentTerm)
-				rf.currentTerm = reply.Term
-				rf.isLeader = false
-			}
-			rf.mu.Unlock()
-		}
-		//rf.serverMu.RUnlock()
-		fmt.Printf("Peer-%d has received reply from peer-%d, %t\n", rf.me, server, appendSucc)
-		return reply != nil && reply.Success
-	} else {
-		return false
+	ok := false
+	var reply *AppendEntryReply
+	var retryCount = 0
+	for !ok && rf.isLeader && retryCount < 10 {
+		reply = new(AppendEntryReply)
+		ok = rf.sendAppendEntry(server, request, reply)
+		rf.sleep(100 * retryCount)
+		retryCount++
 	}
+	fmt.Printf("Peer-%d has sent request to peer-%d\n", rf.me, server)
+	appendSucc := reply != nil && reply.Success
+	isHeartbeat := request.Entry.Command == nil
+	//rf.serverMu.RLock()
+	// heartbeat should not update the nextIndex and matchIndex, if it is successful.
+	if reply != nil && reply.Success && !isHeartbeat {
+		rf.mu.Lock()
+		if currentIndex >= rf.nextIndex[server] {
+			rf.nextIndex[server] = currentIndex + 1
+			fmt.Printf("Peer-%d has set nextIndex[%d] to %d\n", rf.me, server, rf.nextIndex[server])
+		}
+		if currentIndex >= rf.matchIndex[server] {
+			rf.matchIndex[server] = currentIndex
+			fmt.Printf("Peer-%d has set matchIndex[%d] to %d\n", rf.me, server, rf.matchIndex[server])
+		}
+		rf.mu.Unlock()
+	} else if reply != nil {
+		rf.mu.Lock()
+		if reply.Term > rf.currentTerm {
+			fmt.Printf("Peer-%d received reply from peer-%d, it's term=%d is larger than currentTerm=%d\n", rf.me, server, reply.Term, rf.currentTerm)
+			rf.currentTerm = reply.Term
+			rf.isLeader = false
+		}
+		rf.mu.Unlock()
+	}
+	//rf.serverMu.RUnlock()
+	fmt.Printf("Peer-%d has received reply from peer-%d, %t\n", rf.me, server, appendSucc)
+	return reply != nil && reply.Success
 }
 
 func (rf *Raft) sleep(elapse int) {
@@ -724,6 +759,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.lastApplied = 0
 	rf.nextIndex = make(map[int]int)
 	rf.matchIndex = make(map[int]int)
+	rf.syncLogs = make(map[int]bool)
 	atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 
 	// init nextIndex and matchIndex
@@ -777,6 +813,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 				*/
 				fmt.Printf("Peer-%d begin to send heartbeat.\n", rf.me)
 				currentIndex := rf.commitIndex + 1
+				request := rf.createAppendEntryRequest(currentIndex, rf.currentTerm, true)
 				for i := 0; i < len(rf.peers); i++ {
 					if i == rf.me {
 						continue
@@ -785,7 +822,6 @@ func Make(peers []*labrpc.ClientEnd, me int,
 						break
 					}
 					go func(server int) {
-						request := rf.createAppendEntryRequest(currentIndex, rf.currentTerm, true)
 						rf.appendToServerWithCheck(server, currentIndex, request)
 					}(i)
 				}
