@@ -182,7 +182,11 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	}
 	// 4.update commitIndex
 	if args.LeaderCommit > rf.commitIndex {
-		rf.commitIndex = args.LeaderCommit
+		if args.PrevLogIndex < args.LeaderCommit {
+			rf.commitIndex = args.PrevLogIndex
+		} else {
+			rf.commitIndex = args.LeaderCommit
+		}
 	}
 	// 5.check current log entry.
 	index := args.PrevLogIndex + 1
@@ -557,6 +561,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 	toSyncLogs := false
 	for !rf.isStopping {
 		//rf.serverMu.RLock()
+		//
 		if nextLogIndex > currentIndex {
 			break
 		}
@@ -620,7 +625,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 					rf.syncLogs[server] = false
 					rf.mu.Unlock()
 				}
-				fmt.Printf("Peer-%d stop synchronize logs at 5.\n", rf.me)
+				fmt.Printf("Peer-%d stop synchronize logs at 5, {%d, %d, %t}.\n", rf.me, nextLogIndex, currentIndex, toSyncLogs)
 				break
 			}
 			fmt.Printf("Peer-%d append log to peer-%d failed, try nextIndex=%d\n", rf.me, server, nextLogIndex)
@@ -776,7 +781,15 @@ func Make(peers []*labrpc.ClientEnd, me int,
 
 	go func() {
 		for !rf.isStopping {
+			var isInitiated = false
 			if rf.isLeader {
+				// init nextIndex[]
+				if !isInitiated {
+					for key := 0; key < len(rf.nextIndex); key++ {
+						rf.nextIndex[key] = rf.commitIndex + 1
+					}
+					isInitiated = true
+				}
 				// send heartbeat
 				/*
 						var req = new(AppendEntryArgs)
@@ -827,6 +840,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 				}
 				time.Sleep(499 * time.Millisecond)
 			} else {
+				isInitiated = false
 				sleepDuration := 1000 - int(time.Now().UnixNano()-atomic.LoadInt64(&rf.lastTick))/1000000
 				fmt.Printf("peer-%d want to sleep %d\n", rf.me, sleepDuration)
 				if sleepDuration <= 0 {
