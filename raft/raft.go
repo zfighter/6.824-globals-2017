@@ -783,47 +783,14 @@ func Make(peers []*labrpc.ClientEnd, me int,
 		for !rf.isStopping {
 			var isInitiated = false
 			if rf.isLeader {
-				// init nextIndex[]
+				// 1.init nextIndex[] as commitIndex + 1, when the peer becomes the leader.
 				if !isInitiated {
 					for key := 0; key < len(rf.nextIndex); key++ {
 						rf.nextIndex[key] = rf.commitIndex + 1
 					}
 					isInitiated = true
 				}
-				// send heartbeat
-				/*
-						var req = new(AppendEntryArgs)
-						req.Term = rf.currentTerm
-						req.LeaderCommit = rf.commitIndex
-					for i := 0; i < len(rf.peers); i++ {
-						if !rf.isLeader {
-							// check isLeader every time.
-							break
-						}
-						if i == rf.me {
-							continue
-						}
-						server := i
-						go func() {
-							fmt.Printf("leader-%d send heartbeat to peer-%d\n", rf.me, server)
-							rep := new(AppendEntryReply)
-							ok := rf.sendAppendEntry(server, req, rep)
-							if !ok {
-								// retry?
-							} else {
-								fmt.Printf("leader-%d has sent heartbeat to peer-%d\n", rf.me, server)
-								rf.mu.Lock()
-								if rep != nil && rf.currentTerm < rep.Term {
-									fmt.Printf("leader-%d's term %d is smaller than peer-%d's term %d. Turn to follower\n", rf.me, rf.currentTerm, server, rep.Term)
-									atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
-									rf.currentTerm = rep.Term
-									rf.isLeader = false
-								}
-								rf.mu.Unlock()
-							}
-						}()
-					}
-				*/
+				// 2.send heartbeat
 				fmt.Printf("Peer-%d begin to send heartbeat.\n", rf.me)
 				currentIndex := rf.commitIndex + 1
 				request := rf.createAppendEntryRequest(currentIndex, rf.currentTerm, true)
