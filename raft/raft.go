@@ -307,6 +307,8 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 			return
 		}
 		fmt.Printf("Peer-%d's lastLogIndex=%d <= peer-%d's lastLogIndex=%d\n", rf.me, localLastLogIndex, candidateId, candiLastLogIndex)
+	} else {
+		fmt.Printf("Peer-%d's lastLogTerm=%d < peer-%d's lastLogTerm=%d\n", rf.me, localLastLogTerm, candidateId, candiLastLogTerm)
 	}
 	// can grant the request
 	rf.voteFor = candidateId
@@ -783,14 +785,47 @@ func Make(peers []*labrpc.ClientEnd, me int,
 		for !rf.isStopping {
 			var isInitiated = false
 			if rf.isLeader {
-				// 1.init nextIndex[] as commitIndex + 1, when the peer becomes the leader.
+				// init nextIndex[]
 				if !isInitiated {
 					for key := 0; key < len(rf.nextIndex); key++ {
 						rf.nextIndex[key] = rf.commitIndex + 1
 					}
 					isInitiated = true
 				}
-				// 2.send heartbeat
+				// send heartbeat
+				/*
+						var req = new(AppendEntryArgs)
+						req.Term = rf.currentTerm
+						req.LeaderCommit = rf.commitIndex
+					for i := 0; i < len(rf.peers); i++ {
+						if !rf.isLeader {
+							// check isLeader every time.
+							break
+						}
+						if i == rf.me {
+							continue
+						}
+						server := i
+						go func() {
+							fmt.Printf("leader-%d send heartbeat to peer-%d\n", rf.me, server)
+							rep := new(AppendEntryReply)
+							ok := rf.sendAppendEntry(server, req, rep)
+							if !ok {
+								// retry?
+							} else {
+								fmt.Printf("leader-%d has sent heartbeat to peer-%d\n", rf.me, server)
+								rf.mu.Lock()
+								if rep != nil && rf.currentTerm < rep.Term {
+									fmt.Printf("leader-%d's term %d is smaller than peer-%d's term %d. Turn to follower\n", rf.me, rf.currentTerm, server, rep.Term)
+									atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
+									rf.currentTerm = rep.Term
+									rf.isLeader = false
+								}
+								rf.mu.Unlock()
+							}
+						}()
+					}
+				*/
 				fmt.Printf("Peer-%d begin to send heartbeat.\n", rf.me)
 				currentIndex := rf.commitIndex + 1
 				request := rf.createAppendEntryRequest(currentIndex, rf.currentTerm, true)
@@ -853,7 +888,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 									atomic.AddInt32(&voteForMe, 1)
 								} else if rep != nil {
 									if rep.Term > rf.currentTerm {
-										fmt.Printf("peer-%d update term from %d to %d\n", rf.currentTerm, rep.Term)
+										fmt.Printf("peer-%d update term from %d to %d\n", rf.me, rf.currentTerm, rep.Term)
 										rf.mu.Lock()
 										rf.currentTerm = rep.Term
 										rf.mu.Unlock()
