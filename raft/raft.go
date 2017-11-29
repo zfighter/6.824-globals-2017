@@ -782,8 +782,8 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.startApplyService()
 
 	go func() {
+		var isInitiated = false
 		for !rf.isStopping {
-			var isInitiated = false
 			if rf.isLeader {
 				// init nextIndex[]
 				if !isInitiated {
