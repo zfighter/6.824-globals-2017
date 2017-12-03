@@ -172,6 +172,9 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		return
 	} else if localTerm < args.Term {
 		rf.currentTerm = args.Term
+		if rf.isLeader {
+			rf.isLeader = false
+		}
 	}
 	// 3.check index and term of previous log
 	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex >= len(rf.logs) || args.PrevLogTerm != rf.logs[args.PrevLogIndex].Term {
@@ -565,6 +568,9 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 		//rf.serverMu.RLock()
 		//
 		if nextLogIndex > currentIndex {
+			rf.mu.Lock()
+			rf.syncLogs[server] = false
+			rf.mu.Unlock()
 			break
 		}
 		fmt.Printf("Peer-%d try to send append to peer-%d, nextIndex=%d, currentIndex=%d\n", rf.me, server, rf.nextIndex[server], currentIndex)
@@ -595,9 +601,12 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 				rf.mu.Lock()
 				rf.syncLogs[server] = false
 				rf.mu.Unlock()
-				fmt.Printf("Peer-%d stop synchronize logs when reach the currentIndex.\n", rf.me)
+				fmt.Printf("Peer-%d stop synchronize logs to peer-%d when reach the currentIndex.\n", rf.me, server)
 				return true
 			} else if isHeartbeat {
+				rf.mu.Lock()
+				rf.syncLogs[server] = false
+				rf.mu.Unlock()
 				return true
 			}
 			rf.mu.Lock()
@@ -611,7 +620,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 				toSyncLogs = true
 				fmt.Printf("Peer-%d begin to synchronize logs to peer-%d.\n", rf.me, server)
 			} else if !toSyncLogs {
-				fmt.Printf("Peer-%d is synchronizing logs to peer-%d, do not synchronize again.\n", rf.me, server)
+				fmt.Printf("Peer-%d is synchronizing logs to peer-%d, isLeader?%t, do not synchronize again.\n", rf.me, server, rf.isLeader)
 			}
 			if toSyncLogs {
 				nextLogIndex = rf.nextIndex[server] - 1
@@ -647,7 +656,7 @@ func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntr
 	ok := false
 	var reply *AppendEntryReply
 	var retryCount = 0
-	for !ok && rf.isLeader && retryCount < 10 {
+	for !ok && rf.isLeader && retryCount < 3 {
 		reply = new(AppendEntryReply)
 		ok = rf.sendAppendEntry(server, request, reply)
 		rf.sleep(100 * retryCount)
