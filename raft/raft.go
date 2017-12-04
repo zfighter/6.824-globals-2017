@@ -172,9 +172,6 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		return
 	} else if localTerm < args.Term {
 		rf.currentTerm = args.Term
-		if rf.isLeader {
-			rf.isLeader = false
-		}
 	}
 	// 3.check index and term of previous log
 	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex >= len(rf.logs) || args.PrevLogTerm != rf.logs[args.PrevLogIndex].Term {
@@ -441,7 +438,7 @@ func (rf *Raft) createAppendEntryRequest(currentIndex int, currentTerm int, hear
 	request.LeaderId = rf.me
 	request.LeaderCommit = rf.commitIndex
 	prevLogIndex := currentIndex - 1
-	if prevLogIndex >= 0 {
+	if prevLogIndex >= 0 && prevLogIndex < currentLen {
 		request.PrevLogIndex = prevLogIndex
 		request.PrevLogTerm = rf.logs[prevLogIndex].Term
 	} else {
@@ -561,6 +558,14 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 	return hasCommited
 }
 
+func (rf *Raft) stopSync(server int, toSyncLogs bool) {
+	if toSyncLogs {
+		rf.mu.Lock()
+		rf.syncLogs[server] = false
+		rf.mu.Unlock()
+	}
+}
+
 func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *AppendEntryArgs) bool {
 	nextLogIndex := currentIndex
 	toSyncLogs := false
@@ -568,26 +573,21 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 		//rf.serverMu.RLock()
 		//
 		if nextLogIndex > currentIndex {
-			rf.mu.Lock()
-			rf.syncLogs[server] = false
-			rf.mu.Unlock()
+			rf.stopSync(server, toSyncLogs)
+			fmt.Printf("Peer-%d stop to append, because nextLogIndex=%d > currentIndex=%d.\n", rf.me, nextLogIndex, currentIndex)
 			break
 		}
 		fmt.Printf("Peer-%d try to send append to peer-%d, nextIndex=%d, currentIndex=%d\n", rf.me, server, rf.nextIndex[server], currentIndex)
 		//rf.serverMu.RUnlock()
 		if request == nil {
 			fmt.Printf("Peer-%d has received a null request.\n", server)
-			rf.mu.Lock()
-			rf.syncLogs[server] = false
-			rf.mu.Unlock()
+			rf.stopSync(server, toSyncLogs)
 			fmt.Printf("Peer-%d stop synchronize logs at 3.\n", rf.me)
 			break
 		}
 		if !rf.isLeader {
 			fmt.Printf("Peer-%d is not leader, stop to append entries to peer-%d.\n", rf.me, server)
-			rf.mu.Lock()
-			rf.syncLogs[server] = false
-			rf.mu.Unlock()
+			rf.stopSync(server, toSyncLogs)
 			fmt.Printf("Peer-%d stop synchronize logs at 4.\n", rf.me)
 			break
 		}
@@ -598,15 +598,12 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 		if isSuccess {
 			// heartbeat should return if this heartbeat is successful.
 			if rf.nextIndex[server] == currentIndex+1 {
-				rf.mu.Lock()
-				rf.syncLogs[server] = false
-				rf.mu.Unlock()
-				fmt.Printf("Peer-%d stop synchronize logs to peer-%d when reach the currentIndex.\n", rf.me, server)
+				rf.stopSync(server, toSyncLogs)
+				fmt.Printf("Peer-%d stop synchronize logs when reach the currentIndex.\n", rf.me)
 				return true
 			} else if isHeartbeat {
-				rf.mu.Lock()
-				rf.syncLogs[server] = false
-				rf.mu.Unlock()
+				rf.stopSync(server, toSyncLogs)
+				fmt.Printf("Peer-%d stop synchronize logs when send heartbeat to peer-%d successfully.\n", rf.me, server)
 				return true
 			}
 			rf.mu.Lock()
@@ -620,7 +617,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 				toSyncLogs = true
 				fmt.Printf("Peer-%d begin to synchronize logs to peer-%d.\n", rf.me, server)
 			} else if !toSyncLogs {
-				fmt.Printf("Peer-%d is synchronizing logs to peer-%d, isLeader?%t, do not synchronize again.\n", rf.me, server, rf.isLeader)
+				fmt.Printf("Peer-%d is synchronizing logs to peer-%d, do not synchronize again.\n", rf.me, server)
 			}
 			if toSyncLogs {
 				nextLogIndex = rf.nextIndex[server] - 1
@@ -631,11 +628,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			currentTerm = rf.currentTerm
 			rf.mu.Unlock()
 			if nextLogIndex == 0 || nextLogIndex > currentIndex || !toSyncLogs {
-				if toSyncLogs {
-					rf.mu.Lock()
-					rf.syncLogs[server] = false
-					rf.mu.Unlock()
-				}
+				rf.stopSync(server, toSyncLogs)
 				fmt.Printf("Peer-%d stop synchronize logs at 5, {%d, %d, %t}.\n", rf.me, nextLogIndex, currentIndex, toSyncLogs)
 				break
 			}
@@ -658,8 +651,10 @@ func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntr
 	var retryCount = 0
 	for !ok && rf.isLeader && retryCount < 3 {
 		reply = new(AppendEntryReply)
+		fmt.Printf("Peer-%d try to send rpc to peer-%d, this is %d/2 time.\n", rf.me, server, retryCount)
 		ok = rf.sendAppendEntry(server, request, reply)
 		rf.sleep(100 * retryCount)
+		fmt.Printf("Peer-%d has sent rpc to peer-%d, this is %d/2 time.\n", rf.me, server, retryCount)
 		retryCount++
 	}
 	fmt.Printf("Peer-%d has sent request to peer-%d\n", rf.me, server)
