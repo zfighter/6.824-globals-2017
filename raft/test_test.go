@@ -382,13 +382,13 @@ func TestBackup2B(t *testing.T) {
 	cfg.connect((leader1 + 1) % servers)
 	cfg.connect(other)
 
-	fmt.Printf("Stage4: partition1 with one fellow of partition2.\n")
+	fmt.Printf("Stage4: partition1(leader=%d) with one fellow(peer-%d)of partition2.\n", leader1, other)
 	// lots of successful commands to new group.
 	for i := 0; i < 50; i++ {
 		cfg.one(rand.Int(), 3)
 	}
 
-	fmt.Printf("Stage5: all.\n")
+	fmt.Printf("Stage5: all. leader1=%d, leader2=%d, other=%d\n", leader1, leader2, other)
 	// now everyone
 	for i := 0; i < servers; i++ {
 		cfg.connect(i)

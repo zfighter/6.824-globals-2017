@@ -158,11 +158,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 			return
 		}
 	*/
-	// 1.update time.
-	if args.Entry.Command == nil {
-		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
-		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
-	}
+
 	// 2.check currentTerm
 	localTerm := rf.currentTerm
 	if localTerm > args.Term {
@@ -170,8 +166,12 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		reply.Success = false
 		reply.Term = localTerm
 		return
-	} else if localTerm < args.Term {
+	} else if localTerm <= args.Term {
 		rf.currentTerm = args.Term
+		if rf.isLeader {
+			fmt.Printf("Peer-%d turn to fellower.\n", rf.me)
+			rf.isLeader = false
+		}
 	}
 	// 3.check index and term of previous log
 	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex >= len(rf.logs) || args.PrevLogTerm != rf.logs[args.PrevLogIndex].Term {
@@ -179,6 +179,11 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		reply.Term = localTerm
 		reply.Success = false
 		return
+	}
+	// 0.update time.
+	if args.Entry.Command == nil {
+		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
+		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
 	}
 	// 4.update commitIndex
 	if args.LeaderCommit > rf.commitIndex {
@@ -861,15 +866,13 @@ func Make(peers []*labrpc.ClientEnd, me int,
 						fmt.Printf("peer-%d get logIndex=%d\n", rf.me, logIndex)
 						logTerm = rf.logs[logIndex].Term
 					}
-					var voteForMe int32 = 0
-					var waitVote sync.WaitGroup
+					var voteForMe int = 0
+					doneCh := make(chan int)
 					for i := 0; i < len(peers); i++ {
-						waitVote.Add(1)
 						fmt.Printf("peer-%d wants to send vote request to peer-%d\n", rf.me, i)
 						if i == rf.me {
 							// put the judge logic to a function
-							atomic.AddInt32(&voteForMe, 1)
-							waitVote.Done()
+							voteForMe += 1
 							continue
 						}
 						server := i
@@ -882,14 +885,12 @@ func Make(peers []*labrpc.ClientEnd, me int,
 							req.LastLogTerm = logTerm
 							fmt.Printf("peer-%d begin to vote. request=(%d, %d, %d)\n", req.Candidate, req.Term, req.LastLogIndex, req.LastLogTerm)
 							var rep = new(RequestVoteReply)
-							// rep.term = -1
-							// rep.voteGrant = false
 							ok := rf.sendRequestVote(server, &req, rep)
 							if ok {
 								fmt.Printf("peer-%d received vote response from peer-%d.\n", req.Candidate, server)
 								if rep != nil && rep.VoteGrant {
 									fmt.Printf("in peer-%d, peer-%d grant, count=%d.\n", rf.me, server, voteForMe)
-									atomic.AddInt32(&voteForMe, 1)
+									doneCh <- server
 								} else if rep != nil {
 									if rep.Term > rf.currentTerm {
 										fmt.Printf("peer-%d update term from %d to %d\n", rf.me, rf.currentTerm, rep.Term)
@@ -904,28 +905,40 @@ func Make(peers []*labrpc.ClientEnd, me int,
 								// considering retry.
 								fmt.Printf("peer-%d received null vote response from peer-%d.\n", req.Candidate, server)
 							}
-							waitVote.Done()
 						}()
 					}
-					doneChan := make(chan struct{})
-					go func() {
-						defer close(doneChan)
-						waitVote.Wait()
-					}()
-					var isTimeout = false
-					select {
-					case <-doneChan:
-						isTimeout = false
-					case <-time.After(time.Duration(1000) * time.Millisecond):
-						isTimeout = true
+					stopRunning := false
+					hasWon := false
+					isTimeout := false
+					for !stopRunning {
+						select {
+						case server := <-doneCh:
+							if server >= 0 && server < len(rf.peers) {
+								fmt.Printf("Peer-%d confirm peer-%d has done.\n", rf.me, server)
+								voteForMe++
+								if voteForMe >= len(rf.peers)/2+1 {
+									fmt.Printf("Peer-%d's vote confirm majority.\n", rf.me)
+									hasWon = true
+									stopRunning = true
+								}
+							} else {
+								// log it.
+								fmt.Printf("Peer-%d receieve a error server index=%d when voting\n", rf.me, server)
+							}
+						case <-time.After(time.Duration(1000) * time.Millisecond):
+							fmt.Printf("Peer-%d agreement is timeout.\n", rf.me)
+							stopRunning = true
+							isTimeout = true
+						}
 					}
-					if voteForMe >= int32(len(peers)/2+1) {
-						fmt.Printf("peer-%d win, vote granted.\n", rf.me)
+					fmt.Printf("Peer-%d channel select is done.\n", rf.me)
+					if hasWon {
+						fmt.Printf("Peer-%d win, vote granted.\n", rf.me)
 						rf.mu.Lock()
 						rf.isLeader = true
 						rf.mu.Unlock()
 					} else {
-						fmt.Printf("peer-%d vote failed, timeout=%t\n", rf.me, isTimeout)
+						fmt.Printf("Peer-%d vote failed, timeout=%t\n", rf.me, isTimeout)
 						rf.sleep(500)
 					}
 					rf.mu.Lock()
@@ -937,8 +950,8 @@ func Make(peers []*labrpc.ClientEnd, me int,
 					b := time.Now()
 					time.Sleep(time.Duration(realSleepTime) * time.Millisecond)
 					a := time.Now()
-					fmt.Printf("duration: %v\n", a.Sub(b))
-					fmt.Printf("peer-%d has sleep %d.\n", rf.me, realSleepTime)
+					fmt.Printf("Peer-%d duration: %v\n", rf.me, a.Sub(b))
+					fmt.Printf("Peer-%d has sleep %d.\n", rf.me, realSleepTime)
 				}
 			}
 		}
