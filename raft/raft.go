@@ -182,7 +182,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	}
 	// 2.update time. in order to present too much invalid heartbeat,
 	//   the operation should be done after the basic check.
-	if args.Entries[0].Command == nil {
+	if len(args.Entries) <= 0 || args.Entries[0].Command == nil {
 		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
 	}
@@ -196,20 +196,20 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	}
 	// 4.check current log entry.
 	index := args.PrevLogIndex + 1
-	if index < len(rf.logs) {
-		if rf.logs[index].Term == args.Entry.Term {
+	if index < len(rf.logs) && len(args.Entries) > 0 {
+		if rf.logs[index].Term == args.Entries[0].Term {
 			fmt.Printf("Peer-%d matched append log at index=%d\n", rf.me, index)
 			reply.Term = localTerm
 			reply.Success = true
 			return
 		} else {
-			fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Entry.Term, index, rf.logs[index].Term)
+			fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Entries[0].Term, index, rf.logs[index].Term)
 			rf.logs = rf.logs[0:index]
 		}
 	}
 	// 5.do append.
 	//   check command, if command is nil, it means this request is heartbeat, do not append.
-	if len(args.Entries) != 1 || (len(args.Entries) == 1 && args.Entries[0].Command != nil) {
+	if len(args.Entries) > 0 || (len(args.Entries) == 1 && args.Entries[0].Command != nil) {
 		// newLogEntry := new()
 		rf.logs = append(rf.logs, args.Entries...)
 		fmt.Printf("Peer-%d append entry to logs, logs' length=%d, logs=%v.\n", rf.me, len(rf.logs), rf.logs)
@@ -446,9 +446,9 @@ func (rf *Raft) createAppendEntryRequest(startIndex int, stopIndex int, currentT
 		request.PrevLogTerm = 0
 	}
 	if !heartBeat {
-		request.Entry = rf.logs[startIndex:stopIndex]
+		request.Entries = rf.logs[startIndex:stopIndex]
 	}
-	fmt.Printf("Peer-%d create a request: {hb=%t, start=%d, stop=%d, term=%d, cmt=%d, pidx=%d, pterm=%d, v=%v}\n", rf.me, heartBeat, startIndex, stopIndex, request.Term, request.LeaderCommit, request.PrevLogIndex, request.PrevLogTerm, request.Entry)
+	fmt.Printf("Peer-%d create a request: {hb=%t, start=%d, stop=%d, term=%d, cmt=%d, pidx=%d, pterm=%d, v=%v}\n", rf.me, heartBeat, startIndex, stopIndex, request.Term, request.LeaderCommit, request.PrevLogIndex, request.PrevLogTerm, request.Entries)
 	return request
 }
 
@@ -546,7 +546,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			fmt.Printf("Peer-%d stop synchronize logs at 4.\n", rf.me)
 			break
 		}
-		isHeartbeat := request.Entry.Command == nil
+		isHeartbeat := len(request.Entries) <= 0 || request.Entries[0].Command == nil
 		isSuccess := rf.appendToServer(server, nextLogIndex, request)
 		//rf.serverMu.RLock()
 		currentTerm := 0
@@ -614,7 +614,7 @@ func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntr
 	}
 	fmt.Printf("Peer-%d has sent request to peer-%d\n", rf.me, server)
 	appendSucc := reply != nil && reply.Success
-	isHeartbeat := request.Entry.Command == nil
+	isHeartbeat := len(request.Entries) <= 0 || request.Entries[0].Command == nil
 	//rf.serverMu.RLock()
 	// heartbeat should not update the nextIndex and matchIndex, if it is successful.
 	if reply != nil && reply.Success && !isHeartbeat {
