@@ -209,9 +209,9 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	}
 	// 5.do append.
 	//   check command, if command is nil, it means this request is heartbeat, do not append.
-	if args.Entry.Command != nil {
+	if len(args.Entries) != 1 || (len(args.Entries) == 1 && args.Entries[0].Command != nil) {
 		// newLogEntry := new()
-		rf.logs = append(rf.logs, args.Entry)
+		rf.logs = append(rf.logs, args.Entries...)
 		fmt.Printf("Peer-%d append entry to logs, logs' length=%d, logs=%v.\n", rf.me, len(rf.logs), rf.logs)
 	} else {
 		fmt.Printf("Peer-%d do not append heartbeat.\n", rf.me)
@@ -289,15 +289,6 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	if localLastLogIndex >= 0 {
 		localLastLogTerm = rf.logs[localLastLogIndex].Term
 	}
-	/*
-		if localLastLogIndex > candiLastLogIndex ||
-			(localLastLogIndex <= candiLastLogIndex &&
-				localLastLogTerm > candiLastLogTerm) {
-			reply.Term = -1
-			reply.VoteGrant = false
-			return
-		}
-	*/
 	// check whose last log is up-to-date.
 	if localLastLogTerm > candiLastLogTerm {
 		fmt.Printf("Peer-%d's lastLogTerm=%d > peer-%d's lastLogTerm=%d\n", rf.me, localLastLogTerm, candidateId, candiLastLogTerm)
