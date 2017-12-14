@@ -130,7 +130,7 @@ type AppendEntryArgs struct {
 	LeaderId     int
 	PrevLogIndex int
 	PrevLogTerm  int
-	Entry        LogEntry
+	Entries      []LogEntry
 	LeaderCommit int
 }
 
@@ -148,7 +148,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	// 以下的判断顺序不能随便变动！！
-	fmt.Printf("Peer-%d receives msg{term=%d, pidx=%d, pterm=%d, cmt=%d, v=%v} from peer-%d.\n", rf.me, args.Term, args.PrevLogIndex, args.PrevLogTerm, args.LeaderCommit, args.Entry, args.LeaderId)
+	fmt.Printf("Peer-%d receives msg{term=%d, pidx=%d, pterm=%d, cmt=%d, v=%v} from peer-%d.\n", rf.me, args.Term, args.PrevLogIndex, args.PrevLogTerm, args.LeaderCommit, args.Entries, args.LeaderId)
 	// 0.check currentTerm
 	localTerm := rf.currentTerm
 	if localTerm > args.Term {
@@ -182,7 +182,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	}
 	// 2.update time. in order to present too much invalid heartbeat,
 	//   the operation should be done after the basic check.
-	if args.Entry.Command == nil {
+	if args.Entries[0].Command == nil {
 		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
 	}
@@ -433,17 +433,20 @@ func (rf *Raft) applyToLocalServiceReplica(currentIndex int) bool {
 	return applySucc
 }
 
-func (rf *Raft) createAppendEntryRequest(currentIndex int, currentTerm int, heartBeat bool) *AppendEntryArgs {
+func (rf *Raft) createAppendEntryRequest(startIndex int, stopIndex int, currentTerm int, heartBeat bool) *AppendEntryArgs {
 	currentLen := len(rf.logs)
-	if currentIndex <= 0 || (currentIndex >= currentLen && !heartBeat) {
-		fmt.Printf("Peer-%d receive an illegal currentIndex=%d, largest log index=%d\n", rf.me, currentIndex, len(rf.logs))
+	if startIndex <= 0 || stopIndex <= startIndex || (startIndex >= currentLen && !heartBeat) {
+		fmt.Printf("Peer-%d receive an illegal indexRange=[%d, %d], largest log index=%d\n", rf.me, startIndex, stopIndex, len(rf.logs))
 		return nil
+	}
+	if stopIndex > currentLen {
+		stopIndex = currentLen
 	}
 	request := new(AppendEntryArgs)
 	request.Term = currentTerm
 	request.LeaderId = rf.me
 	request.LeaderCommit = rf.commitIndex
-	prevLogIndex := currentIndex - 1
+	prevLogIndex := startIndex - 1
 	if prevLogIndex >= 0 && prevLogIndex < currentLen {
 		request.PrevLogIndex = prevLogIndex
 		request.PrevLogTerm = rf.logs[prevLogIndex].Term
@@ -452,9 +455,9 @@ func (rf *Raft) createAppendEntryRequest(currentIndex int, currentTerm int, hear
 		request.PrevLogTerm = 0
 	}
 	if !heartBeat {
-		request.Entry = rf.logs[currentIndex]
+		request.Entry = rf.logs[startIndex:stopIndex]
 	}
-	fmt.Printf("Peer-%d create a request: {hb=%t, cidx=%d, term=%d, cmt=%d, pidx=%d, pterm=%d, v=%v}\n", rf.me, heartBeat, currentIndex, request.Term, request.LeaderCommit, request.PrevLogIndex, request.PrevLogTerm, request.Entry)
+	fmt.Printf("Peer-%d create a request: {hb=%t, start=%d, stop=%d, term=%d, cmt=%d, pidx=%d, pterm=%d, v=%v}\n", rf.me, heartBeat, startIndex, stopIndex, request.Term, request.LeaderCommit, request.PrevLogIndex, request.PrevLogTerm, request.Entry)
 	return request
 }
 
@@ -463,7 +466,7 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 	doneCh := make(chan int)
 	doneCount := 0
 	hasCommited := false
-	request := rf.createAppendEntryRequest(currentIndex, currentTerm, false)
+	request := rf.createAppendEntryRequest(currentIndex, currentIndex+1, currentTerm, false)
 	for i := 0; rf.isLeader && i < len(rf.peers); i++ {
 		if i == rf.me {
 			doneCount++
@@ -596,7 +599,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			fmt.Printf("Peer-%d append log to peer-%d failed, try nextIndex=%d\n", rf.me, server, nextLogIndex)
 		}
 		if currentTerm != 0 {
-			request = rf.createAppendEntryRequest(nextLogIndex, currentTerm, false)
+			request = rf.createAppendEntryRequest(nextLogIndex, rf.commitIndex+1, currentTerm, false)
 		} else {
 			request = nil
 		}
@@ -764,7 +767,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 				// send heartbeat
 				fmt.Printf("Peer-%d begin to send heartbeat.\n", rf.me)
 				currentIndex := rf.commitIndex + 1
-				request := rf.createAppendEntryRequest(currentIndex, rf.currentTerm, true)
+				request := rf.createAppendEntryRequest(currentIndex, currentIndex+1, rf.currentTerm, true)
 				for i := 0; i < len(rf.peers); i++ {
 					if i == rf.me {
 						continue
