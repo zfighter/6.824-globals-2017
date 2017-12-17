@@ -168,15 +168,22 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		fmt.Printf("Args: PrevLogTerm=%d, PrevLogIndex=%d; local: PrevLogIndex=%d\n", args.PrevLogTerm, args.PrevLogIndex, len(rf.logs)-1)
 		reply.Term = localTerm
 		reply.Success = false
-		if args.PrevLogIndex < len(rf.logs) {
-			conflictTerm := rf.logs[args.PrevLogIndex].Term
-			reply.ConflictTerm = conflictTerm
+		// get the conflict index.
+		conflictIndex := args.PrevLogIndex
+		if args.PrevLogIndex >= len(rf.logs) {
+			conflictIndex = len(rf.logs) - 1
+		}
+		conflictTerm := rf.logs[conflictIndex].Term
+		reply.ConflictTerm = conflictTerm
+		if args.PrevLogTerm != conflictTerm {
 			//TODO: change to binary search later
-			for i := args.PrevLogIndex - 1; i > 0; i-- {
+			for i := conflictIndex; i >= 0; i-- {
 				if rf.logs[i].Term != conflictTerm {
 					reply.FirstIndex = i + 1
 				}
 			}
+		} else {
+			reply.FirstIndex = conflictIndex
 		}
 		return
 	}
@@ -383,7 +390,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		rf.logs = append(rf.logs, newLogEntry)
 		currIndex = len(rf.logs) - 1
 		rf.mu.Unlock()
-		fmt.Printf("Peer-%d has get all data.\n", rf.me)
+		fmt.Printf("Peer-%d has get all data. logs=%v\n", rf.me, rf.logs)
 		// begin to append log to all followers.
 		hasCommited := rf.appendToServers(currIndex, currTerm)
 		// begin to apply commited command.
@@ -426,8 +433,8 @@ func (rf *Raft) applyToLocalServiceReplica(currentIndex int) bool {
 
 func (rf *Raft) createAppendEntryRequest(startIndex int, stopIndex int, currentTerm int, heartBeat bool) *AppendEntryArgs {
 	currentLen := len(rf.logs)
-	if startIndex <= 0 || stopIndex <= startIndex || (startIndex >= currentLen && !heartBeat) {
-		fmt.Printf("Peer-%d receive an illegal indexRange=[%d, %d], largest log index=%d\n", rf.me, startIndex, stopIndex, len(rf.logs))
+	if startIndex < 0 || stopIndex <= startIndex || (startIndex >= currentLen && !heartBeat) {
+		fmt.Printf("Peer-%d receive an illegal indexRange=[%d, %d], largest log index=%d\n", rf.me, startIndex, stopIndex, len(rf.logs)-1)
 		return nil
 	}
 	if stopIndex > currentLen {
@@ -446,6 +453,10 @@ func (rf *Raft) createAppendEntryRequest(startIndex int, stopIndex int, currentT
 		request.PrevLogTerm = 0
 	}
 	if !heartBeat {
+		// avoid to append logs[0] too many times.
+		if startIndex == 0 {
+			startIndex = 1
+		}
 		request.Entries = rf.logs[startIndex:stopIndex]
 	}
 	fmt.Printf("Peer-%d create a request: {hb=%t, start=%d, stop=%d, term=%d, cmt=%d, pidx=%d, pterm=%d, v=%v}\n", rf.me, heartBeat, startIndex, stopIndex, request.Term, request.LeaderCommit, request.PrevLogIndex, request.PrevLogTerm, request.Entries)
@@ -582,7 +593,8 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			}
 			currentTerm = rf.currentTerm
 			rf.mu.Unlock()
-			if nextLogIndex == 0 || nextLogIndex > currentIndex || !toSyncLogs {
+			// nextLogIndex == 0 is not needed, because fellower may return nextIndex=1.
+			if /*nextLogIndex == 0 ||*/ nextLogIndex > currentIndex || !toSyncLogs {
 				rf.stopSync(server, toSyncLogs)
 				fmt.Printf("Peer-%d stop synchronize logs at 5, {%d, %d, %t}.\n", rf.me, nextLogIndex, currentIndex, toSyncLogs)
 				break
@@ -590,7 +602,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			fmt.Printf("Peer-%d append log to peer-%d failed, try nextIndex=%d\n", rf.me, server, nextLogIndex)
 		}
 		if currentTerm != 0 {
-			request = rf.createAppendEntryRequest(nextLogIndex, rf.commitIndex+1, currentTerm, false)
+			request = rf.createAppendEntryRequest(nextLogIndex, len(rf.logs), currentTerm, false)
 		} else {
 			request = nil
 		}
@@ -637,6 +649,7 @@ func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntr
 		} else if reply.ConflictTerm != 0 {
 			if rf.logs[reply.FirstIndex].Term != reply.ConflictTerm {
 				rf.nextIndex[server] = reply.FirstIndex
+				fmt.Printf("Peer-%d set next index to %d\n", rf.me, reply.FirstIndex)
 			}
 		}
 		rf.mu.Unlock()
