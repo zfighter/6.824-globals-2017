@@ -187,13 +187,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 		}
 		return
 	}
-	// 2.update time. in order to present too much invalid heartbeat,
-	//   the operation should be done after the basic check.
-	if len(args.Entries) <= 0 || args.Entries[0].Command == nil {
-		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
-		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
-	}
-	// 3.update commitIndex
+	// 2.update commitIndex
 	if args.LeaderCommit > rf.commitIndex {
 		if args.PrevLogIndex < args.LeaderCommit {
 			rf.commitIndex = args.PrevLogIndex
@@ -201,24 +195,48 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 			rf.commitIndex = args.LeaderCommit
 		}
 	}
+	// 3.update time. in order to present too much invalid heartbeat,
+	//   the operation should be done after the basic check.
+	if len(args.Entries) <= 0 || args.Entries[0].Command == nil {
+		atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
+		fmt.Printf("Receive hearbeat, peer-%d set lastTick to %d\n", rf.me, rf.lastTick)
+		// this request is heartbeat, return after checking and updating commitIndex
+		reply.Term = localTerm
+		reply.Success = true
+		return
+	}
 	// 4.check current log entry.
 	index := args.PrevLogIndex + 1
-	if index < len(rf.logs) && len(args.Entries) > 0 {
-		if rf.logs[index].Term == args.Entries[0].Term {
-			fmt.Printf("Peer-%d matched append log at index=%d\n", rf.me, index)
-			reply.Term = localTerm
-			reply.Success = true
-			return
-		} else {
-			fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Entries[0].Term, index, rf.logs[index].Term)
-			rf.logs = rf.logs[0:index]
+	beginOfAppend := -1
+	if /*index < len(rf.logs) &&*/ len(args.Entries) > 0 {
+		/*
+			if rf.logs[index].Term == args.Entries[0].Term {
+				fmt.Printf("Peer-%d matched append log at index=%d, local logs=%v, receive logs=%v\n", rf.me, index, rf.logs, args.Entries)
+				reply.Term = localTerm
+				reply.Success = true
+				return
+			} else {
+				fmt.Printf("args' entry=%d, but local logs[%d]=%d\n", args.Entries[0].Term, index, rf.logs[index].Term)
+				rf.logs = rf.logs[0:index]
+			}
+		*/
+		// 这里应该顺序比较index之后的所有数据，因为有可能args带来的logs比local的logs多很多或者其中有很多是不一样的。
+		for i, e := range args.Entries {
+			if index+i < len(rf.logs) && rf.logs[index+i].Term == e.Term {
+				// do nothing.
+			} else {
+				beginOfAppend = i
+				break
+			}
 		}
 	}
 	// 5.do append.
 	//   check command, if command is nil, it means this request is heartbeat, do not append.
-	if len(args.Entries) > 0 || (len(args.Entries) == 1 && args.Entries[0].Command != nil) {
-		// newLogEntry := new()
-		rf.logs = append(rf.logs, args.Entries...)
+	if beginOfAppend != -1 {
+		if beginOfAppend != 0 {
+			rf.logs = rf.logs[0 : index+beginOfAppend]
+		}
+		rf.logs = append(rf.logs, args.Entries[beginOfAppend:]...)
 		fmt.Printf("Peer-%d append entry to logs, logs' length=%d, logs=%v.\n", rf.me, len(rf.logs), rf.logs)
 	} else {
 		fmt.Printf("Peer-%d do not append heartbeat.\n", rf.me)
@@ -508,7 +526,7 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 				fmt.Printf("Leader-%d receieve a error server index=%d\n", rf.me, server)
 			}
 		case <-time.After(time.Duration(1000) * time.Millisecond):
-			fmt.Printf("Peer-%d agreement is timeout.\n", rf.me)
+			fmt.Printf("Peer-%d agreement on index-%d is timeout.\n", rf.me, currentIndex)
 			stopRunning = true
 		}
 	}
@@ -526,9 +544,12 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 
 func (rf *Raft) stopSync(server int, toSyncLogs bool) {
 	if toSyncLogs {
+		fmt.Printf("Peer-%d begin to stop synchronizing logs.\n", rf.me)
 		rf.mu.Lock()
+		fmt.Printf("Peer-%d stop sync in lock.\n", rf.me)
 		rf.syncLogs[server] = false
 		rf.mu.Unlock()
+		fmt.Printf("Peer-%d finished stop operation.\n", rf.me)
 	}
 }
 
@@ -602,7 +623,10 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			fmt.Printf("Peer-%d append log to peer-%d failed, try nextIndex=%d\n", rf.me, server, nextLogIndex)
 		}
 		if currentTerm != 0 {
-			request = rf.createAppendEntryRequest(nextLogIndex, len(rf.logs), currentTerm, false)
+			// warning: the stop index should be the currentIndex + 1,
+			// 					因为在创建新的request的时候，并没有与Start在同一个锁里面，所以len(rf.logs)会有
+			//					变化的，这样很可能会导致append失败或者混乱。
+			request = rf.createAppendEntryRequest(nextLogIndex, currentIndex+1, currentTerm, false)
 		} else {
 			request = nil
 		}
@@ -620,7 +644,7 @@ func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntr
 		reply = new(AppendEntryReply)
 		fmt.Printf("Peer-%d try to send rpc to peer-%d, this is %d/2 time.\n", rf.me, server, retryCount)
 		ok = rf.sendAppendEntry(server, request, reply)
-		rf.sleep(100 * retryCount)
+		rf.sleep(10 * retryCount)
 		fmt.Printf("Peer-%d has sent rpc to peer-%d, this is %d/2 time.\n", rf.me, server, retryCount)
 		retryCount++
 	}
