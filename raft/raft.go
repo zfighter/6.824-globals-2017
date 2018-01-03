@@ -234,6 +234,9 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	// 5.do append.
 	//   check command, if command is nil, it means this request is heartbeat, do not append.
 	if beginOfAppend != -1 {
+		// 20180103: here should be beginOfAppend+index > 0, not beginOfAppend > 0,
+		// because if args.Entries just has one entry, the beginOfAppend will be 0,
+		// and this condition is legal.
 		if beginOfAppend+index != 0 {
 			rf.logs = rf.logs[0 : index+beginOfAppend]
 		}
@@ -580,6 +583,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			break
 		}
 		isHeartbeat := len(request.Entries) <= 0 || request.Entries[0].Command == nil
+		// 20180103: now we append history logs in batch, so the second argument should be currentIndex, not nextIndex.
 		isSuccess := rf.appendToServer(server, currentIndex, request)
 		//rf.serverMu.RLock()
 		currentTerm := 0
