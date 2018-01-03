@@ -66,7 +66,7 @@ type Raft struct {
 	lastTick int64
 
 	// only for leader
-	syncLogs   map[int]bool
+	syncLogs   map[int]int
 	nextIndex  map[int]int // peer id -> appliedIndex
 	matchIndex map[int]int // peer id -> highest index
 
@@ -166,6 +166,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	// 1.check index and term of previous log
 	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex >= len(rf.logs) || args.PrevLogTerm != rf.logs[args.PrevLogIndex].Term {
 		fmt.Printf("Args: PrevLogTerm=%d, PrevLogIndex=%d; local: PrevLogIndex=%d\n", args.PrevLogTerm, args.PrevLogIndex, len(rf.logs)-1)
+		fmt.Printf("Peer-%d's logs=%v\n", rf.me, rf.logs)
 		reply.Term = localTerm
 		reply.Success = false
 		// get the conflict index.
@@ -233,7 +234,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	// 5.do append.
 	//   check command, if command is nil, it means this request is heartbeat, do not append.
 	if beginOfAppend != -1 {
-		if beginOfAppend != 0 {
+		if beginOfAppend+index != 0 {
 			rf.logs = rf.logs[0 : index+beginOfAppend]
 		}
 		rf.logs = append(rf.logs, args.Entries[beginOfAppend:]...)
@@ -545,10 +546,10 @@ func (rf *Raft) appendToServers(currentIndex int, currentTerm int) bool {
 func (rf *Raft) stopSync(server int, toSyncLogs bool) {
 	if toSyncLogs {
 		fmt.Printf("Peer-%d begin to stop synchronizing logs.\n", rf.me)
-		rf.mu.Lock()
-		fmt.Printf("Peer-%d stop sync in lock.\n", rf.me)
-		rf.syncLogs[server] = false
-		rf.mu.Unlock()
+		// rf.mu.Lock()
+		// fmt.Printf("Peer-%d stop sync in lock.\n", rf.me)
+		// rf.syncLogs[server] = false
+		// rf.mu.Unlock()
 		fmt.Printf("Peer-%d finished stop operation.\n", rf.me)
 	}
 }
@@ -579,7 +580,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			break
 		}
 		isHeartbeat := len(request.Entries) <= 0 || request.Entries[0].Command == nil
-		isSuccess := rf.appendToServer(server, nextLogIndex, request)
+		isSuccess := rf.appendToServer(server, currentIndex, request)
 		//rf.serverMu.RLock()
 		currentTerm := 0
 		if isSuccess {
@@ -599,8 +600,8 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			rf.mu.Unlock()
 		} else {
 			rf.mu.Lock()
-			if !rf.syncLogs[server] {
-				rf.syncLogs[server] = true
+			if rf.syncLogs[server] < currentIndex {
+				rf.syncLogs[server] = currentIndex
 				toSyncLogs = true
 				fmt.Printf("Peer-%d begin to synchronize logs to peer-%d.\n", rf.me, server)
 			} else if !toSyncLogs {
@@ -766,7 +767,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.lastApplied = 0
 	rf.nextIndex = make(map[int]int)
 	rf.matchIndex = make(map[int]int)
-	rf.syncLogs = make(map[int]bool)
+	rf.syncLogs = make(map[int]int)
 	atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 
 	// init nextIndex and matchIndex
