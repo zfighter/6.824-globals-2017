@@ -24,8 +24,8 @@ import "sync/atomic"
 import "time"
 import "github.com/6.824/labrpc"
 
-// import "bytes"
-// import "encoding/gob"
+import "bytes"
+import "encoding/gob"
 
 //
 // as each Raft peer becomes aware that successive log entries are
@@ -248,6 +248,7 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	// 6.reply.
 	reply.Term = rf.currentTerm
 	reply.Success = true
+	rf.persist()
 }
 
 func (rf *Raft) sendAppendEntry(server int, args *AppendEntryArgs, reply *AppendEntryReply) bool {
@@ -287,14 +288,14 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	rf.lastTick = time.Now().UnixNano()
-	rf.isLeader = false
 	currTerm := rf.currentTerm
 	if args == nil {
-		fmt.Printf("args is null.\n")
+		fmt.Printf("Peer-%d's vote args is null.\n")
 		reply.Term = currTerm
 		reply.VoteGrant = false
 		return
 	}
+	fmt.Printf("Peer-%d revieved vote request from peer-%d\n", rf.me, args.Candidate)
 	termOfCandidate := args.Term
 	candidateId := args.Candidate
 	if termOfCandidate < currTerm {
@@ -338,11 +339,10 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	}
 	// can grant the request
 	rf.voteFor = candidateId
-	if rf.isLeader {
-		rf.isLeader = false
-	}
+	rf.isLeader = false
 	reply.Term = currTerm
 	reply.VoteGrant = true
+	rf.persist()
 	return
 }
 
@@ -411,6 +411,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		newLogEntry.Command = command
 		rf.logs = append(rf.logs, newLogEntry)
 		currIndex = len(rf.logs) - 1
+		rf.persist()
 		rf.mu.Unlock()
 		fmt.Printf("Peer-%d has get all data. logs=%v\n", rf.me, rf.logs)
 		// begin to append log to all followers.
@@ -434,21 +435,21 @@ func (rf *Raft) applyToLocalServiceReplica(currentIndex int) bool {
 		return applySucc
 	}
 	msg := ApplyMsg{}
-	msg.Index = currentIndex
-	msg.Command = rf.logs[currentIndex].Command
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
+	msg.Index = currentIndex
+	msg.Command = rf.logs[currentIndex].Command
 	currentIndex = rf.lastApplied + 1
 	fmt.Printf("Peer-%d check the index before apply. Want=%d, real=%d.\n", rf.me, msg.Index, currentIndex)
-	if currentIndex == msg.Index {
+	if currentIndex >= msg.Index {
 		rf.applyChan <- msg
-		rf.lastApplied = currentIndex
+		rf.lastApplied = msg.Index
 		applySucc = true
 	}
 	if applySucc {
 		fmt.Printf("peer-%d has send applyMsg={%d, %v} to channel.\n", rf.me, msg.Index, msg.Command)
 	} else {
-		fmt.Printf("current applied index is changed. expect=%d, actual=%d\n", currentIndex, msg.Index)
+		fmt.Printf("current applied index is less than expect. expect=%d, actual=%d\n", currentIndex, msg.Index)
 	}
 	return applySucc
 }
@@ -820,9 +821,11 @@ func Make(peers []*labrpc.ClientEnd, me int,
 				if sleepDuration <= 0 {
 					rf.mu.Lock()
 					rf.isVoting = true
+					rf.voteFor = rf.me
 					rf.currentTerm += 1
 					reqTerm := rf.currentTerm
 					logIndex := len(rf.logs) - 1
+					rf.persist()
 					rf.mu.Unlock()
 					var logTerm = 0
 					if logIndex >= 0 {
@@ -902,7 +905,8 @@ func Make(peers []*labrpc.ClientEnd, me int,
 						rf.mu.Unlock()
 					} else {
 						fmt.Printf("Peer-%d vote failed, timeout=%t\n", rf.me, isTimeout)
-						rf.sleep(500)
+						realSleepTime := rand.Intn(200) + 500
+						time.Sleep(time.Duration(realSleepTime) * time.Millisecond)
 					}
 					rf.mu.Lock()
 					rf.isVoting = false
