@@ -414,12 +414,14 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		rf.persist()
 		rf.mu.Unlock()
 		fmt.Printf("Peer-%d has get all data. logs=%v\n", rf.me, rf.logs)
-		// begin to append log to all followers.
-		hasCommited := rf.appendToServers(currIndex, currTerm)
-		// begin to apply commited command.
-		if hasCommited {
-			go rf.applyToLocalServiceReplica(currIndex)
-		}
+		go func() {
+			// begin to append log to all followers.
+			hasCommited := rf.appendToServers(currIndex, currTerm)
+			// begin to apply commited command.
+			if hasCommited {
+				go rf.applyToLocalServiceReplica(currIndex)
+			}
+		}()
 		index = currIndex
 		term = currTerm
 	} else {
