@@ -165,17 +165,19 @@ func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
 	}
 	// 1.check index and term of previous log
 	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex >= len(rf.logs) || args.PrevLogTerm != rf.logs[args.PrevLogIndex].Term {
-		fmt.Printf("Args: PrevLogTerm=%d, PrevLogIndex=%d; local: PrevLogIndex=%d\n", args.PrevLogTerm, args.PrevLogIndex, len(rf.logs)-1)
-		fmt.Printf("Peer-%d's logs=%v\n", rf.me, rf.logs)
+		fmt.Printf("Peer-%d, Args: PrevLogTerm=%d, PrevLogIndex=%d; local: PrevLogIndex(length)=%d, logs=%v\n", rf.me, args.PrevLogTerm, args.PrevLogIndex, len(rf.logs)-1, rf.logs)
 		reply.Term = localTerm
 		reply.Success = false
 		// get the conflict index.
 		conflictIndex := args.PrevLogIndex
 		if args.PrevLogIndex >= len(rf.logs) {
-			conflictIndex = len(rf.logs) - 1
+			// 20180125: if the leader's logs is more than follower's, the follower return the max log index as the FirstIndex
+			reply.FirstIndex = len(rf.logs) - 1
+			return
 		}
 		conflictTerm := rf.logs[conflictIndex].Term
 		reply.ConflictTerm = conflictTerm
+		// only the index is equals and the term of this index is different, we should search for the first index of conflict term.
 		if args.PrevLogTerm != conflictTerm {
 			//TODO: change to binary search later
 			for i := conflictIndex; i >= 0; i-- {
@@ -562,6 +564,7 @@ func (rf *Raft) stopSync(server int, toSyncLogs bool) {
 
 func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *AppendEntryArgs) bool {
 	nextLogIndex := currentIndex
+	currTermWhenAppend := request.Term
 	toSyncLogs := false
 	for !rf.isStopping {
 		//rf.serverMu.RLock()
@@ -579,7 +582,7 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 			fmt.Printf("Peer-%d stop synchronize logs at 3.\n", rf.me)
 			break
 		}
-		if !rf.isLeader {
+		if !rf.isLeader || rf.currentTerm != currTermWhenAppend {
 			fmt.Printf("Peer-%d is not leader, stop to append entries to peer-%d.\n", rf.me, server)
 			rf.stopSync(server, toSyncLogs)
 			fmt.Printf("Peer-%d stop synchronize logs at 4.\n", rf.me)
@@ -646,14 +649,15 @@ func (rf *Raft) appendToServerWithCheck(server int, currentIndex int, request *A
 
 func (rf *Raft) appendToServer(server int, currentIndex int, request *AppendEntryArgs) bool {
 	ok := false
+	currTermWhenAppend := request.Term
 	var reply *AppendEntryReply
 	var retryCount = 0
-	for !ok && rf.isLeader && retryCount < 3 {
+	for !ok && rf.isLeader && rf.currentTerm == currTermWhenAppend && retryCount < 3 {
 		reply = new(AppendEntryReply)
-		fmt.Printf("Peer-%d try to send rpc to peer-%d, this is %d/2 time.\n", rf.me, server, retryCount)
+		fmt.Printf("Peer-%d try to send rpc for index-%d to peer-%d, this is %d/2 time.\n", rf.me, currentIndex, server, retryCount)
 		ok = rf.sendAppendEntry(server, request, reply)
 		rf.sleep(10 * retryCount)
-		fmt.Printf("Peer-%d has sent rpc to peer-%d, this is %d/2 time.\n", rf.me, server, retryCount)
+		fmt.Printf("Peer-%d has sent rpc for index-%d to peer-%d, this is %d/2 time.\n", rf.me, currentIndex, server, retryCount)
 		retryCount++
 	}
 	fmt.Printf("Peer-%d has sent request to peer-%d\n", rf.me, server)
