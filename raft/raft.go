@@ -71,7 +71,8 @@ type Raft struct {
 	lastApplied int
 
 	// timer
-	lastTick int64
+	electionTimeout time.Duration
+	electionTimer   *time.Timer
 
 	// only for leader
 	nextIndex  map[int]int // peer id -> appliedIndex
@@ -194,7 +195,13 @@ func (rf *Raft) ElectionService() {
 		switch state {
 		case Follower:
 			// TODO: timeout to start election.
-
+			if electionTimer == nil {
+				electionTimer = time.newTimer(electionTimeout)
+			}
+			if !electionTimer.Stop() {
+				<-electionTimer.C
+			}
+			electionTimer.Reset(electionTimeout)
 		case Candidate:
 			// TODO: 1.if timeout, try to elect again.
 			// TODO:
