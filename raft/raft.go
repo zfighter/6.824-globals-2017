@@ -77,6 +77,8 @@ type Raft struct {
 	nextIndex  map[int]int // peer id -> appliedIndex
 	matchIndex map[int]int // peer id -> highest index
 
+	// state channel
+	stateChan chan State
 	// apply channel
 	applyChan chan ApplyMsg
 }
@@ -186,20 +188,22 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 
 }
 
-func (rf *Raft) StartElectionService() {
-	go func() {
-		for !rf.isStopping {
-			switch rf.state {
-			case Follower:
-				// TODO: timeout to start election.
-			case Candidate:
-				// TODO: 1.if timeout, try to elect again.
-				// TODO:
-			case Leader:
-				// TODO
-			}
+func (rf *Raft) ElectionService() {
+	select {
+	case state := <-stateChan:
+		switch state {
+		case Follower:
+			// TODO: timeout to start election.
+
+		case Candidate:
+			// TODO: 1.if timeout, try to elect again.
+			// TODO:
+		case Leader:
+			// TODO
 		}
-	}()
+	case <-shutdownChan:
+		return
+	}
 }
 
 //
