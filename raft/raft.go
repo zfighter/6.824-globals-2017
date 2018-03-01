@@ -36,6 +36,13 @@ const (
 	Leader
 )
 
+const (
+	Timeout Event = iota
+	// HeartBeat Event = iota
+	NewTerm
+	Win
+)
+
 //
 // as each Raft peer becomes aware that successive log entries are
 // committed, the peer should send an ApplyMsg to the service (or
@@ -65,7 +72,7 @@ type Raft struct {
 	state       State
 	currentTerm int
 	voteFor     int        // index of peer
-	logs        []LogEntry // using slices
+	log         []LogEntry // using slices
 
 	commitIndex int
 	lastApplied int
@@ -78,6 +85,8 @@ type Raft struct {
 	nextIndex  map[int]int // peer id -> appliedIndex
 	matchIndex map[int]int // peer id -> highest index
 
+	// event channel
+	heartbeatChan chan struct{}
 	// state channel
 	stateChan chan State
 	// apply channel
@@ -189,30 +198,6 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 
 }
 
-func (rf *Raft) ElectionService() {
-	select {
-	case state := <-stateChan:
-		switch state {
-		case Follower:
-			// TODO: timeout to start election.
-			if electionTimer == nil {
-				electionTimer = time.newTimer(electionTimeout)
-			}
-			if !electionTimer.Stop() {
-				<-electionTimer.C
-			}
-			electionTimer.Reset(electionTimeout)
-		case Candidate:
-			// TODO: 1.if timeout, try to elect again.
-			// TODO:
-		case Leader:
-			// TODO
-		}
-	case <-shutdownChan:
-		return
-	}
-}
-
 //
 // example code to send a RequestVote RPC to a server.
 // server is the index of the target server in rf.peers[].
@@ -245,6 +230,101 @@ func (rf *Raft) ElectionService() {
 func (rf *Raft) sendRequestVote(server int, args *RequestVoteArgs, reply *RequestVoteReply) bool {
 	ok := rf.peers[server].Call("Raft.RequestVote", args, reply)
 	return ok
+}
+
+// transition state
+func (rf *Raft) transtionState(currentState State, event Event) (nextState State) {
+	var nextState State = Follower // default is Follower
+	switch event {
+	case Timeout:
+		if currentState == Follower {
+			nextState = Candidate
+		} else if currentState == Candidate {
+			nextState = Candidate
+		} // leader should not have Timeout event.
+	case NewTerm:
+		if currentState == Candidate {
+			nextState = Follower
+		} else if currentState == Leader {
+			nextState = Follower
+		} // if follower get NewTerm, it should stay in state: follower.
+	case Win:
+		if currentState == Candidate {
+			nextState = Leader
+		}
+	}
+	return nextState
+}
+
+//
+func (rf *Raft) electionService() {
+	for {
+		switch currentState {
+		case Follower:
+			select {
+			case <-time.After(electionTimeout):
+				rf.mu.Lock()
+				nextState := rf.transitionState(rf.state, Timeout)
+				rf.state = nextState
+				if nextState == Candidate {
+					rf.currentTerm += 1
+				}
+				rf.mu.Unlock()
+				DPrintf("LSM has set state to candidate.\n")
+			case <-rf.heartbeatChan:
+				DPrintf("Received heartbeat from leader, reset timer.\n")
+			}
+		case Candidate:
+			// start a election.
+
+			select {
+			case <-time.After(electionTimeout):
+				DPrintf("Election is timeout, try again.\n")
+			}
+		case Leader:
+		default:
+		}
+	}
+}
+
+func (rf *Raft) ceateVoteRequest() *RequestVoteArgs {
+	var request *RequestVoteArgs
+	rf.mu.Lock()
+	request.Term = rf.currentTerm
+	request.Candidate = rf.me
+	logIndex = len(rf.logs) - 1
+	rf.mu.Unlock()
+	if logIndex < 1 {
+		logIndex = 0
+	}
+	request.LastLogTerm = rf.log[logIndex].Term
+	request.LostLogIndex = logIndex
+	return request
+}
+
+func (rf *Raft) agreeOnServers(handler interface{}) {
+}
+
+//
+func (rf *Raft) sendVoteToServer(server int) bool {
+	var reply = new(RequestVoteReply)
+	requestArgs := rf.ceateVoteRequest()
+	ok := rf.sendRequestVote(server, requestArgs, reply)
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	if ok {
+		if reply != nil && reply.VoteGrant {
+			return true
+		} else if reply != nil && reply.Term > rf.currentTerm {
+			rf.transitionState(rf.state, rf.NewTerm)
+			return false
+		} else {
+			return false
+		}
+	} else {
+		DPrintf("Send vote request failed.\n")
+		return false
+	}
 }
 
 //
@@ -310,7 +390,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.isLeader = false
 	rf.currentTerm = 0
 	rf.voteFor = -1
-	rf.logs = make([]LogEntry, 1)
+	rf.log = make([]LogEntry, 1)
 	rf.commitIndex = 0
 	rf.lastApplied = 0
 	rf.nextIndex = make(map[int]int)
