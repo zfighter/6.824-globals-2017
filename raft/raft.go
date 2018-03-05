@@ -302,20 +302,24 @@ func (rf *Raft) ceateVoteRequest() *RequestVoteArgs {
 	return request
 }
 
-func (rf *Raft) agreeOnServers(handler interface{}) {
+func (rf *Raft) agreeWithServers(handler interface{}) {
+	for i, peer := range rf.peers {
+
+	}
 }
 
 //
-func (rf *Raft) sendVoteToServer(server int) bool {
+func (rf *Raft) agreeWith(server int) bool {
 	var reply = new(RequestVoteReply)
 	requestArgs := rf.ceateVoteRequest()
 	ok := rf.sendRequestVote(server, requestArgs, reply)
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
+	// if return is true, the reply is not nil.
 	if ok {
-		if reply != nil && reply.VoteGrant {
+		if reply.VoteGrant {
 			return true
-		} else if reply != nil && reply.Term > rf.currentTerm {
+		} else if reply.Term > rf.currentTerm {
 			rf.transitionState(rf.state, rf.NewTerm)
 			return false
 		} else {
