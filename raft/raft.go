@@ -43,6 +43,10 @@ const (
 	Win
 )
 
+type Handler interface {
+	handle(server int) bool
+}
+
 //
 // as each Raft peer becomes aware that successive log entries are
 // committed, the peer should send an ApplyMsg to the service (or
@@ -188,6 +192,9 @@ type RequestVoteReply struct {
 	// Your data here (2A).
 	Term      int
 	VoteGrant bool
+}
+
+type VoteHandler struct {
 }
 
 //
