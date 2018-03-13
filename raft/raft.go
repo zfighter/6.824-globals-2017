@@ -36,6 +36,9 @@ const (
 	Leader
 )
 
+// the event types
+type Event int
+
 const (
 	Timeout Event = iota
 	// HeartBeat Event = iota
@@ -43,8 +46,9 @@ const (
 	Win
 )
 
+// handler to make agreement
 type Handler interface {
-	handle(server int) bool
+	handle(server int, callback interface{}) bool
 }
 
 //
@@ -316,7 +320,7 @@ func (rf *Raft) agreeWithServers(handler interface{}) {
 }
 
 //
-func (rf *Raft) agreeWith(server int) bool {
+func (rf *Raft) voteTo(server int, callback interface{}) bool {
 	var reply = new(RequestVoteReply)
 	requestArgs := rf.ceateVoteRequest()
 	ok := rf.sendRequestVote(server, requestArgs, reply)
