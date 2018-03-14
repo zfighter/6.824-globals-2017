@@ -47,8 +47,8 @@ const (
 )
 
 // handler to make agreement
-type Handler interface {
-	handle(server int, callback interface{}) bool
+type Processor interface {
+	process(server int)
 }
 
 //
@@ -99,6 +99,9 @@ type Raft struct {
 	stateChan chan State
 	// apply channel
 	applyChan chan ApplyMsg
+
+	// max attempts
+	maxAttempts int
 }
 
 type LogEntry struct {
@@ -198,9 +201,6 @@ type RequestVoteReply struct {
 	VoteGrant bool
 }
 
-type VoteHandler struct {
-}
-
 //
 // example RequestVote RPC handler.
 //
@@ -239,7 +239,15 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 // the struct itself.
 //
 func (rf *Raft) sendRequestVote(server int, args *RequestVoteArgs, reply *RequestVoteReply) bool {
-	ok := rf.peers[server].Call("Raft.RequestVote", args, reply)
+	ok := rf.callWithRetry(server, "Raft.RequestVote", args, reply)
+	return ok
+}
+
+func (rf *Raft) callWithRetry(server int, method string, args interface{}, reply interface{}) bool {
+	ok := false
+	for time := 1; !ok && time < rf.maxAttempts; time++ {
+		ok := rf.peers[server].Call(method, args, reply)
+	}
 	return ok
 }
 
@@ -313,9 +321,26 @@ func (rf *Raft) ceateVoteRequest() *RequestVoteArgs {
 	return request
 }
 
-func (rf *Raft) agreeWithServers(handler interface{}) {
+func (rf *Raft) agreeWithServers(processor Processor) {
 	for i, peer := range rf.peers {
+		go func(server int) {
+			ok := processor.process(server)
 
+		}(peer)
+	}
+}
+
+func (rf *Raft) callWithRetry() (success bool) {
+	ok := false
+	time := 1
+	for !ok && time < maxAttempts {
+		ok := callable()
+		time++
+	}
+	if ok {
+		return true
+	} else {
+		panic("Retry exausted.")
 	}
 }
 
