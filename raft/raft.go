@@ -322,49 +322,29 @@ func (rf *Raft) ceateVoteRequest() *RequestVoteArgs {
 }
 
 func (rf *Raft) agreeWithServers(processor Processor) {
+	doneChan := make(chan int)
 	for i, peer := range rf.peers {
 		go func(server int) {
 			ok := processor.process(server)
+			if ok {
 
+			}
 		}(peer)
 	}
 }
 
-func (rf *Raft) callWithRetry() (success bool) {
-	ok := false
-	time := 1
-	for !ok && time < maxAttempts {
-		ok := callable()
-		time++
-	}
-	if ok {
-		return true
-	} else {
-		panic("Retry exausted.")
-	}
-}
-
-//
-func (rf *Raft) voteTo(server int, callback interface{}) bool {
-	var reply = new(RequestVoteReply)
-	requestArgs := rf.ceateVoteRequest()
-	ok := rf.sendRequestVote(server, requestArgs, reply)
-	rf.mu.Lock()
-	defer rf.mu.Unlock()
-	// if return is true, the reply is not nil.
-	if ok {
+func (rf *Raft) processVoteReply(reply *RequestVoteReply) (win bool) {
+	win := false
+	if reply != nil {
 		if reply.VoteGrant {
-			return true
+			win = true
 		} else if reply.Term > rf.currentTerm {
+			rf.mu.Lock()
 			rf.transitionState(rf.state, rf.NewTerm)
-			return false
-		} else {
-			return false
+			rf.mu.Unlock()
 		}
-	} else {
-		DPrintf("Send vote request failed.\n")
-		return false
 	}
+	return win
 }
 
 //
