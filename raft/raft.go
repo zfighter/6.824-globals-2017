@@ -44,6 +44,7 @@ const (
 	// HeartBeat Event = iota
 	NewTerm
 	Win
+	Stop
 )
 
 // handler to make agreement
@@ -295,10 +296,15 @@ func (rf *Raft) electionService() {
 			}
 		case Candidate:
 			// start a election.
+			processor := func(server int) {
+				request := rf.createVoteRequest()
+				reply := new(RequestVoteReply)
+				rf.sendRequestVote(server, request, reply)
+				rf.processVoteReply(reply)
+			}
+			ok := rf.agreeWithServers(processor)
+			if ok {
 
-			select {
-			case <-time.After(electionTimeout):
-				DPrintf("Election is timeout, try again.\n")
 			}
 		case Leader:
 		default:
@@ -321,15 +327,29 @@ func (rf *Raft) ceateVoteRequest() *RequestVoteArgs {
 	return request
 }
 
-func (rf *Raft) agreeWithServers(processor Processor) {
+func (rf *Raft) agreeWithServers(processor Processor) (agree bool) {
 	doneChan := make(chan int)
 	for i, peer := range rf.peers {
 		go func(server int) {
 			ok := processor.process(server)
 			if ok {
-
+				doneChan <- server
 			}
 		}(peer)
+	}
+	deadline := time.After(rf.electionTimeout)
+	doneCount := 0
+	for {
+		select {
+		case <-deadline:
+			DPrintf("Agreement timeout!\n")
+			return false
+		case server := <-doneChan:
+			doneCount += 1
+			if doneCount >= len(rf.peers)+1 {
+				return true
+			}
+		}
 	}
 }
 
