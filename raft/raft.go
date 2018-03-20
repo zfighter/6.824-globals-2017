@@ -156,7 +156,7 @@ func (rf *Raft) readPersist(data []byte) {
 }
 
 // AppendEntry RPC
-type AppendEntryArgs struct {
+type AppendEntriesArgs struct {
 	Term         int
 	LeaderId     int
 	PrevLogIndex int
@@ -165,7 +165,7 @@ type AppendEntryArgs struct {
 	LeaderCommit int
 }
 
-type AppendEntryReply struct {
+type AppendEntriesReply struct {
 	Term         int
 	Success      bool
 	ConflictTerm int
@@ -253,7 +253,7 @@ func (rf *Raft) callWithRetry(server int, method string, args interface{}, reply
 }
 
 // transition state
-func (rf *Raft) transtionState(currentState State, event Event) (nextState State) {
+func (rf *Raft) transitionState(currentState State, event Event) (nextState State) {
 	var nextState State = Follower // default is Follower
 	switch event {
 	case Timeout:
@@ -296,24 +296,27 @@ func (rf *Raft) electionService() {
 			}
 		case Candidate:
 			// start a election.
-			processor := func(server int) {
+			process := func(server int) bool {
 				request := rf.createVoteRequest()
 				reply := new(RequestVoteReply)
 				rf.sendRequestVote(server, request, reply)
 				rf.processVoteReply(reply)
 			}
-			ok := rf.agreeWithServers(processor)
+			ok := rf.agreeWithServers(process)
 			if ok {
-
+				rf.mu.Lock()
+				rf.transitionState(rf.state, rf.Win)
+				rf.mu.Unlock()
 			}
 		case Leader:
+			// start to send heartbeat.
 		default:
 		}
 	}
 }
 
 func (rf *Raft) ceateVoteRequest() *RequestVoteArgs {
-	var request *RequestVoteArgs
+	request := new(RequestVoteArgs)
 	rf.mu.Lock()
 	request.Term = rf.currentTerm
 	request.Candidate = rf.me
@@ -327,11 +330,25 @@ func (rf *Raft) ceateVoteRequest() *RequestVoteArgs {
 	return request
 }
 
-func (rf *Raft) agreeWithServers(processor Processor) (agree bool) {
+func (rf *Raft) processVoteReply(reply *RequestVoteReply) (win bool) {
+	win := false
+	if reply != nil {
+		if reply.VoteGrant {
+			win = true
+		} else if reply.Term > rf.currentTerm {
+			rf.mu.Lock()
+			rf.transitionState(rf.state, rf.NewTerm)
+			rf.mu.Unlock()
+		}
+	}
+	return win
+}
+
+func (rf *Raft) agreeWithServers(process func(server int) bool) (agree bool) {
 	doneChan := make(chan int)
 	for i, peer := range rf.peers {
 		go func(server int) {
-			ok := processor.process(server)
+			ok := process(server)
 			if ok {
 				doneChan <- server
 			}
@@ -353,18 +370,24 @@ func (rf *Raft) agreeWithServers(processor Processor) (agree bool) {
 	}
 }
 
-func (rf *Raft) processVoteReply(reply *RequestVoteReply) (win bool) {
-	win := false
-	if reply != nil {
-		if reply.VoteGrant {
-			win = true
-		} else if reply.Term > rf.currentTerm {
-			rf.mu.Lock()
-			rf.transitionState(rf.state, rf.NewTerm)
-			rf.mu.Unlock()
-		}
+func (rf *Raft) createAppendEntriesRequest(start int, stop int, term int, isHeartbeat bool) *AppendEntriesArgs {
+	currentLen := len(rf.logs)
+	if start < 0 || stop > start || (start == currentLen && !isHeartbeat) {
+		fmt.Printf()
+		return nil
 	}
-	return win
+	if stop > currentLen {
+		stop = currentLen
+	}
+	request := new(AppendEntriesArgs)
+	request.Term = term
+	request.LeaderId = rf.me
+	request.LeaderCommit = rf.commitIndex
+	prevLogIndex := start - 1
+}
+
+func (rf *Raft) sendHeartbeat() bool {
+
 }
 
 //
