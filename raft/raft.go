@@ -155,6 +155,7 @@ func (rf *Raft) readPersist(data []byte) {
 	// d.Decode(&rf.logs)
 }
 
+// ======== Vote ===========
 //
 // example RequestVote RPC arguments structure.
 // field names must start with capital letters!
@@ -182,7 +183,28 @@ type RequestVoteReply struct {
 //
 func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// Your code here (2A, 2B).
-
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	currentTerm := rf.currentTerm
+	if args == nil {
+		DPrintf("Peer-%d received a null vote request.\n", rf.me)
+		return
+	}
+	DPrintf("Peer-%d received a vote request %v", rf.me, args)
+	candidateTerm := args.Term
+	candidateId := args.Candidate
+	if candidateTerm < currentTerm {
+		reply.Term = currentTerm
+		reply.Grant = false
+		return
+	} else if candidateTerm == currentTerm {
+		if rf.voteFor != -1 && rf.voteFor != candidateId {
+			DPrintf("Peer-%d has grant to peer-%d.\n", rf.me, candidateId)
+			reply.Term = currentTerm
+			reply.Grant = false
+			return
+		}
+	}
 }
 
 //
@@ -217,77 +239,6 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 func (rf *Raft) sendRequestVote(server int, args *RequestVoteArgs, reply *RequestVoteReply) bool {
 	ok := rf.callWithRetry(server, "Raft.RequestVote", args, reply)
 	return ok
-}
-
-func (rf *Raft) callWithRetry(server int, method string, args interface{}, reply interface{}) bool {
-	ok := false
-	for time := 1; !ok && time < rf.maxAttempts; time++ {
-		ok := rf.peers[server].Call(method, args, reply)
-	}
-	return ok
-}
-
-// transition state
-func (rf *Raft) transitionState(currentState State, event Event) (nextState State) {
-	var nextState State = Follower // default is Follower
-	switch event {
-	case Timeout:
-		if currentState == Follower {
-			nextState = Candidate
-		} else if currentState == Candidate {
-			nextState = Candidate
-		} // leader should not have Timeout event.
-	case NewTerm:
-		if currentState == Candidate {
-			nextState = Follower
-		} else if currentState == Leader {
-			nextState = Follower
-		} // if follower get NewTerm, it should stay in state: follower.
-	case Win:
-		if currentState == Candidate {
-			nextState = Leader
-		}
-	}
-	return nextState
-}
-
-//
-func (rf *Raft) electionService() {
-	for {
-		switch currentState {
-		case Follower:
-			select {
-			case <-time.After(electionTimeout):
-				rf.mu.Lock()
-				nextState := rf.transitionState(rf.state, Timeout)
-				rf.state = nextState
-				if nextState == Candidate {
-					rf.currentTerm += 1
-				}
-				rf.mu.Unlock()
-				DPrintf("LSM has set state to candidate.\n")
-			case <-rf.heartbeatChan:
-				DPrintf("Received heartbeat from leader, reset timer.\n")
-			}
-		case Candidate:
-			// start a election.
-			process := func(server int) bool {
-				request := rf.createVoteRequest()
-				reply := new(RequestVoteReply)
-				rf.sendRequestVote(server, request, reply)
-				rf.processVoteReply(reply)
-			}
-			ok := rf.agreeWithServers(process)
-			if ok {
-				rf.mu.Lock()
-				rf.transitionState(rf.state, rf.Win)
-				rf.mu.Unlock()
-			}
-		case Leader:
-			// start to send heartbeat.
-		default:
-		}
-	}
 }
 
 func (rf *Raft) ceateVoteRequest() *RequestVoteArgs {
@@ -414,7 +365,47 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	return index, term, isLeader
 }
 
-// ======= utilities =======
+// ======= Service =========
+//
+func (rf *Raft) electionService() {
+	for {
+		switch currentState {
+		case Follower:
+			select {
+			case <-time.After(electionTimeout):
+				rf.mu.Lock()
+				nextState := rf.transitionState(rf.state, Timeout)
+				rf.state = nextState
+				if nextState == Candidate {
+					rf.currentTerm += 1
+				}
+				rf.mu.Unlock()
+				DPrintf("LSM has set state to candidate.\n")
+			case <-rf.heartbeatChan:
+				DPrintf("Received heartbeat from leader, reset timer.\n")
+			}
+		case Candidate:
+			// start a election.
+			process := func(server int) bool {
+				request := rf.createVoteRequest()
+				reply := new(RequestVoteReply)
+				rf.sendRequestVote(server, request, reply)
+				rf.processVoteReply(reply)
+			}
+			ok := rf.agreeWithServers(process)
+			if ok {
+				rf.mu.Lock()
+				rf.transitionState(rf.state, rf.Win)
+				rf.mu.Unlock()
+			}
+		case Leader:
+			// start to send heartbeat.
+		default:
+		}
+	}
+}
+
+// agreement with timeout.
 func (rf *Raft) agreeWithServers(process func(server int) bool) (agree bool) {
 	doneChan := make(chan int)
 	for i, peer := range rf.peers {
@@ -441,10 +432,44 @@ func (rf *Raft) agreeWithServers(process func(server int) bool) (agree bool) {
 	}
 }
 
+// ======= utilities =======
+// transition state
+func (rf *Raft) transitionState(currentState State, event Event) (nextState State) {
+	var nextState State = Follower // default is Follower
+	switch event {
+	case Timeout:
+		if currentState == Follower {
+			nextState = Candidate
+		} else if currentState == Candidate {
+			nextState = Candidate
+		} // leader should not have Timeout event.
+	case NewTerm:
+		if currentState == Candidate {
+			nextState = Follower
+		} else if currentState == Leader {
+			nextState = Follower
+		} // if follower get NewTerm, it should stay in state: follower.
+	case Win:
+		if currentState == Candidate {
+			nextState = Leader
+		}
+	}
+	return nextState
+}
+
 func (rf *Raft) sleep(elapse int) {
 	if elapse > 0 {
 		time.Sleep(time.Duration(elapse) * time.Millisecond)
 	}
+}
+
+// Rpc
+func (rf *Raft) callWithRetry(server int, method string, args interface{}, reply interface{}) bool {
+	ok := false
+	for time := 1; !ok && time < rf.maxAttempts; time++ {
+		ok := rf.peers[server].Call(method, args, reply)
+	}
+	return ok
 }
 
 //
