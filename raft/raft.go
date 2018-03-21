@@ -155,31 +155,6 @@ func (rf *Raft) readPersist(data []byte) {
 	// d.Decode(&rf.logs)
 }
 
-// AppendEntry RPC
-type AppendEntriesArgs struct {
-	Term         int
-	LeaderId     int
-	PrevLogIndex int
-	PrevLogTerm  int
-	Entries      []LogEntry
-	LeaderCommit int
-}
-
-type AppendEntriesReply struct {
-	Term         int
-	Success      bool
-	ConflictTerm int
-	FirstIndex   int
-}
-
-func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
-}
-
-func (rf *Raft) sendAppendEntry(server int, args *AppendEntryArgs, reply *AppendEntryReply) bool {
-	ok := rf.peers[server].Call("Raft.AppendEntry", args, reply)
-	return ok
-}
-
 //
 // example RequestVote RPC arguments structure.
 // field names must start with capital letters!
@@ -344,6 +319,102 @@ func (rf *Raft) processVoteReply(reply *RequestVoteReply) (win bool) {
 	return win
 }
 
+// ======= AppendEntry ======
+
+// AppendEntry RPC
+type AppendEntriesArgs struct {
+	Term         int
+	LeaderId     int
+	PrevLogIndex int
+	PrevLogTerm  int
+	Entries      []LogEntry
+	LeaderCommit int
+}
+
+type AppendEntriesReply struct {
+	Term         int
+	Success      bool
+	ConflictTerm int
+	FirstIndex   int
+}
+
+func (rf *Raft) AppendEntry(args *AppendEntryArgs, reply *AppendEntryReply) {
+}
+
+func (rf *Raft) sendAppendEntry(server int, args *AppendEntryArgs, reply *AppendEntryReply) bool {
+	ok := rf.callWithRetry(server, "Raft.AppendEntry", args, reply)
+	return ok
+}
+
+// hold the lock outside.
+func (rf *Raft) createAppendEntriesRequest(start int, stop int, term int) *AppendEntriesArgs {
+	currentLen := len(rf.logs)
+	if start < 0 || stop <= start {
+		fmt.Printf()
+		return nil
+	}
+	if stop > currentLen {
+		stop = currentLen
+	}
+	request := new(AppendEntriesArgs)
+	request.Term = term
+	request.LeaderId = rf.me
+	request.LeaderCommit = rf.commitIndex
+	prevLogIndex := start - 1
+	if prevLogIndex >= 0 && prevLogIndex < currentLen {
+		request.PrevLogIndex = prevLogIndex
+		request.PrevLogTerm = rf.logs[prevLogIndex].Term
+	} else {
+		request.PrevLogIndex = 0
+		request.PrevLogTerm = 0
+	}
+	if start < currentLen && stop >= start {
+		if start == 0 {
+			start = 1
+		}
+		request.Entries = rf.logs[start:stop]
+	}
+	DPrintf("Peer-%d create an appendRequest: %v", rf.me, request)
+	return request
+}
+
+func (rf *Raft) sendHeartbeat() bool {
+	rf.mu.Lock()
+	currentIndex := len(rf.logs)
+	currentTerm := rf.currentTerm
+	request := rf.createAppendEntriesRequest(currentIndex, currentIndex+1, currentTerm)
+	rf.mu.Unlock()
+	for i, peer := range rf.peers {
+		if peer == rf.me {
+			continue
+		}
+		// TODO: send request.
+	}
+}
+
+//
+// the service using Raft (e.g. a k/v server) wants to start
+// agreement on the next command to be appended to Raft's log. if this
+// server isn't the leader, returns false. otherwise start the
+// agreement and return immediately. there is no guarantee that this
+// command will ever be committed to the Raft log, since the leader
+// may fail or lose an election.
+//
+// the first return value is the index that the command will appear at
+// if it's ever committed. the second return value is the current
+// term. the third return value is true if this server believes it is
+// the leader.
+//
+func (rf *Raft) Start(command interface{}) (int, int, bool) {
+	index := -1
+	term := -1
+	isLeader := true
+
+	// Your code here (2B).
+	return index, term, isLeader
+}
+
+// ======= utilities =======
 func (rf *Raft) agreeWithServers(process func(server int) bool) (agree bool) {
 	doneChan := make(chan int)
 	for i, peer := range rf.peers {
@@ -368,48 +439,6 @@ func (rf *Raft) agreeWithServers(process func(server int) bool) (agree bool) {
 			}
 		}
 	}
-}
-
-func (rf *Raft) createAppendEntriesRequest(start int, stop int, term int, isHeartbeat bool) *AppendEntriesArgs {
-	currentLen := len(rf.logs)
-	if start < 0 || stop > start || (start == currentLen && !isHeartbeat) {
-		fmt.Printf()
-		return nil
-	}
-	if stop > currentLen {
-		stop = currentLen
-	}
-	request := new(AppendEntriesArgs)
-	request.Term = term
-	request.LeaderId = rf.me
-	request.LeaderCommit = rf.commitIndex
-	prevLogIndex := start - 1
-}
-
-func (rf *Raft) sendHeartbeat() bool {
-
-}
-
-//
-// the service using Raft (e.g. a k/v server) wants to start
-// agreement on the next command to be appended to Raft's log. if this
-// server isn't the leader, returns false. otherwise start the
-// agreement and return immediately. there is no guarantee that this
-// command will ever be committed to the Raft log, since the leader
-// may fail or lose an election.
-//
-// the first return value is the index that the command will appear at
-// if it's ever committed. the second return value is the current
-// term. the third return value is true if this server believes it is
-// the leader.
-//
-func (rf *Raft) Start(command interface{}) (int, int, bool) {
-	index := -1
-	term := -1
-	isLeader := true
-
-	// Your code here (2B).
-	return index, term, isLeader
 }
 
 func (rf *Raft) sleep(elapse int) {
