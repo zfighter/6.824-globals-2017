@@ -63,6 +63,7 @@ type ApplyMsg struct {
 	Command     interface{}
 	UseSnapshot bool   // ignore for lab2; only used in lab3
 	Snapshot    []byte // ignore for lab2; only used in lab3
+
 }
 
 //
@@ -86,6 +87,7 @@ type Raft struct {
 
 	commitIndex int
 	lastApplied int
+	test        int
 
 	// timer
 	heartbeatInterval time.Duration
@@ -329,7 +331,33 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	localTerm := rf.currentTerm
+	logsSize := len(rf.logs)
+	if localTerm > args.Term {
+		reply.Success = false
+		reply.Term = localTerm
+		return
+	} else if localTerm <= args.Term {
+		rf.currentTerm = args.Term
+		rf.state = transitionState(rf.state, NewTerm)
+	}
+	// 1.check previous log, first checking term, second checking index.
+	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex >= logsSize ||
+		args.PrevLogTerm != rf.logs[args.PrevLogIndex].Term {
+		reply.Term = localTerm
+		reply.Success = false
+		// get the conflict index
+		conflictIndex := args.PrevLogIndex
+		if args.PrevLogIndex >= logsSize {
+			// if the leader's logs are more than follower's
+			reply.FirstIndex = logsSize - 1
+			return
+		}
+		conflictTerm := rf.logs[conflictIndex].Term
+		reply.ConflictTerm = conflictTerm
+		return
+	}
 	// TODO: if the request is a heartbeat, send a signal to heartbeatChan
+	return
 }
 
 func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *AppendEntryReply) bool {
