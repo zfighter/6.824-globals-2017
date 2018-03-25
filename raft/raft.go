@@ -356,6 +356,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		reply.ConflictTerm = conflictTerm
 		return
 	}
+	// TODO:
 	// TODO: if the request is a heartbeat, send a signal to heartbeatChan
 	return
 }
