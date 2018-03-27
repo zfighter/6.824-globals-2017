@@ -325,6 +325,7 @@ type AppendEntriesReply struct {
 	FirstIndex   int
 }
 
+// TODO: extract subfunction from the function.
 func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply) {
 	DPrintf("Peer-%d has reveived new request: {%v}", rf.me, &args)
 	// lock
@@ -332,37 +333,102 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	defer rf.mu.Unlock()
 	localTerm := rf.currentTerm
 	logsSize := len(rf.logs)
+	// init reply. Term to localTerm
+	reply.Term = localTerm
+	reply.Success = false
+	reply.ConflictTerm = -1
+	reply.FirstIndex = -1
+	// begin to check.
+	// 1. check term.
 	if localTerm > args.Term {
 		reply.Success = false
-		reply.Term = localTerm
 		return
-	} else if localTerm <= args.Term {
+	} else if localTerm < args.Term {
 		rf.currentTerm = args.Term
 		rf.state = transitionState(rf.state, NewTerm)
 	}
-	// 1.check previous log, first checking term, second checking index.
-	if args.PrevLogTerm < 0 || args.PrevLogIndex < 0 || args.PrevLogIndex >= logsSize ||
-		args.PrevLogTerm != rf.logs[args.PrevLogIndex].Term {
-		reply.Term = localTerm
+	// 2. the term is the same, check term of the previous log.
+	prevLogIndex := args.PrevLogIndex
+	prevLogTerm := args.PrevLogTerm
+	// 2.1. check arguments.
+	if prevLogTerm < 0 || prevLogIndex < 0 || prevLogIndex >= logsSize {
 		reply.Success = false
-		// get the conflict index
-		conflictIndex := args.PrevLogIndex
-		if args.PrevLogIndex >= logsSize {
+		if prevLogIndex >= logsSize && logsSize > 0 {
 			// if the leader's logs are more than follower's
 			reply.FirstIndex = logsSize - 1
-			return
+			reply.ConflictTerm = rf.logs[logsSize-1].Term
 		}
-		conflictTerm := rf.logs[conflictIndex].Term
-		reply.ConflictTerm = conflictTerm
 		return
 	}
-	// TODO:
-	// TODO: if the request is a heartbeat, send a signal to heartbeatChan
+	// 2.2. check previous log's term.
+	if prevLogTerm != rf.logs[prevLogIndex].Term {
+		reply.Success = false
+		// to find the first index of conflict term.
+		conflictTerm := rf.logs[prevLogIndex].Term
+		reply.ConflictTerm = conflictTerm
+		// TODO: replace this loop with binary search.
+		for i := prevLogIndex; i >= 0; i-- {
+			if rf.logs[i].Term != conflictTerm {
+				reply.FirstIndex = i + 1
+				break
+			}
+		}
+		return
+	}
+	// 3. the previous log's term is the same, we can update commitIndex and append logs now.
+	appendEntriesLen := 0
+	if args.Entries != nil {
+		appendEntriesLen = len(args.Entries)
+	}
+	// 3.1. update commit index.
+	if args.LeaderCommit > rf.commitIndex {
+		rf.commitIndex = args.LeaderCommit
+	}
+	// 3.2. send heartbeat.
+	if appendEntriesLen <= 0 || args.Entries[0].Command == nil {
+		// TODO: send message to heartbeat channel.
+		reply.Success = true
+		DPrintf("Peer-%d received heartbeat from peer-%d.\n", rf.me, args.LeaderId)
+		return
+	}
+	// 4. begin to append logs.
+	// 4.1. to find the same logs between local logs and args logs.
+	firstDiffLogPos := -1
+	appendPos := prevLogIndex + 1
+	if appendEntriesLen > 0 {
+		for argsLogIndex, appendEntry := range args.Entries {
+			// localLogsIndex points to local logs, its start position is prevLogIndex + 1;
+			// argsLogIndex points to args' log entries, start from 0;
+			// compaire local logs and args logs one by one.
+			if appendPos < logsSize && rf.logs[localLogsIndex].Term == appendEntry.Term {
+				appendPos += 1 // move local logs' pointer to next one.
+				continue
+			} else {
+				firstDiffLogPos = argsLogIndex
+				break
+			}
+		}
+	}
+	// 4.2. do append.
+	if firstDiffLogPos != -1 {
+		// cut logs to position=appendPos - 1
+		if appendPos > 0 {
+			rf.logs = rf.logs[0:appendPos]
+		}
+		// append the different part of args.Entries to logs.
+		rf.logs = append(rf.logs, args.Entries[firstDiffLogPos:]...)
+		DPrintf("Peer-%d append entries to logs, logs' length=%d, logs=%v\n", rf.me, len(rf.logs), rf.logs)
+	} else {
+		DPrintf("Peer-%d do not append duplicate logs.\n", rf.me)
+	}
+	// 5. reply.
+	reply.Term = localTerm
+	reply.Success = true
 	return
 }
 
 func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *AppendEntryReply) bool {
-	ok := rf.callWithRetry(server, "Raft.AppendEntry", args, reply)
+	ok := rf.callWithRetry(server, "Raft.AppendEntries", args, reply)
 	return ok
 }
 
@@ -426,7 +492,6 @@ func (rf *Raft) sendHeartbeat() {
 		if peer == rf.me {
 			continue
 		}
-		// TODO: send request.
 		reply := new(AppendEntriesReply)
 		ok := rf.sendAppendEntries(server, request, reply)
 		if ok {
@@ -454,6 +519,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	isLeader := true
 
 	// Your code here (2B).
+
 	return index, term, isLeader
 }
 
