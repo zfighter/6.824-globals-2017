@@ -427,7 +427,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	return
 }
 
-func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *AppendEntryReply) bool {
+func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *AppendEntriesReply) bool {
 	ok := rf.callWithRetry(server, "Raft.AppendEntries", args, reply)
 	return ok
 }
@@ -500,7 +500,8 @@ func (rf *Raft) sendHeartbeat() {
 	}
 }
 
-//
+// ======= Part: Service =========
+// Append service.
 // the service using Raft (e.g. a k/v server) wants to start
 // agreement on the next command to be appended to Raft's log. if this
 // server isn't the leader, returns false. otherwise start the
@@ -519,12 +520,39 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 	isLeader := true
 
 	// Your code here (2B).
-
+	if rf.state == Leader {
+		currentIndex := -1
+		currentTerm := -1
+		newLogEntry := LogEntry{}
+		rf.mu.Lock
+		if rf.state == Leader {
+			currentTerm = rf.currentTerm
+			newLogEntry.Term = currentTerm
+			newLogEntry.Command = command
+			rf.logs = append(rf.logs, newLogEntry)
+			currentIndex = len(rf.logs) - 1
+			// rf.persist()
+		} else {
+			DPrintf("Peer-%d, before lock, the state has changed to %d.\n", rf.me, rf.state)
+		}
+		if currentTerm != -1 {
+			DPrintf("Peer-%d start to append log to peers.\n", rf.me)
+			request := rf.createAppendEntriesRequest(currentIndex, currentIndex+1, currentTerm)
+			appendProcess := func(server int) bool {
+				reply := new(AppendEntriesReply)
+				rf.sendAppendEntries(server, request, reply)
+				rf.processAppendEntriesReply(reply)
+			}
+			go rf.agreeWithServers(appendProcess)
+		}
+		rf.mu.Unlock
+	} else {
+		isLeader = false
+	}
 	return index, term, isLeader
 }
 
-// ======= Part: Service =========
-//
+// Election service: elect leader.
 func (rf *Raft) electionService() {
 	for {
 		currentState = rf.state
@@ -568,7 +596,7 @@ func (rf *Raft) electionService() {
 	}
 }
 
-// agreement with timeout.
+// Agreement service: agreement with timeout.
 func (rf *Raft) agreeWithServers(process func(server int) bool) (agree bool) {
 	doneChan := make(chan int)
 	for i, peer := range rf.peers {
