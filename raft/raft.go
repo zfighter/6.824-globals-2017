@@ -17,15 +17,9 @@ package raft
 //   in the same server.
 //
 
-import "fmt"
-import "math/rand"
 import "sync"
-import "sync/atomic"
 import "time"
 import "github.com/6.824/labrpc"
-
-import "bytes"
-import "encoding/gob"
 
 // the status of raft peer.
 type State int
@@ -87,7 +81,6 @@ type Raft struct {
 
 	commitIndex int
 	lastApplied int
-	test        int
 
 	// timer
 	heartbeatInterval time.Duration
@@ -139,7 +132,7 @@ func (rf *Raft) persist() {
 	// e := gob.NewEncoder(w)
 	// e.Encode(rf.voteFor)
 	// e.Encode(rf.currentTerm)
-	// e.Encode(rf.logs)
+	// e.Encode(rf.log)
 	// data := w.Bytes()
 	// rf.persister.SaveRaftState(data)
 }
@@ -156,7 +149,7 @@ func (rf *Raft) readPersist(data []byte) {
 	// d := gob.NewDecoder(r)
 	// d.Decode(&rf.voteFor)
 	// d.Decode(&rf.currentTerm)
-	// d.Decode(&rf.logs)
+	// d.Decode(&rf.log)
 }
 
 // ======== Part: Vote ===========
@@ -217,10 +210,10 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	// check whose log is up-to-date
 	candiLastLogIndex := args.LastLogIndex
 	candiLastLogTerm := args.LastLogTerm
-	localLastLogIndex := len(rf.logs) - 1
+	localLastLogIndex := len(rf.log) - 1
 	localLastLogTerm := -1
 	if localLastLogIndex >= 0 {
-		localLastLogTerm = rf.logs[localLastLogIndex].Term
+		localLastLogTerm = rf.log[localLastLogIndex].Term
 	}
 	// check term first, if term is the same, then check the index.
 	if localLastLogTerm > candiLastLogTerm {
@@ -235,7 +228,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		}
 	} else {
 	}
-	// local logs are up-to-date, grant
+	// local log are up-to-date, grant
 	rf.voteFor = candidateId
 	reply.Term = rf.currentTerm
 	reply.VoteGrant = true
@@ -277,18 +270,18 @@ func (rf *Raft) sendRequestVote(server int, args *RequestVoteArgs, reply *Reques
 	return ok
 }
 
-func (rf *Raft) ceateVoteRequest() *RequestVoteArgs {
+func (rf *Raft) createVoteRequest() *RequestVoteArgs {
 	request := new(RequestVoteArgs)
 	rf.mu.Lock()
 	request.Term = rf.currentTerm
 	request.Candidate = rf.me
-	logIndex = len(rf.logs) - 1
+	logIndex := len(rf.log) - 1
 	rf.mu.Unlock()
 	if logIndex < 1 {
 		logIndex = 0
 	}
 	request.LastLogTerm = rf.log[logIndex].Term
-	request.LostLogIndex = logIndex
+	request.LastLogIndex = logIndex
 	return request
 }
 
@@ -299,7 +292,7 @@ func (rf *Raft) processVoteReply(reply *RequestVoteReply) (win bool) {
 			win = true
 		} else if reply.Term > rf.currentTerm {
 			rf.mu.Lock()
-			rf.state = transitionState(rf.state, rf.NewTerm)
+			rf.state = transitionState(rf.state, NewTerm)
 			rf.mu.Unlock()
 		}
 	}
@@ -323,6 +316,7 @@ type AppendEntriesReply struct {
 	Success      bool
 	ConflictTerm int
 	FirstIndex   int
+	PeerId       int
 }
 
 // TODO: extract subfunction from the function.
@@ -332,9 +326,10 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	rf.mu.Lock()
 	defer rf.mu.Unlock()
 	localTerm := rf.currentTerm
-	logsSize := len(rf.logs)
+	logSize := len(rf.log)
 	// init reply. Term to localTerm
 	reply.Term = localTerm
+	reply.PeerId = rf.me
 	reply.Success = false
 	reply.ConflictTerm = -1
 	reply.FirstIndex = -1
@@ -351,31 +346,31 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	prevLogIndex := args.PrevLogIndex
 	prevLogTerm := args.PrevLogTerm
 	// 2.1. check arguments.
-	if prevLogTerm < 0 || prevLogIndex < 0 || prevLogIndex >= logsSize {
+	if prevLogTerm < 0 || prevLogIndex < 0 || prevLogIndex >= logSize {
 		reply.Success = false
-		if prevLogIndex >= logsSize && logsSize > 0 {
-			// if the leader's logs are more than follower's
-			reply.FirstIndex = logsSize - 1
-			reply.ConflictTerm = rf.logs[logsSize-1].Term
+		if prevLogIndex >= logSize && logSize > 0 {
+			// if the leader's log are more than follower's
+			reply.FirstIndex = logSize - 1
+			reply.ConflictTerm = rf.log[logSize-1].Term
 		}
 		return
 	}
 	// 2.2. check previous log's term.
-	if prevLogTerm != rf.logs[prevLogIndex].Term {
+	if prevLogTerm != rf.log[prevLogIndex].Term {
 		reply.Success = false
 		// to find the first index of conflict term.
-		conflictTerm := rf.logs[prevLogIndex].Term
+		conflictTerm := rf.log[prevLogIndex].Term
 		reply.ConflictTerm = conflictTerm
 		// TODO: replace this loop with binary search.
 		for i := prevLogIndex; i >= 0; i-- {
-			if rf.logs[i].Term != conflictTerm {
+			if rf.log[i].Term != conflictTerm {
 				reply.FirstIndex = i + 1
 				break
 			}
 		}
 		return
 	}
-	// 3. the previous log's term is the same, we can update commitIndex and append logs now.
+	// 3. the previous log's term is the same, we can update commitIndex and append log now.
 	appendEntriesLen := 0
 	if args.Entries != nil {
 		appendEntriesLen = len(args.Entries)
@@ -391,17 +386,17 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		DPrintf("Peer-%d received heartbeat from peer-%d.\n", rf.me, args.LeaderId)
 		return
 	}
-	// 4. begin to append logs.
-	// 4.1. to find the same logs between local logs and args logs.
+	// 4. begin to append log.
+	// 4.1. to find the same log between local log and args log.
 	firstDiffLogPos := -1
 	appendPos := prevLogIndex + 1
 	if appendEntriesLen > 0 {
 		for argsLogIndex, appendEntry := range args.Entries {
-			// localLogsIndex points to local logs, its start position is prevLogIndex + 1;
+			// localLogsIndex points to local log, its start position is prevLogIndex + 1;
 			// argsLogIndex points to args' log entries, start from 0;
-			// compaire local logs and args logs one by one.
-			if appendPos < logsSize && rf.logs[localLogsIndex].Term == appendEntry.Term {
-				appendPos += 1 // move local logs' pointer to next one.
+			// compaire local log and args log one by one.
+			if appendPos < logSize && rf.log[appendPos].Term == appendEntry.Term {
+				appendPos += 1 // move local log' pointer to next one.
 				continue
 			} else {
 				firstDiffLogPos = argsLogIndex
@@ -411,15 +406,15 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	}
 	// 4.2. do append.
 	if firstDiffLogPos != -1 {
-		// cut logs to position=appendPos - 1
+		// cut log to position=appendPos - 1
 		if appendPos > 0 {
-			rf.logs = rf.logs[0:appendPos]
+			rf.log = rf.log[0:appendPos]
 		}
-		// append the different part of args.Entries to logs.
-		rf.logs = append(rf.logs, args.Entries[firstDiffLogPos:]...)
-		DPrintf("Peer-%d append entries to logs, logs' length=%d, logs=%v\n", rf.me, len(rf.logs), rf.logs)
+		// append the different part of args.Entries to log.
+		rf.log = append(rf.log, args.Entries[firstDiffLogPos:]...)
+		DPrintf("Peer-%d append entries to log, log' length=%d, log=%v\n", rf.me, len(rf.log), rf.log)
 	} else {
-		DPrintf("Peer-%d do not append duplicate logs.\n", rf.me)
+		DPrintf("Peer-%d do not append duplicate log.\n", rf.me)
 	}
 	// 5. reply.
 	reply.Term = localTerm
@@ -434,9 +429,8 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 
 // hold the lock outside.
 func (rf *Raft) createAppendEntriesRequest(start int, stop int, term int) *AppendEntriesArgs {
-	currentLen := len(rf.logs)
+	currentLen := len(rf.log)
 	if start < 0 || stop <= start {
-		fmt.Printf()
 		return nil
 	}
 	if stop > currentLen {
@@ -449,7 +443,7 @@ func (rf *Raft) createAppendEntriesRequest(start int, stop int, term int) *Appen
 	prevLogIndex := start - 1
 	if prevLogIndex >= 0 && prevLogIndex < currentLen {
 		request.PrevLogIndex = prevLogIndex
-		request.PrevLogTerm = rf.logs[prevLogIndex].Term
+		request.PrevLogTerm = rf.log[prevLogIndex].Term
 	} else {
 		request.PrevLogIndex = 0
 		request.PrevLogTerm = 0
@@ -458,7 +452,7 @@ func (rf *Raft) createAppendEntriesRequest(start int, stop int, term int) *Appen
 		if start == 0 {
 			start = 1
 		}
-		request.Entries = rf.logs[start:stop]
+		request.Entries = rf.log[start:stop]
 	}
 	DPrintf("Peer-%d create an appendRequest: %v", rf.me, &request)
 	return request
@@ -473,23 +467,24 @@ func (rf *Raft) processAppendEntriesReply(reply *AppendEntriesReply) (succ bool)
 			rf.currentTerm = reply.Term
 			rf.state = transitionState(rf.state, NewTerm)
 		} else if reply.ConflictTerm != 0 && reply.FirstIndex >= 0 {
-			// TODO: use channel and a thread to synchronize logs.
-			if rf.logs[reply.FirstIndex].Term != reply.ConflictTerm {
-				rf.nextIndex[server] = reply.FirstIndex
+			// TODO: use channel and a thread to synchronize log.
+			if rf.log[reply.FirstIndex].Term != reply.ConflictTerm {
+				rf.nextIndex[reply.PeerId] = reply.FirstIndex
 			}
 		}
 		rf.mu.Unlock()
 	}
+	return succ
 }
 
 func (rf *Raft) sendHeartbeat() {
 	rf.mu.Lock()
-	currentIndex := len(rf.logs)
+	currentIndex := len(rf.log)
 	currentTerm := rf.currentTerm
 	request := rf.createAppendEntriesRequest(currentIndex, currentIndex+1, currentTerm)
 	rf.mu.Unlock()
-	for i, peer := range rf.peers {
-		if peer == rf.me {
+	for server, _ := range rf.peers {
+		if server == rf.me {
 			continue
 		}
 		reply := new(AppendEntriesReply)
@@ -524,13 +519,13 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 		currentIndex := -1
 		currentTerm := -1
 		newLogEntry := LogEntry{}
-		rf.mu.Lock
+		rf.mu.Lock()
 		if rf.state == Leader {
 			currentTerm = rf.currentTerm
 			newLogEntry.Term = currentTerm
 			newLogEntry.Command = command
-			rf.logs = append(rf.logs, newLogEntry)
-			currentIndex = len(rf.logs) - 1
+			rf.log = append(rf.log, newLogEntry)
+			currentIndex = len(rf.log) - 1
 			// rf.persist()
 		} else {
 			DPrintf("Peer-%d, before lock, the state has changed to %d.\n", rf.me, rf.state)
@@ -541,11 +536,12 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 			appendProcess := func(server int) bool {
 				reply := new(AppendEntriesReply)
 				rf.sendAppendEntries(server, request, reply)
-				rf.processAppendEntriesReply(reply)
+				ok := rf.processAppendEntriesReply(reply)
+				return ok
 			}
 			go rf.agreeWithServers(appendProcess)
 		}
-		rf.mu.Unlock
+		rf.mu.Unlock()
 	} else {
 		isLeader = false
 	}
@@ -555,11 +551,11 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 // Election service: elect leader.
 func (rf *Raft) electionService() {
 	for {
-		currentState = rf.state
+		currentState := rf.state
 		switch currentState {
 		case Follower:
 			select {
-			case <-time.After(electionTimeout):
+			case <-time.After(rf.electionTimeout):
 				rf.mu.Lock()
 				nextState := transitionState(currentState, Timeout)
 				rf.state = nextState
@@ -577,16 +573,17 @@ func (rf *Raft) electionService() {
 				request := rf.createVoteRequest()
 				reply := new(RequestVoteReply)
 				rf.sendRequestVote(server, request, reply)
-				rf.processVoteReply(reply)
+				ok := rf.processVoteReply(reply)
+				return ok
 			}
 			ok := rf.agreeWithServers(process)
 			if ok {
-				rf.state = transitionState(currentState, rf.Win)
+				rf.state = transitionState(currentState, Win)
 			}
 		case Leader:
 			// start to send heartbeat.
 			rf.sendHeartbeat()
-			time.Sleep(heartbeatInterval)
+			time.Sleep(rf.heartbeatInterval)
 		case End:
 			DPrintf("Peer-%d is stopping.\n", rf.me)
 			return
@@ -599,38 +596,78 @@ func (rf *Raft) electionService() {
 // Agreement service: agreement with timeout.
 func (rf *Raft) agreeWithServers(process func(server int) bool) (agree bool) {
 	doneChan := make(chan int)
-	for i, peer := range rf.peers {
+	for i, _ := range rf.peers {
 		go func(server int) {
 			ok := process(server)
 			if ok {
 				doneChan <- server
 			}
-		}(peer)
+		}(i)
 	}
 	deadline := time.After(rf.electionTimeout)
 	doneCount := 0
+	peerCount := len(rf.peers)
 	for {
 		select {
 		case <-deadline:
 			DPrintf("Agreement timeout!\n")
 			return false
 		case server := <-doneChan:
-			doneCount += 1
-			if doneCount >= len(rf.peers)+1 {
-				return true
+			if server >= 0 && server < peerCount {
+				doneCount += 1
+				if doneCount >= peerCount/2+1 {
+					return true
+				}
+			} else {
+				DPrintf("Peer-%d find an illegal server number=%d when do agreement.\n", rf.me, server)
 			}
 		}
 	}
 }
 
-// TODO: finish apply service
+// apply service
+func (rf *Raft) applyService() {
+	DPrintf("Peer-%d start applyService.\n", rf.me)
+	currentIndex := 0
+	for rf.state != End {
+		toApply := false
+		rf.mu.Lock()
+		logSize := len(rf.log)
+		currentIndex = rf.lastApplied + 1
+		if currentIndex > 0 && currentIndex <= rf.commitIndex {
+			toApply = true
+		}
+		rf.mu.Unlock()
+		if !toApply {
+			sleep(100) // if the raft has no new agreement, this check will always occupy this thread.
+			continue
+		}
+		if currentIndex >= logSize {
+			// this should not happen.
+			// TODO: throw exception here, panic
+			DPrintf("Peer-%d, currentIndex=%d >= logSize=%d.\n", rf.me, currentIndex, logSize)
+			rf.state = transitionState(rf.state, Stop)
+			break
+		}
+		// do apply.
+		msg := ApplyMsg{}
+		msg.Index = currentIndex
+		msg.Command = rf.log[currentIndex].Command
+		rf.applyChan <- msg
+		rf.lastApplied = currentIndex
+		DPrintf("Peer-%d has applied msg={%v}.\n", rf.me, msg)
+	}
+}
 
-// TODO: finish log sync service
+// log sync service
+func (rf *Raft) logSyncService() {
+	// TODO: synchronize log to all followers.
+}
 
 // ======= Part: Utilities =======
 // transition state
 func transitionState(currentState State, event Event) (nextState State) {
-	var nextState State = Follower // default is Follower
+	nextState = Follower // default is Follower
 	switch event {
 	case Timeout:
 		if currentState == Follower {
@@ -666,7 +703,7 @@ func sleep(elapse int) {
 func (rf *Raft) callWithRetry(server int, method string, args interface{}, reply interface{}) bool {
 	ok := false
 	for time := 1; !ok && time < rf.maxAttempts; time++ {
-		ok := rf.peers[server].Call(method, args, reply)
+		ok = rf.peers[server].Call(method, args, reply)
 	}
 	return ok
 }
@@ -679,6 +716,9 @@ func (rf *Raft) callWithRetry(server int, method string, args interface{}, reply
 //
 func (rf *Raft) Kill() {
 	// Your code here, if desired.
+	rf.mu.Lock()
+	defer rf.mu.Unlock()
+	rf.state = transitionState(rf.state, Stop)
 }
 
 // ========= Part: in ========
@@ -702,21 +742,19 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.applyChan = applyCh
 
 	// Your initialization code here (2A, 2B, 2C).
-	rf.isVoting = true
-	rf.isStopping = false
-	rf.isLeader = false
 	rf.currentTerm = 0
 	rf.voteFor = -1
-	rf.log = make([]LogEntry, 1)
 	rf.commitIndex = 0
 	rf.lastApplied = 0
+	timeout := 1000
+	rf.heartbeatInterval = time.Duration(timeout / 2)
+	rf.electionTimeout = time.Duration(timeout)
+	rf.log = make([]LogEntry, 1)
 	rf.nextIndex = make(map[int]int)
 	rf.matchIndex = make(map[int]int)
-	rf.syncLogs = make(map[int]int)
-	atomic.StoreInt64(&rf.lastTick, time.Now().UnixNano())
 
 	// init nextIndex and matchIndex
-	logSize := len(rf.logs)
+	logSize := len(rf.log)
 	for key := 0; key < len(rf.peers); key++ {
 		rf.nextIndex[key] = logSize
 		rf.matchIndex[key] = 0
@@ -724,6 +762,8 @@ func Make(peers []*labrpc.ClientEnd, me int,
 
 	// initialize from state persisted before a crash
 	rf.readPersist(persister.ReadRaftState())
+
+	// TODO: start services.
 
 	return rf
 }
