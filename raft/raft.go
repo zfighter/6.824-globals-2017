@@ -57,7 +57,6 @@ type ApplyMsg struct {
 	Command     interface{}
 	UseSnapshot bool   // ignore for lab2; only used in lab3
 	Snapshot    []byte // ignore for lab2; only used in lab3
-
 }
 
 //
@@ -97,6 +96,8 @@ type Raft struct {
 	stateChan chan State
 	// apply channel
 	applyChan chan ApplyMsg
+	// log sync channel
+	logSyncChan chan int
 
 	// max attempts
 	maxAttempts int
@@ -382,6 +383,8 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	// 3.2. send heartbeat.
 	if appendEntriesLen <= 0 || args.Entries[0].Command == nil {
 		// TODO: send message to heartbeat channel.
+		msg := new(struct{})
+		rf.heartbeatChan <- msg
 		reply.Success = true
 		DPrintf("Peer-%d received heartbeat from peer-%d.\n", rf.me, args.LeaderId)
 		return
@@ -458,18 +461,28 @@ func (rf *Raft) createAppendEntriesRequest(start int, stop int, term int) *Appen
 	return request
 }
 
-func (rf *Raft) processAppendEntriesReply(reply *AppendEntriesReply) (succ bool) {
+func (rf *Raft) processAppendEntriesReply(nextIndex int, reply *AppendEntriesReply) (succ bool) {
 	succ = false
 	if reply != nil {
 		succ = reply.Success
 		rf.mu.Lock()
-		if reply.Term > rf.currentTerm {
-			rf.currentTerm = reply.Term
-			rf.state = transitionState(rf.state, NewTerm)
-		} else if reply.ConflictTerm != 0 && reply.FirstIndex >= 0 {
-			// TODO: use channel and a thread to synchronize log.
-			if rf.log[reply.FirstIndex].Term != reply.ConflictTerm {
-				rf.nextIndex[reply.PeerId] = reply.FirstIndex
+		if succ {
+			if nextIndex >= rf.nextIndex[server] {
+				rf.nextIndex[server] = nextIndex
+			}
+			if nextIndex-1 >= rf.matchIndex[server] {
+				rf.matchIndex[server] = nextIndex - 1
+			}
+		} else {
+			if reply.Term > rf.currentTerm {
+				rf.currentTerm = reply.Term
+				rf.state = transitionState(rf.state, NewTerm)
+			}
+			if reply.ConflictTerm > 0 && reply.FirstIndex >= 0 {
+				if rf.log[reply.FirstIndex].Term != reply.ConflictTerm {
+					rf.nextIndex[reply.PeerId] = reply.FirstIndex
+					rf.logSyncChan <- reply.FirstIndex
+				}
 			}
 		}
 		rf.mu.Unlock()
@@ -536,10 +549,20 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 			appendProcess := func(server int) bool {
 				reply := new(AppendEntriesReply)
 				rf.sendAppendEntries(server, request, reply)
-				ok := rf.processAppendEntriesReply(reply)
+				ok := rf.processAppendEntriesReply(currentIndex+1, reply)
+				if ok {
+					DPrintf("Peer-%d append log=%v to peer-%d successfully.\n", rf.me, request.Entries, server)
+				} else {
+					DPrintf("Peer-%d append log=%v to peer-%d failed.\n", rf.me, request.Entries, server)
+				}
 				return ok
 			}
-			go rf.agreeWithServers(appendProcess)
+			go func() {
+				ok := rf.agreeWithServers(appendProcess)
+				if !ok {
+					DPrintf("Peer-%d start agreement with servers failed. currentIndex=%d.\n", rf.me, currentIndex)
+				}
+			}()
 		}
 		rf.mu.Unlock()
 	} else {
@@ -661,7 +684,23 @@ func (rf *Raft) applyService() {
 
 // log sync service
 func (rf *Raft) logSyncService() {
-	// TODO: synchronize log to all followers.
+	lastIndexMap := make(map[int]int) // server -> last syncIndex
+	for i, _ := range rf.peers {
+		lastIndexMap[i] = 0
+	}
+	for rf.state != End {
+		select {
+		case index := <-rf.logSyncChan:
+			for server, lastIndex := range lastIndexMap {
+				start := index
+				if index < lastIndex {
+					start = lastIndex
+				}
+
+			}
+		case time.After(time.Duration(100)):
+		}
+	}
 }
 
 // ======= Part: Utilities =======
