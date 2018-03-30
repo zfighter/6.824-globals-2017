@@ -59,6 +59,11 @@ type ApplyMsg struct {
 	Snapshot    []byte // ignore for lab2; only used in lab3
 }
 
+type SyncMsg struct {
+	Server int
+	Index  int
+}
+
 //
 // A Go object implementing a single Raft peer.
 //
@@ -97,7 +102,7 @@ type Raft struct {
 	// apply channel
 	applyChan chan ApplyMsg
 	// log sync channel
-	logSyncChan chan int
+	logSyncChan chan SyncMsg
 
 	// max attempts
 	maxAttempts int
@@ -481,7 +486,7 @@ func (rf *Raft) processAppendEntriesReply(nextIndex int, reply *AppendEntriesRep
 			if reply.ConflictTerm > 0 && reply.FirstIndex >= 0 {
 				if rf.log[reply.FirstIndex].Term != reply.ConflictTerm {
 					rf.nextIndex[reply.PeerId] = reply.FirstIndex
-					rf.logSyncChan <- reply.FirstIndex
+					// TODO:
 				}
 			}
 		}
@@ -696,7 +701,6 @@ func (rf *Raft) logSyncService() {
 				if index < lastIndex {
 					start = lastIndex
 				}
-
 			}
 		case time.After(time.Duration(100)):
 		}
