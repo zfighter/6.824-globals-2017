@@ -89,20 +89,15 @@ type Raft struct {
 	// timer
 	heartbeatInterval time.Duration
 	electionTimeout   time.Duration
-	electionTimer     *time.Timer
 
 	// only for leader
 	nextIndex  map[int]int // peer id -> appliedIndex
 	matchIndex map[int]int // peer id -> highest index
 
 	// event channel
-	heartbeatChan chan struct{}
-	// state channel
-	stateChan chan State
+	heartbeatChan chan string
 	// apply channel
 	applyChan chan ApplyMsg
-	// log sync channel
-	logSyncChan chan SyncMsg
 
 	// max attempts
 	maxAttempts int
@@ -388,8 +383,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	// 3.2. send heartbeat.
 	if appendEntriesLen <= 0 || args.Entries[0].Command == nil {
 		// TODO: send message to heartbeat channel.
-		msg := new(struct{})
-		rf.heartbeatChan <- msg
+		rf.heartbeatChan <- "hb"
 		reply.Success = true
 		DPrintf("Peer-%d received heartbeat from peer-%d.\n", rf.me, args.LeaderId)
 		return
@@ -466,17 +460,18 @@ func (rf *Raft) createAppendEntriesRequest(start int, stop int, term int) *Appen
 	return request
 }
 
-func (rf *Raft) processAppendEntriesReply(nextIndex int, reply *AppendEntriesReply) (succ bool) {
+func (rf *Raft) processAppendEntriesReply(nextLogIndex int, reply *AppendEntriesReply) (succ bool) {
 	succ = false
 	if reply != nil {
 		succ = reply.Success
+		server := reply.PeerId
 		rf.mu.Lock()
 		if succ {
-			if nextIndex >= rf.nextIndex[server] {
-				rf.nextIndex[server] = nextIndex
+			if nextLogIndex >= rf.nextIndex[server] {
+				rf.nextIndex[server] = nextLogIndex
 			}
-			if nextIndex-1 >= rf.matchIndex[server] {
-				rf.matchIndex[server] = nextIndex - 1
+			if nextLogIndex-1 >= rf.matchIndex[server] {
+				rf.matchIndex[server] = nextLogIndex - 1
 			}
 		} else {
 			if reply.Term > rf.currentTerm {
@@ -486,7 +481,6 @@ func (rf *Raft) processAppendEntriesReply(nextIndex int, reply *AppendEntriesRep
 			if reply.ConflictTerm > 0 && reply.FirstIndex >= 0 {
 				if rf.log[reply.FirstIndex].Term != reply.ConflictTerm {
 					rf.nextIndex[reply.PeerId] = reply.FirstIndex
-					// TODO:
 				}
 			}
 		}
@@ -689,21 +683,37 @@ func (rf *Raft) applyService() {
 
 // log sync service
 func (rf *Raft) logSyncService() {
-	lastIndexMap := make(map[int]int) // server -> last syncIndex
-	for i, _ := range rf.peers {
-		lastIndexMap[i] = 0
-	}
-	for rf.state != End {
-		select {
-		case index := <-rf.logSyncChan:
-			for server, lastIndex := range lastIndexMap {
-				start := index
-				if index < lastIndex {
-					start = lastIndex
+	for index, _ := range rf.peers {
+		if index == rf.me {
+			continue
+		}
+		go func(server int) {
+			for rf.state != End {
+				rf.mu.Lock()
+				lastLogIndex := len(rf.log)
+				nextLogIndex := rf.nextIndex[server]
+				currentTerm := rf.currentTerm
+				rf.mu.Unlock()
+				if lastLogIndex >= nextLogIndex {
+					request := rf.createAppendEntriesRequest(nextLogIndex, lastLogIndex, currentTerm)
+					reply := new(AppendEntriesReply)
+					ok := rf.sendAppendEntries(server, request, reply)
+					if ok {
+						DPrintf("Peer-%d: the RPC to synchronize log to peer-%d successfully.\n", rf.me, server)
+						succ := rf.processAppendEntriesReply(nextLogIndex, reply)
+						if succ {
+							DPrintf("Peer-%d: synchronize log to peer-%d successfully.\n", rf.me, server)
+						} else {
+							DPrintf("Peer-%d: synchronize log to peer-%d failed.\n", rf.me, server)
+							sleep(300)
+						}
+					} else {
+						DPrintf("Peer-%d: the RPC to synchronize log to peer-%d failed.\n", rf.me, server)
+						sleep(300)
+					}
 				}
 			}
-		case time.After(time.Duration(100)):
-		}
+		}(index)
 	}
 }
 
@@ -785,6 +795,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.applyChan = applyCh
 
 	// Your initialization code here (2A, 2B, 2C).
+	DPrintf("Peer-%d begins to initialize.\n", rf.me)
 	rf.currentTerm = 0
 	rf.voteFor = -1
 	rf.commitIndex = 0
@@ -798,15 +809,24 @@ func Make(peers []*labrpc.ClientEnd, me int,
 
 	// init nextIndex and matchIndex
 	logSize := len(rf.log)
-	for key := 0; key < len(rf.peers); key++ {
+	for key, _ := range rf.peers {
 		rf.nextIndex[key] = logSize
 		rf.matchIndex[key] = 0
 	}
 
 	// initialize from state persisted before a crash
-	rf.readPersist(persister.ReadRaftState())
+	// rf.readPersist(persister.ReadRaftState())
+	DPrintf("Peer-%d is initialized.\n", rf.me)
 
-	// TODO: start services.
+	// start services.
+	DPrintf("Peer-%d start services\n", rf.me)
+	go rf.electionService()
+	go rf.applyService()
+	go rf.logSyncService()
+
+	for rf.state != End {
+		sleep(1000)
+	}
 
 	return rf
 }
