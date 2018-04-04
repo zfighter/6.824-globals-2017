@@ -17,9 +17,11 @@ package raft
 //   in the same server.
 //
 
-import "sync"
-import "time"
-import "github.com/6.824/labrpc"
+import (
+	"github.com/6.824/labrpc"
+	"sync"
+	"time"
+)
 
 // the status of raft peer.
 type State int
@@ -76,8 +78,6 @@ type Raft struct {
 	// Your data here (2A, 2B, 2C).
 	// Look at the paper's Figure 2 for a description of what
 	// state a Raft server must maintain.
-	serverMu    sync.RWMutex
-	isStopping  bool
 	state       State
 	currentTerm int
 	voteFor     int        // index of peer
@@ -632,7 +632,7 @@ func (rf *Raft) agreeWithServers(process func(server int) bool) (agree bool) {
 	for {
 		select {
 		case <-deadline:
-			DPrintf("Agreement timeout!\n")
+			DPrintf("Peer-%d, agreement timeout!\n", rf.me)
 			return false
 		case server := <-doneChan:
 			if server >= 0 && server < peerCount {
@@ -690,7 +690,7 @@ func (rf *Raft) logSyncService() {
 		go func(server int) {
 			for rf.state != End {
 				rf.mu.Lock()
-				lastLogIndex := len(rf.log)
+				lastLogIndex := len(rf.log) - 1
 				nextLogIndex := rf.nextIndex[server]
 				currentTerm := rf.currentTerm
 				rf.mu.Unlock()
@@ -800,12 +800,15 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.voteFor = -1
 	rf.commitIndex = 0
 	rf.lastApplied = 0
-	timeout := 1000
+	rf.state = Follower
+	timeout := RaftElectionTimeout
 	rf.heartbeatInterval = time.Duration(timeout / 2)
 	rf.electionTimeout = time.Duration(timeout)
+	rf.heartbeatChan = make(chan string)
 	rf.log = make([]LogEntry, 1)
 	rf.nextIndex = make(map[int]int)
 	rf.matchIndex = make(map[int]int)
+	rf.maxAttempts = 3
 
 	// init nextIndex and matchIndex
 	logSize := len(rf.log)
@@ -824,9 +827,9 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	go rf.applyService()
 	go rf.logSyncService()
 
-	for rf.state != End {
-		sleep(1000)
-	}
+	// for rf.state != End {
+	// 	sleep(1000)
+	// }
 
 	return rf
 }
