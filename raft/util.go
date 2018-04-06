@@ -20,13 +20,12 @@ func Init() {
 		}
 	}
 	logFile, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	// logger := log.New(logFile, "", log.Ldate|log.Ltime|log.Lshortfile)
 	if err != nil {
 		log.Printf("%s\n", err.Error())
 		os.Exit(-1)
 	}
 	log.SetOutput(logFile)
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	log.SetFlags(log.Ldate | log.Ltime)
 }
 
 func DPrintf(format string, a ...interface{}) (n int, err error) {
