@@ -6,7 +6,7 @@ import (
 )
 
 // Debugging
-const Debug = 1
+const Debug = 2
 const Truncate = true
 const fileName = "debug.log"
 
@@ -34,6 +34,17 @@ func DPrintf(format string, a ...interface{}) (n int, err error) {
 		initialized = true
 	}
 	if Debug > 0 {
+		log.Printf(format, a...)
+	}
+	return
+}
+
+func TPrintf(format string, a ...interface{}) (n int, err error) {
+	if !initialized {
+		Init()
+		initialized = true
+	}
+	if Debug > 1 {
 		log.Printf(format, a...)
 	}
 	return

@@ -233,6 +233,10 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		}
 	} else {
 	}
+	// heartbeat.
+	go func() {
+		rf.heartbeatChan <- "hb"
+	}()
 	// local log are up-to-date, grant
 	rf.voteFor = candidateId
 	reply.Term = rf.currentTerm
@@ -397,7 +401,9 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		// A -> B.AppendEntries, B hold the lock and send msg;
 		// B.electionService, B try to hold lock to process, if not, it wait, so can not receive msg.
 		// send message to heartbeat channel.
-		rf.heartbeatChan <- "hb"
+		go func() {
+			rf.heartbeatChan <- "hb"
+		}()
 		reply.Success = true
 		DPrintf("Peer-%d received heartbeat from peer-%d.", rf.me, args.LeaderId)
 		return
@@ -592,7 +598,10 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 // Election service: to elect leader.
 func (rf *Raft) electionService() {
 	for {
+		rf.mu.Lock()
 		currentState := rf.state
+		currentTerm := rf.currentTerm
+		rf.mu.Unlock()
 		switch currentState {
 		case Follower:
 			// clear raft state.
@@ -600,9 +609,11 @@ func (rf *Raft) electionService() {
 			case <-time.After(rf.electionTimeout + time.Duration(rand.Intn(500))):
 				DPrintf("Peer-%d's election is timeout.", rf.me)
 				rf.mu.Lock()
-				DPrintf("Peer-%d's election hold the lock.", rf.me)
-				if rf.state == Follower {
+				DPrintf("Peer-%d's election hold the lock, now the currtentTerm=%d, rf.currentTerm=%d.", rf.me, currentTerm, rf.currentTerm)
+				// we should record the currentTerm for which the timer wait.
+				if rf.state == Follower && rf.currentTerm == currentTerm {
 					rf.transitionState(Timeout)
+					DPrintf("Peer-%d turn state from Follower to %v.", rf.me, rf.state)
 				}
 				rf.mu.Unlock()
 				DPrintf("Peer-%d LSM has set state to candidate.", rf.me)
@@ -611,26 +622,49 @@ func (rf *Raft) electionService() {
 			}
 		case Candidate:
 			// start a election.
-			DPrintf("Peer-%d begin to vote.", rf.me)
-			rf.mu.Lock()
-			if rf.state == Candidate && (rf.voteFor == -1 || rf.voteFor == rf.me) {
-				rf.voteFor = rf.me // should mark its voteFor when it begins to vote.
-			}
-			rf.mu.Unlock()
-			request := rf.createVoteRequest()
-			process := func(server int) bool {
-				reply := new(RequestVoteReply)
-				rf.sendRequestVote(server, request, reply)
-				ok := rf.processVoteReply(reply)
-				return ok
-			}
-			ok := rf.agreeWithServers(process)
-			if ok {
+			voteDoneChan := make(chan int)
+			go func() {
+				TPrintf("Peer-%d becomes candidate, try to hold the lock.", rf.me)
 				rf.mu.Lock()
-				if rf.state == Candidate {
-					rf.transitionState(Win)
+				TPrintf("Peer-%d becomes candidate, has hold the lock, rf.voteFor=%d.", rf.me, rf.voteFor)
+				toVote := rf.state == Candidate && (rf.voteFor == -1 || rf.voteFor == rf.me)
+				if toVote {
+					rf.voteFor = rf.me // should mark its voteFor when it begins to vote.
+					DPrintf("Peer-%d set voteFor=%d.", rf.me, rf.voteFor)
 				}
-				DPrintf("Peer-%d becomes the leader.", rf.me)
+				rf.mu.Unlock()
+				ok := false
+				if toVote {
+					DPrintf("Peer-%d begin to vote.", rf.me)
+					request := rf.createVoteRequest()
+					process := func(server int) bool {
+						reply := new(RequestVoteReply)
+						rf.sendRequestVote(server, request, reply)
+						ok := rf.processVoteReply(reply)
+						return ok
+					}
+					ok = rf.agreeWithServers(process)
+				}
+				if ok {
+					voteDoneChan <- 1
+				} else {
+					voteDoneChan <- 2
+				}
+			}()
+			select {
+			case done := <-voteDoneChan:
+				rf.mu.Lock()
+				if done == 1 {
+					if rf.state == Candidate {
+						rf.transitionState(Win)
+					}
+					DPrintf("Peer-%d becomes the leader.", rf.me)
+				}
+				rf.mu.Unlock()
+			case <-rf.heartbeatChan:
+				DPrintf("Peer-%d received heartbeat when voting, turn to follower, reset timer.", rf.me)
+				rf.mu.Lock()
+				rf.transitionState(NewTerm)
 				rf.mu.Unlock()
 			}
 		case Leader:
@@ -773,6 +807,7 @@ func (rf *Raft) transitionState(event Event) (nextState State) {
 			rf.currentTerm += 1
 		} else if currentState == Candidate {
 			nextState = Candidate
+			rf.voteFor = -1
 		} // leader should not have Timeout event.
 	case NewTerm:
 		if currentState == Candidate {
