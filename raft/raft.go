@@ -234,9 +234,9 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	} else {
 	}
 	// heartbeat.
-	go func() {
-		rf.heartbeatChan <- "hb"
-	}()
+	// go func() {
+	//	rf.heartbeatChan <- "hb"
+	// }()
 	// local log are up-to-date, grant
 	rf.voteFor = candidateId
 	reply.Term = rf.currentTerm
@@ -805,6 +805,7 @@ func (rf *Raft) transitionState(event Event) (nextState State) {
 			nextState = Candidate
 			// Follower -> Candidate, get new term.
 			rf.currentTerm += 1
+			rf.voteFor = -1
 		} else if currentState == Candidate {
 			nextState = Candidate
 			rf.voteFor = -1
