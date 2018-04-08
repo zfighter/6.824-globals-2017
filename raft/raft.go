@@ -234,9 +234,9 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	} else {
 	}
 	// heartbeat.
-	// go func() {
-	//	rf.heartbeatChan <- "hb"
-	// }()
+	go func() {
+		rf.heartbeatChan <- "hb"
+	}()
 	// local log are up-to-date, grant
 	rf.voteFor = candidateId
 	reply.Term = rf.currentTerm
@@ -451,6 +451,7 @@ func (rf *Raft) sendAppendEntries(server int, args *AppendEntriesArgs, reply *Ap
 
 // hold the lock outside.
 func (rf *Raft) createAppendEntriesRequest(start int, stop int, term int) *AppendEntriesArgs {
+	DPrintf("Peer-%d create AppendEntriesRequest with start=%d, stop=%d, term=%d.", rf.me, start, stop, term)
 	currentLen := len(rf.log)
 	if start < 0 || stop <= start {
 		return nil
@@ -599,6 +600,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 func (rf *Raft) electionService() {
 	for {
 		rf.mu.Lock()
+		// snapshot current state of raft, (state & term)
 		currentState := rf.state
 		currentTerm := rf.currentTerm
 		rf.mu.Unlock()
@@ -613,20 +615,24 @@ func (rf *Raft) electionService() {
 				// we should record the currentTerm for which the timer wait.
 				if rf.state == Follower && rf.currentTerm == currentTerm {
 					rf.transitionState(Timeout)
-					DPrintf("Peer-%d turn state from Follower to %v.", rf.me, rf.state)
+					DPrintf("Peer-%d LSM has set state to candidate.", rf.me)
 				}
 				rf.mu.Unlock()
-				DPrintf("Peer-%d LSM has set state to candidate.", rf.me)
+				DPrintf("Peer-%d turn state from %v to %v.", rf.me, currentState, rf.state)
 			case <-rf.heartbeatChan:
 				DPrintf("Peer-%d Received heartbeat from leader, reset timer.", rf.me)
 			}
 		case Candidate:
 			// start a election.
-			voteDoneChan := make(chan int)
+			// using a thread to do election, and sending message to channel;
+			// this can let the heartbeat to break the election progress.
+			voteDoneChan := make(chan bool)
 			go func() {
 				TPrintf("Peer-%d becomes candidate, try to hold the lock.", rf.me)
 				rf.mu.Lock()
 				TPrintf("Peer-%d becomes candidate, has hold the lock, rf.voteFor=%d.", rf.me, rf.voteFor)
+				// check state first, if the state has changed, do not vote.
+				// then check voteFor, if it has voteFor other peer in this term.
 				toVote := rf.state == Candidate && (rf.voteFor == -1 || rf.voteFor == rf.me)
 				if toVote {
 					rf.voteFor = rf.me // should mark its voteFor when it begins to vote.
@@ -637,6 +643,7 @@ func (rf *Raft) electionService() {
 				if toVote {
 					DPrintf("Peer-%d begin to vote.", rf.me)
 					request := rf.createVoteRequest()
+					// the process logic for each peer.
 					process := func(server int) bool {
 						reply := new(RequestVoteReply)
 						rf.sendRequestVote(server, request, reply)
@@ -645,23 +652,29 @@ func (rf *Raft) electionService() {
 					}
 					ok = rf.agreeWithServers(process)
 				}
-				if ok {
-					voteDoneChan <- 1
-				} else {
-					voteDoneChan <- 2
-				}
+				voteDoneChan <- ok
 			}()
 			select {
 			case done := <-voteDoneChan:
-				rf.mu.Lock()
-				if done == 1 {
+				if done {
+					// if voting is success, we set state to leader.
+					rf.mu.Lock()
 					if rf.state == Candidate {
 						rf.transitionState(Win)
 					}
+					rf.mu.Unlock()
 					DPrintf("Peer-%d becomes the leader.", rf.me)
+				} else {
+					// if voting is failed, we reset voteFor to -1, but do not reset state and term.
+					rf.mu.Lock()
+					if rf.state == Candidate {
+						rf.transitionState(Timeout)
+					}
+					rf.mu.Unlock()
+					sleep(rand.Intn(500))
 				}
-				rf.mu.Unlock()
 			case <-rf.heartbeatChan:
+				// if another is win, we will receive heartbeat, so we shoul
 				DPrintf("Peer-%d received heartbeat when voting, turn to follower, reset timer.", rf.me)
 				rf.mu.Lock()
 				rf.transitionState(NewTerm)
@@ -762,12 +775,17 @@ func (rf *Raft) logSyncService() {
 		go func(server int) {
 			for rf.state != End {
 				rf.mu.Lock()
-				lastLogIndex := len(rf.log) - 1
+				lastLogIndex := len(rf.log)
 				nextLogIndex := rf.nextIndex[server]
 				currentTerm := rf.currentTerm
 				rf.mu.Unlock()
-				if lastLogIndex >= nextLogIndex {
+				if lastLogIndex > nextLogIndex {
 					request := rf.createAppendEntriesRequest(nextLogIndex, lastLogIndex, currentTerm)
+					if request == nil {
+						DPrintf("Peer-%d create a null request.", rf.me)
+						sleep(300)
+						continue
+					}
 					reply := new(AppendEntriesReply)
 					ok := rf.sendAppendEntries(server, request, reply)
 					if ok {
