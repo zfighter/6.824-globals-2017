@@ -554,27 +554,25 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 
 	// Your code here (2B).
 	if rf.state == Leader {
-		currentIndex := -1
-		currentTerm := -1
 		newLogEntry := LogEntry{}
 		rf.mu.Lock()
 		if rf.state == Leader {
-			currentTerm = rf.currentTerm
-			newLogEntry.Term = currentTerm
+			term = rf.currentTerm
+			newLogEntry.Term = term
 			newLogEntry.Command = command
 			rf.log = append(rf.log, newLogEntry)
-			currentIndex = len(rf.log) - 1
+			index = len(rf.log) - 1
 			// rf.persist()
 		} else {
 			DPrintf("Peer-%d, before lock, the state has changed to %d.\n", rf.me, rf.state)
 		}
-		if currentTerm != -1 {
-			DPrintf("Peer-%d start to append log to peers.\n", rf.me)
-			request := rf.createAppendEntriesRequest(currentIndex, currentIndex+1, currentTerm)
+		if term != -1 {
+			DPrintf("Peer-%d start to append %v to peers.\n", rf.me, command)
+			request := rf.createAppendEntriesRequest(index, index+1, term)
 			appendProcess := func(server int) bool {
 				reply := new(AppendEntriesReply)
 				rf.sendAppendEntries(server, request, reply)
-				ok := rf.processAppendEntriesReply(currentIndex+1, reply)
+				ok := rf.processAppendEntriesReply(index+1, reply)
 				if ok {
 					DPrintf("Peer-%d append log=%v to peer-%d successfully.\n", rf.me, request.Entries, server)
 				} else {
@@ -584,8 +582,17 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 			}
 			go func() {
 				ok := rf.agreeWithServers(appendProcess)
-				if !ok {
-					DPrintf("Peer-%d start agreement with servers failed. currentIndex=%d.\n", rf.me, currentIndex)
+				if ok {
+					// if append successfully, update commit index.
+					rf.mu.Lock()
+					if index > rf.commitIndex {
+						rf.commitIndex = index
+					} else {
+						DPrintf("Peer-%d get a currentIndex=%d <= commitIndex=%d, it can not be happend.", rf.me, index, rf.commitIndex)
+					}
+					rf.mu.Unlock()
+				} else {
+					DPrintf("Peer-%d start agreement with servers failed. currentIndex=%d.\n", rf.me, index)
 				}
 			}()
 		}
@@ -778,8 +785,15 @@ func (rf *Raft) logSyncService() {
 				lastLogIndex := len(rf.log)
 				nextLogIndex := rf.nextIndex[server]
 				currentTerm := rf.currentTerm
+				currentState := rf.state
 				rf.mu.Unlock()
+				if currentState != Leader {
+					// only the leader can sync log!!!
+					time.Sleep(rf.electionTimeout)
+					continue
+				}
 				if lastLogIndex > nextLogIndex {
+					DPrintf("Peer-%d try to sync log, lastLogIndex=%d, nextLogIndex=%d.", rf.me, lastLogIndex, nextLogIndex)
 					request := rf.createAppendEntriesRequest(nextLogIndex, lastLogIndex, currentTerm)
 					if request == nil {
 						DPrintf("Peer-%d create a null request.", rf.me)
@@ -819,13 +833,13 @@ func (rf *Raft) transitionState(event Event) (nextState State) {
 	nextState = currentState
 	switch event {
 	case Timeout:
-		if currentState == Follower {
+		if currentState == Follower || currentState == Candidate {
+			// the process logic of Follower and Candidate is the same
+			// if state is Follower, when it is timeout, to start a new election, so we should increment term
+			// if state is Candidate, when it is timeout, to restart a new election, so should increment term
 			nextState = Candidate
 			// Follower -> Candidate, get new term.
 			rf.currentTerm += 1
-			rf.voteFor = -1
-		} else if currentState == Candidate {
-			nextState = Candidate
 			rf.voteFor = -1
 		} // leader should not have Timeout event.
 	case NewTerm:
