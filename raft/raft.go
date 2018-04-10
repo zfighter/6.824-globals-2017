@@ -664,6 +664,7 @@ func (rf *Raft) electionService() {
 			select {
 			case done := <-voteDoneChan:
 				if done {
+					DPrintf("Peer-%d win.", rf.me)
 					// if voting is success, we set state to leader.
 					rf.mu.Lock()
 					if rf.state == Candidate {
@@ -726,7 +727,7 @@ func (rf *Raft) agreeWithServers(process func(server int) bool) (agree bool) {
 			if server >= 0 && server < peerCount {
 				doneCount += 1
 				if doneCount >= peerCount/2+1 {
-					DPrintf("Peer-%d win.", rf.me)
+					DPrintf("Peer-%d's agreement is successful.", rf.me)
 					return true
 				}
 			} else {
@@ -745,11 +746,13 @@ func (rf *Raft) applyService() {
 		rf.mu.Lock()
 		logSize := len(rf.log)
 		currentIndex = rf.lastApplied + 1
-		if currentIndex > 0 && currentIndex <= rf.commitIndex {
+		commitIndex := rf.commitIndex
+		if currentIndex > 0 && currentIndex <= commitIndex {
 			toApply = true
 		}
 		rf.mu.Unlock()
 		if !toApply {
+			DPrintf("Peer-%d do not apply log, currentIndex=%d, commitIndex=%d.", rf.me, currentIndex, commitIndex)
 			sleep(100) // if the raft has no new agreement, this check will always occupy this thread.
 			continue
 		}
@@ -804,9 +807,29 @@ func (rf *Raft) logSyncService() {
 					ok := rf.sendAppendEntries(server, request, reply)
 					if ok {
 						DPrintf("Peer-%d: the RPC to synchronize log to peer-%d successfully.\n", rf.me, server)
-						succ := rf.processAppendEntriesReply(nextLogIndex, reply)
+						succ := rf.processAppendEntriesReply(lastLogIndex, reply)
 						if succ {
 							DPrintf("Peer-%d: synchronize log to peer-%d successfully.\n", rf.me, server)
+							// if it sync log successfully, to update the commit index.
+							rf.mu.Lock()
+							minMatchIndex := -1
+							for i, _ := range rf.peers {
+								// skip self, because leader updates other followers only,
+								// so its matchIndex is always smaller than followers,
+								// the minMatchIndex is always filled by leader's matchIndex.
+								// it is wrong.
+								if i == rf.me {
+									continue
+								}
+								matchIndexForPeer := rf.matchIndex[i]
+								if minMatchIndex == -1 {
+									minMatchIndex = matchIndexForPeer
+								} else if matchIndexForPeer < minMatchIndex {
+									minMatchIndex = matchIndexForPeer
+								}
+							}
+							rf.commitIndex = minMatchIndex
+							rf.mu.Unlock()
 						} else {
 							DPrintf("Peer-%d: synchronize log to peer-%d failed.\n", rf.me, server)
 							sleep(300)
