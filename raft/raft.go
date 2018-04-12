@@ -752,7 +752,7 @@ func (rf *Raft) applyService() {
 		}
 		rf.mu.Unlock()
 		if !toApply {
-			DPrintf("Peer-%d do not apply log, currentIndex=%d, commitIndex=%d.", rf.me, currentIndex, commitIndex)
+			DPrintf("Peer-%d do not apply log, currentIndex=%d, commitIndex=%d, logSize=%d.", rf.me, currentIndex, commitIndex, logSize)
 			sleep(100) // if the raft has no new agreement, this check will always occupy this thread.
 			continue
 		}
@@ -796,7 +796,7 @@ func (rf *Raft) logSyncService() {
 					continue
 				}
 				if lastLogIndex > nextLogIndex {
-					DPrintf("Peer-%d try to sync log, lastLogIndex=%d, nextLogIndex=%d.", rf.me, lastLogIndex, nextLogIndex)
+					DPrintf("Peer-%d try to sync log to peer-%d, lastLogIndex=%d, nextLogIndex=%d.", rf.me, server, lastLogIndex, nextLogIndex)
 					request := rf.createAppendEntriesRequest(nextLogIndex, lastLogIndex, currentTerm)
 					if request == nil {
 						DPrintf("Peer-%d create a null request.", rf.me)
