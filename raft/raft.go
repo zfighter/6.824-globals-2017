@@ -352,10 +352,33 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		rf.currentTerm = args.Term
 		rf.transitionState(NewTerm)
 	}
-	// 2. the term is the same, check term of the previous log.
+	// 2. process heartbeat.
+	appendEntriesLen := 0
+	if args.Entries != nil {
+		appendEntriesLen = len(args.Entries)
+	}
+	if rf.voteFor == args.LeaderId {
+		if appendEntriesLen <= 0 || args.Entries[0].Command == nil {
+			// when receive heartbeat, we should turn from Canditate to Follower.
+			rf.transitionState(HeartBeat)
+			rf.voteFor = args.LeaderId
+			DPrintf("Peer-%d try to send heartbeat message.", rf.me)
+			// to send msg should void deadlock:
+			// A -> B.AppendEntries, B hold the lock and send msg;
+			// B.electionService, B try to hold lock to process, if not, it wait, so can not receive msg.
+			// send message to heartbeat channel.
+			go func() {
+				rf.heartbeatChan <- "hb"
+			}()
+			reply.Success = true
+			DPrintf("Peer-%d received heartbeat from peer-%d.", rf.me, args.LeaderId)
+			return
+		}
+	}
+	// 3. the term is the same, check term of the previous log.
 	prevLogIndex := args.PrevLogIndex
 	prevLogTerm := args.PrevLogTerm
-	// 2.1. check arguments.
+	// 3.1. check arguments.
 	if prevLogTerm < 0 || prevLogIndex < 0 || prevLogIndex >= logSize {
 		reply.Success = false
 		if prevLogIndex >= logSize && logSize > 0 {
@@ -365,7 +388,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		}
 		return
 	}
-	// 2.2. check previous log's term.
+	// 3.2. check previous log's term.
 	localPrevLogTerm := rf.log[prevLogIndex].Term
 	DPrintf("Peer-%d local: prevLogTerm=%d, prevLogIndex=%d.", rf.me, localPrevLogTerm, prevLogIndex)
 	if prevLogTerm != localPrevLogTerm {
@@ -382,34 +405,13 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		}
 		return
 	}
-	// 3. the previous log's term is the same, we can update commitIndex and append log now.
-	appendEntriesLen := 0
-	if args.Entries != nil {
-		appendEntriesLen = len(args.Entries)
-	}
-	// 3.1. update commit index.
+	// 4. the previous log's term is the same, we can update commitIndex and append log now.
+	// 4.1. update commit index.
 	if args.LeaderCommit > rf.commitIndex {
 		rf.commitIndex = args.LeaderCommit
 	}
-	// 3.2. send heartbeat.
-	if appendEntriesLen <= 0 || args.Entries[0].Command == nil {
-		// when receive heartbeat, we should turn from Canditate to Follower.
-		rf.transitionState(HeartBeat)
-		rf.voteFor = args.LeaderId
-		DPrintf("Peer-%d try to send heartbeat message.", rf.me)
-		// to send msg should void deadlock:
-		// A -> B.AppendEntries, B hold the lock and send msg;
-		// B.electionService, B try to hold lock to process, if not, it wait, so can not receive msg.
-		// send message to heartbeat channel.
-		go func() {
-			rf.heartbeatChan <- "hb"
-		}()
-		reply.Success = true
-		DPrintf("Peer-%d received heartbeat from peer-%d.", rf.me, args.LeaderId)
-		return
-	}
-	// 4. begin to append log.
-	// 4.1. to find the same log between local log and args log.
+	// 5. begin to append log.
+	// 5.1. to find the same log between local log and args log.
 	firstDiffLogPos := -1
 	appendPos := prevLogIndex + 1
 	if appendEntriesLen > 0 {
@@ -426,7 +428,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 			}
 		}
 	}
-	// 4.2. do append.
+	// 5.2. do append.
 	if firstDiffLogPos != -1 {
 		// cut log to position=appendPos - 1
 		if appendPos > 0 {
@@ -438,7 +440,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	} else {
 		DPrintf("Peer-%d do not append duplicate log.\n", rf.me)
 	}
-	// 5. reply.
+	// 6. reply.
 	reply.Term = localTerm
 	reply.Success = true
 	return
@@ -486,6 +488,7 @@ func (rf *Raft) processAppendEntriesReply(nextLogIndex int, reply *AppendEntries
 	if reply != nil {
 		succ = reply.Success
 		server := reply.PeerId
+		DPrintf("Peer-%d process AppendEntriesReply=%v.", rf.me, *reply)
 		rf.mu.Lock()
 		if succ {
 			if nextLogIndex >= rf.nextIndex[server] {
@@ -690,6 +693,7 @@ func (rf *Raft) electionService() {
 			}
 		case Leader:
 			// start to send heartbeat.
+
 			rf.sendHeartbeat()
 			time.Sleep(rf.heartbeatInterval)
 		case End:
