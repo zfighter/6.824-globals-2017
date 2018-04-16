@@ -370,9 +370,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 			go func() {
 				rf.heartbeatChan <- "hb"
 			}()
-			reply.Success = true
 			DPrintf("Peer-%d received heartbeat from peer-%d.", rf.me, args.LeaderId)
-			return
 		}
 	}
 	// 3. the term is the same, check term of the previous log.
@@ -438,7 +436,9 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		rf.log = append(rf.log, args.Entries[firstDiffLogPos:]...)
 		DPrintf("Peer-%d append entries to log, log' length=%d, log=%v\n", rf.me, len(rf.log), rf.log)
 	} else {
-		DPrintf("Peer-%d do not append duplicate log.\n", rf.me)
+		if appendEntriesLen > 0 {
+			DPrintf("Peer-%d do not append duplicate log.\n", rf.me)
+		}
 	}
 	// 6. reply.
 	reply.Term = localTerm
@@ -492,9 +492,11 @@ func (rf *Raft) processAppendEntriesReply(nextLogIndex int, reply *AppendEntries
 		rf.mu.Lock()
 		if succ {
 			if nextLogIndex >= rf.nextIndex[server] {
+				DPrintf("Peer-%d set nextIndex=%d, origin=%d", rf.me, nextLogIndex, rf.nextIndex[server])
 				rf.nextIndex[server] = nextLogIndex
 			}
 			if nextLogIndex-1 >= rf.matchIndex[server] {
+				DPrintf("Peer-%d set matchIndex=%d, origin=%d", rf.me, nextLogIndex-1, rf.matchIndex[server])
 				rf.matchIndex[server] = nextLogIndex - 1
 			}
 		} else {
@@ -589,6 +591,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 					// if append successfully, update commit index.
 					rf.mu.Lock()
 					if index > rf.commitIndex {
+						DPrintf("Peer-%d set commit=%d, origin=%d.", rf.me, index, rf.commitIndex)
 						rf.commitIndex = index
 					} else {
 						DPrintf("Peer-%d get a currentIndex=%d <= commitIndex=%d, it can not be happend.", rf.me, index, rf.commitIndex)
@@ -816,23 +819,15 @@ func (rf *Raft) logSyncService() {
 							DPrintf("Peer-%d: synchronize log to peer-%d successfully.\n", rf.me, server)
 							// if it sync log successfully, to update the commit index.
 							rf.mu.Lock()
-							minMatchIndex := -1
-							for i, _ := range rf.peers {
-								// skip self, because leader updates other followers only,
-								// so its matchIndex is always smaller than followers,
-								// the minMatchIndex is always filled by leader's matchIndex.
-								// it is wrong.
-								if i == rf.me {
-									continue
-								}
-								matchIndexForPeer := rf.matchIndex[i]
-								if minMatchIndex == -1 {
-									minMatchIndex = matchIndexForPeer
-								} else if matchIndexForPeer < minMatchIndex {
-									minMatchIndex = matchIndexForPeer
-								}
+							// it should skip self, because leader updates other followers only,
+							// so its matchIndex is always smaller than followers,
+							// the minMatchIndex is always filled by leader's matchIndex.
+							// it is wrong.
+							minMatchIndex := getMin(rf.matchIndex, rf.me)
+							if minMatchIndex != -1 {
+								DPrintf("Peer-%d set commitIndex=%d, origin=%d.", rf.me, minMatchIndex, rf.commitIndex)
+								rf.commitIndex = minMatchIndex
 							}
-							rf.commitIndex = minMatchIndex
 							rf.mu.Unlock()
 						} else {
 							DPrintf("Peer-%d: synchronize log to peer-%d failed.\n", rf.me, server)
@@ -849,6 +844,21 @@ func (rf *Raft) logSyncService() {
 }
 
 // ======= Part: Utilities =======
+// get the min index
+func getMin(index map[int]int, skip int) (min int) {
+	min = -1
+	for i, _ := range index {
+		if i == skip {
+			continue
+		}
+		currentIndex := index[i]
+		if min == -1 || min > currentIndex {
+			min = currentIndex
+		}
+	}
+	return min
+}
+
 // check state
 func checkState(target State, source State) bool {
 	return target == source
