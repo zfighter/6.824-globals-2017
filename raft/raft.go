@@ -357,21 +357,20 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	if args.Entries != nil {
 		appendEntriesLen = len(args.Entries)
 	}
-	if rf.voteFor == args.LeaderId {
-		if appendEntriesLen <= 0 || args.Entries[0].Command == nil {
-			// when receive heartbeat, we should turn from Canditate to Follower.
-			rf.transitionState(HeartBeat)
-			rf.voteFor = args.LeaderId
-			DPrintf("Peer-%d try to send heartbeat message.", rf.me)
-			// to send msg should void deadlock:
-			// A -> B.AppendEntries, B hold the lock and send msg;
-			// B.electionService, B try to hold lock to process, if not, it wait, so can not receive msg.
-			// send message to heartbeat channel.
-			go func() {
-				rf.heartbeatChan <- "hb"
-			}()
-			DPrintf("Peer-%d received heartbeat from peer-%d.", rf.me, args.LeaderId)
-		}
+	// localTerm <= args.Term, it should receive heartbeat.
+	if appendEntriesLen <= 0 || args.Entries[0].Command == nil {
+		// when receive heartbeat, we should turn from Canditate to Follower.
+		rf.transitionState(HeartBeat)
+		rf.voteFor = args.LeaderId
+		DPrintf("Peer-%d try to send heartbeat message.", rf.me)
+		// to send msg should void deadlock:
+		// A -> B.AppendEntries, B hold the lock and send msg;
+		// B.electionService, B try to hold lock to process, if not, it wait, so can not receive msg.
+		// send message to heartbeat channel.
+		go func() {
+			rf.heartbeatChan <- "hb"
+		}()
+		DPrintf("Peer-%d received heartbeat from peer-%d.", rf.me, args.LeaderId)
 	}
 	// 3. the term is the same, check term of the previous log.
 	prevLogIndex := args.PrevLogIndex
