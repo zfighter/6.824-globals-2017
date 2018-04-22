@@ -402,6 +402,9 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 				break
 			}
 		}
+		if reply.FirstIndex == -1 {
+			reply.FirstIndex = rf.commitIndex + 1
+		}
 		return
 	}
 	// 4. the previous log's term is the same, we can update commitIndex and append log now.
@@ -814,7 +817,7 @@ func (rf *Raft) logSyncService() {
 					request := rf.createAppendEntriesRequest(nextLogIndex, lastLogIndex, currentTerm)
 					if request == nil {
 						DPrintf("Peer-%d create a null request.", rf.me)
-						sleep(300)
+						sleep(100)
 						continue
 					}
 					reply := new(AppendEntriesReply)
@@ -830,10 +833,10 @@ func (rf *Raft) logSyncService() {
 							// so its matchIndex is always smaller than followers,
 							// the minMatchIndex is always filled by leader's matchIndex.
 							// it is wrong.
-							minMatchIndex := getMinOfMajority(rf.matchIndex)
+							minMatchIndex := getMinOfMajority(rf.matchIndex, rf.commitIndex)
 							if minMatchIndex != 10000 {
 								// see the last one of raft rules for leader.
-								if minMatchIndex > rf.commitIndex && minMatchIndex < len(rf.log) && rf.log[minMatchIndex].Term == rf.currentTerm {
+								if minMatchIndex < len(rf.log) && rf.log[minMatchIndex].Term == rf.currentTerm {
 									DPrintf("Peer-%d set commitIndex=%d, origin=%d, matchIndex=%v.", rf.me, minMatchIndex, rf.commitIndex, rf.matchIndex)
 									rf.commitIndex = minMatchIndex
 								}
@@ -841,7 +844,7 @@ func (rf *Raft) logSyncService() {
 							rf.mu.Unlock()
 						} else {
 							DPrintf("Peer-%d: synchronize log to peer-%d failed.\n", rf.me, server)
-							sleep(300)
+							sleep(100)
 						}
 					} else {
 						DPrintf("Peer-%d: the RPC to synchronize log to peer-%d failed.\n", rf.me, server)
@@ -855,7 +858,7 @@ func (rf *Raft) logSyncService() {
 
 // ======= Part: Utilities =======
 // get the min index
-func getMinOfMajority(index map[int]int) (min int) {
+func getMinOfMajority(index map[int]int, commitIndex int) (min int) {
 	min = 10000
 	countMap := make(map[int]int)
 	for _, currentIndex := range index {
@@ -870,12 +873,12 @@ func getMinOfMajority(index map[int]int) (min int) {
 			}
 		}
 	}
-	TPrintf("getMinOfMajority: countMap=%v.", countMap)
 	for key, value := range countMap {
-		if min > key && value >= len(index)/2+1 {
+		if min > key && value >= len(index)/2+1 && key > commitIndex {
 			min = key
 		}
 	}
+	TPrintf("getMinOfMajority: countMap=%v, commitIndex=%d, min=%d.", countMap, commitIndex, min)
 	return min
 }
 
