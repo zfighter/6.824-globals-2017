@@ -503,6 +503,7 @@ func (rf *Raft) processAppendEntriesReply(nextLogIndex int, reply *AppendEntries
 			if reply.Term > rf.currentTerm {
 				rf.currentTerm = reply.Term
 				rf.transitionState(NewTerm)
+				DPrintf("Peer-%d change term %d -> %d, state leader -> %v.", rf.me, rf.currentTerm, reply.Term, rf.state)
 			}
 			if reply.ConflictTerm > 0 && reply.FirstIndex >= 0 {
 				if rf.log[reply.FirstIndex].Term != reply.ConflictTerm {
@@ -567,6 +568,9 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 			newLogEntry.Command = command
 			rf.log = append(rf.log, newLogEntry)
 			index = len(rf.log) - 1
+			// update leader's matchIndex and nextIndex
+			rf.matchIndex[rf.me] = index
+			rf.nextIndex[rf.me] = index + 1
 			// rf.persist()
 		} else {
 			DPrintf("Peer-%d, before lock, the state has changed to %d.\n", rf.me, rf.state)
@@ -823,9 +827,9 @@ func (rf *Raft) logSyncService() {
 							// so its matchIndex is always smaller than followers,
 							// the minMatchIndex is always filled by leader's matchIndex.
 							// it is wrong.
-							minMatchIndex := getMin(rf.matchIndex, rf.me)
+							minMatchIndex := getMinOfMajority(rf.matchIndex)
 							if minMatchIndex != -1 {
-								DPrintf("Peer-%d set commitIndex=%d, origin=%d.", rf.me, minMatchIndex, rf.commitIndex)
+								DPrintf("Peer-%d set commitIndex=%d, origin=%d, matchIndex=%v.", rf.me, minMatchIndex, rf.commitIndex, rf.matchIndex)
 								rf.commitIndex = minMatchIndex
 							}
 							rf.mu.Unlock()
@@ -845,15 +849,23 @@ func (rf *Raft) logSyncService() {
 
 // ======= Part: Utilities =======
 // get the min index
-func getMin(index map[int]int, skip int) (min int) {
+func getMinOfMajority(index map[int]int) (min int) {
 	min = -1
-	for i, _ := range index {
-		if i == skip {
-			continue
+	countMap := make(map[int]int)
+	for _, currentIndex := range index {
+		v, ok := countMap[currentIndex]
+		if !ok {
+			countMap[currentIndex] = 0
 		}
-		currentIndex := index[i]
-		if min == -1 || min > currentIndex {
-			min = currentIndex
+		for key, value := range countMap {
+			if key >= v {
+				countMap[key] = value + 1
+			}
+		}
+	}
+	for key, value := range countMap {
+		if min == -1 || (min > key && value >= len(index)/2+1) {
+			min = key
 		}
 	}
 	return min
