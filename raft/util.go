@@ -25,7 +25,7 @@ func Init() {
 		os.Exit(-1)
 	}
 	log.SetOutput(logFile)
-	log.SetFlags(log.Ldate | log.Ltime)
+	log.SetFlags(log.Ldate | log.Lmicroseconds)
 }
 
 func DPrintf(format string, a ...interface{}) (n int, err error) {

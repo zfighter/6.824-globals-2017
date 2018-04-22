@@ -395,7 +395,8 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		conflictTerm := localPrevLogTerm
 		reply.ConflictTerm = conflictTerm
 		// TODO: replace this loop with binary search.
-		for i := prevLogIndex; i >= 0; i-- {
+		// The lower boundary is the commintIndex, because all the entries below commitIndex have been commit.
+		for i := prevLogIndex; i >= rf.commitIndex; i-- {
 			if rf.log[i].Term != conflictTerm {
 				reply.FirstIndex = i + 1
 				break
@@ -406,6 +407,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	// 4. the previous log's term is the same, we can update commitIndex and append log now.
 	// 4.1. update commit index.
 	if args.LeaderCommit > rf.commitIndex {
+		DPrintf("Peer-%d set commitIndex=%d, origin=%d, from leader-%d.", rf.me, args.LeaderCommit, rf.commitIndex, args.LeaderId)
 		rf.commitIndex = args.LeaderCommit
 	}
 	// 5. begin to append log.
@@ -507,6 +509,7 @@ func (rf *Raft) processAppendEntriesReply(nextLogIndex int, reply *AppendEntries
 			}
 			if reply.ConflictTerm > 0 && reply.FirstIndex >= 0 {
 				if rf.log[reply.FirstIndex].Term != reply.ConflictTerm {
+					DPrintf("Peer-%d set nextIndex[%d]=%d.", rf.me, reply.PeerId, reply.FirstIndex)
 					rf.nextIndex[reply.PeerId] = reply.FirstIndex
 				}
 			}
@@ -700,7 +703,7 @@ func (rf *Raft) electionService() {
 			}
 		case Leader:
 			// start to send heartbeat.
-
+			DPrintf("Peer-%d try to send heartbeat.", rf.me)
 			rf.sendHeartbeat()
 			time.Sleep(rf.heartbeatInterval)
 		case End:
@@ -828,9 +831,12 @@ func (rf *Raft) logSyncService() {
 							// the minMatchIndex is always filled by leader's matchIndex.
 							// it is wrong.
 							minMatchIndex := getMinOfMajority(rf.matchIndex)
-							if minMatchIndex != -1 {
-								DPrintf("Peer-%d set commitIndex=%d, origin=%d, matchIndex=%v.", rf.me, minMatchIndex, rf.commitIndex, rf.matchIndex)
-								rf.commitIndex = minMatchIndex
+							if minMatchIndex != 10000 {
+								// see the last one of raft rules for leader.
+								if minMatchIndex > rf.commitIndex && minMatchIndex < len(rf.log) && rf.log[minMatchIndex].Term == rf.currentTerm {
+									DPrintf("Peer-%d set commitIndex=%d, origin=%d, matchIndex=%v.", rf.me, minMatchIndex, rf.commitIndex, rf.matchIndex)
+									rf.commitIndex = minMatchIndex
+								}
 							}
 							rf.mu.Unlock()
 						} else {
@@ -850,21 +856,23 @@ func (rf *Raft) logSyncService() {
 // ======= Part: Utilities =======
 // get the min index
 func getMinOfMajority(index map[int]int) (min int) {
-	min = -1
+	min = 10000
 	countMap := make(map[int]int)
 	for _, currentIndex := range index {
-		v, ok := countMap[currentIndex]
+		_, ok := countMap[currentIndex]
 		if !ok {
 			countMap[currentIndex] = 0
 		}
+		// update every entry in countMap, if the key of entry is larger than currentIndex, its value plus one.
 		for key, value := range countMap {
-			if key >= v {
+			if key <= currentIndex {
 				countMap[key] = value + 1
 			}
 		}
 	}
+	TPrintf("getMinOfMajority: countMap=%v.", countMap)
 	for key, value := range countMap {
-		if min == -1 || (min > key && value >= len(index)/2+1) {
+		if min > key && value >= len(index)/2+1 {
 			min = key
 		}
 	}
