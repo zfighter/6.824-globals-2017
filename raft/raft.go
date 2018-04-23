@@ -41,6 +41,7 @@ const (
 	Timeout Event = iota
 	HeartBeat
 	NewTerm
+	NewLeader
 	Win
 	Stop
 )
@@ -238,6 +239,8 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		rf.heartbeatChan <- "hb"
 	}()
 	// local log are up-to-date, grant
+	// before grant to candidate, we should reset ourselves state.
+	rf.transitionState(NewLeader)
 	rf.voteFor = candidateId
 	reply.Term = rf.currentTerm
 	reply.VoteGrant = true
@@ -909,6 +912,11 @@ func (rf *Raft) transitionState(event Event) (nextState State) {
 		} // if follower get NewTerm, it should stay in state: follower.
 		// reset
 		rf.voteFor = -1
+	case NewLeader:
+		if currentState == Candidate {
+			nextState = Follower
+			rf.voteFor = -1
+		}
 	case Win:
 		if currentState == Candidate {
 			nextState = Leader
@@ -925,6 +933,7 @@ func (rf *Raft) transitionState(event Event) (nextState State) {
 		DPrintf("Do not support the event: %v\n", event)
 	}
 	rf.state = nextState
+	DPrintf("Peer-%d trun from %s to %s", rf.me, currentState, nextState)
 	return nextState
 }
 
