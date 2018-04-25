@@ -602,11 +602,11 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 				if ok {
 					// if append successfully, update commit index.
 					rf.mu.Lock()
-					if index > rf.commitIndex {
+					if index >= rf.commitIndex {
 						DPrintf("Peer-%d set commit=%d, origin=%d.", rf.me, index, rf.commitIndex)
 						rf.commitIndex = index
 					} else {
-						DPrintf("Peer-%d get a currentIndex=%d <= commitIndex=%d, it can not be happend.", rf.me, index, rf.commitIndex)
+						DPrintf("Peer-%d get a currentIndex=%d < commitIndex=%d, it can not be happend.", rf.me, index, rf.commitIndex)
 					}
 					rf.mu.Unlock()
 				} else {
@@ -811,11 +811,12 @@ func (rf *Raft) logSyncService() {
 				rf.mu.Unlock()
 				if currentState != Leader {
 					// only the leader can sync log!!!
+					DPrintf("Peer-%d is not leader now, do not sync log to peer-%d", rf.me, server)
 					time.Sleep(rf.electionTimeout)
 					continue
 				}
+				DPrintf("Peer-%d try to sync log to peer-%d, lastLogIndex=%d, nextLogIndex=%d.", rf.me, server, lastLogIndex, nextLogIndex)
 				if lastLogIndex > nextLogIndex {
-					DPrintf("Peer-%d try to sync log to peer-%d, lastLogIndex=%d, nextLogIndex=%d.", rf.me, server, lastLogIndex, nextLogIndex)
 					request := rf.createAppendEntriesRequest(nextLogIndex, lastLogIndex, currentTerm)
 					if request == nil {
 						DPrintf("Peer-%d create a null request.", rf.me)
@@ -852,6 +853,9 @@ func (rf *Raft) logSyncService() {
 						DPrintf("Peer-%d: the RPC to synchronize log to peer-%d failed.\n", rf.me, server)
 						sleep(300)
 					}
+				} else {
+					DPrintf("Peer-%d: lastLogIndex <= nextLogIndex, sleep 300ms", rf.me)
+					sleep(300)
 				}
 			}
 		}(index)
@@ -933,7 +937,7 @@ func (rf *Raft) transitionState(event Event) (nextState State) {
 		DPrintf("Do not support the event: %v\n", event)
 	}
 	rf.state = nextState
-	DPrintf("Peer-%d trun from %s to %s", rf.me, currentState, nextState)
+	DPrintf("Peer-%d trun from %d to %d", rf.me, currentState, nextState)
 	return nextState
 }
 
