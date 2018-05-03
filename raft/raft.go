@@ -18,6 +18,8 @@ package raft
 //
 
 import (
+	"bytes"
+	"encoding/gob"
 	"github.com/6.824/labrpc"
 	"math/rand"
 	"sync"
@@ -131,13 +133,13 @@ func (rf *Raft) GetState() (int, bool) {
 //
 func (rf *Raft) persist() {
 	// Your code here (2C).
-	// w := new(bytes.Buffer)
-	// e := gob.NewEncoder(w)
-	// e.Encode(rf.voteFor)
-	// e.Encode(rf.currentTerm)
-	// e.Encode(rf.log)
-	// data := w.Bytes()
-	// rf.persister.SaveRaftState(data)
+	w := new(bytes.Buffer)
+	e := gob.NewEncoder(w)
+	e.Encode(rf.voteFor)
+	e.Encode(rf.currentTerm)
+	e.Encode(rf.log)
+	data := w.Bytes()
+	rf.persister.SaveRaftState(data)
 }
 
 //
@@ -148,11 +150,11 @@ func (rf *Raft) readPersist(data []byte) {
 	if data == nil || len(data) < 1 { // bootstrap without any state?
 		return
 	}
-	// r := bytes.NewBuffer(data)
-	// d := gob.NewDecoder(r)
-	// d.Decode(&rf.voteFor)
-	// d.Decode(&rf.currentTerm)
-	// d.Decode(&rf.log)
+	r := bytes.NewBuffer(data)
+	d := gob.NewDecoder(r)
+	d.Decode(&rf.voteFor)
+	d.Decode(&rf.currentTerm)
+	d.Decode(&rf.log)
 }
 
 // ======== Part: Vote ===========
@@ -245,7 +247,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	reply.Term = rf.currentTerm
 	reply.VoteGrant = true
 	DPrintf("Peer-%d grant to peer-%d.", rf.me, candidateId)
-	// rf.persist()
+	rf.persist()
 	return
 }
 
@@ -579,7 +581,7 @@ func (rf *Raft) Start(command interface{}) (int, int, bool) {
 			// update leader's matchIndex and nextIndex
 			rf.matchIndex[rf.me] = index
 			rf.nextIndex[rf.me] = index + 1
-			// rf.persist()
+			rf.persist()
 		} else {
 			DPrintf("Peer-%d, before lock, the state has changed to %d.\n", rf.me, rf.state)
 		}
@@ -1013,8 +1015,8 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	}
 
 	// initialize from state persisted before a crash
-	// rf.readPersist(persister.ReadRaftState())
-	DPrintf("Peer-%d is initialized.\n", rf.me)
+	rf.readPersist(persister.ReadRaftState())
+	DPrintf("Peer-%d is initialized. log=%v, term=%d, leader=%d\n", rf.me, rf.log, rf.currentTerm, rf.state)
 
 	// start services.
 	DPrintf("Peer-%d start services\n", rf.me)
