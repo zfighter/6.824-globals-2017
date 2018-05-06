@@ -385,8 +385,8 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		reply.Success = false
 		if prevLogIndex >= logSize && logSize > 0 {
 			// if the leader's log are more than follower's
-			reply.FirstIndex = logSize - 1
-			reply.ConflictTerm = rf.log[logSize-1].Term
+			reply.FirstIndex = logSize
+			// reply.ConflictTerm = rf.log[logSize-1].Term
 		}
 		return
 	}
@@ -514,7 +514,7 @@ func (rf *Raft) processAppendEntriesReply(nextLogIndex int, reply *AppendEntries
 				rf.transitionState(NewTerm)
 				DPrintf("Peer-%d change term %d -> %d, state leader -> %v.", rf.me, rf.currentTerm, reply.Term, rf.state)
 			}
-			if reply.ConflictTerm > 0 && reply.FirstIndex >= 0 {
+			if reply.FirstIndex >= 0 {
 				if rf.log[reply.FirstIndex].Term != reply.ConflictTerm {
 					DPrintf("Peer-%d set nextIndex[%d]=%d.", rf.me, reply.PeerId, reply.FirstIndex)
 					rf.nextIndex[reply.PeerId] = reply.FirstIndex
