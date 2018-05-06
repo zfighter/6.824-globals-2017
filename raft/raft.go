@@ -443,6 +443,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		}
 		// append the different part of args.Entries to log.
 		rf.log = append(rf.log, args.Entries[firstDiffLogPos:]...)
+		rf.persist()
 		DPrintf("Peer-%d append entries to log, log' length=%d, log=%v\n", rf.me, len(rf.log), rf.log)
 	} else {
 		if appendEntriesLen > 0 {
@@ -967,8 +968,9 @@ func (rf *Raft) callWithRetry(server int, method string, args interface{}, reply
 func (rf *Raft) Kill() {
 	// Your code here, if desired.
 	rf.mu.Lock()
-	defer rf.mu.Unlock()
 	rf.transitionState(Stop)
+	rf.mu.Unlock()
+	sleep(2000)
 }
 
 // ========= Part: in ========
@@ -1007,6 +1009,9 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	rf.matchIndex = make(map[int]int)
 	rf.maxAttempts = 3
 
+	// initialize from state persisted before a crash
+	rf.readPersist(persister.ReadRaftState())
+
 	// init nextIndex and matchIndex
 	logSize := len(rf.log)
 	for key, _ := range rf.peers {
@@ -1014,8 +1019,6 @@ func Make(peers []*labrpc.ClientEnd, me int,
 		rf.matchIndex[key] = 0
 	}
 
-	// initialize from state persisted before a crash
-	rf.readPersist(persister.ReadRaftState())
 	DPrintf("Peer-%d is initialized. log=%v, term=%d, leader=%d\n", rf.me, rf.log, rf.currentTerm, rf.state)
 
 	// start services.

@@ -736,7 +736,6 @@ func TestFigure8Unreliable2C(t *testing.T) {
 
 	nup := servers
 	for iters := 0; iters < 1000; iters++ {
-		fmt.Printf("do iter-%d.\n", iters)
 		if iters == 200 {
 			cfg.setlongreordering(true)
 		}
@@ -751,17 +750,14 @@ func TestFigure8Unreliable2C(t *testing.T) {
 		if (rand.Int() % 1000) < 100 {
 			ms := rand.Int63() % (int64(RaftElectionTimeout/time.Millisecond) / 2)
 			time.Sleep(time.Duration(ms) * time.Millisecond)
-			fmt.Printf("iter-%d has sleep %d ms.\n", iters, ms)
 		} else {
 			ms := (rand.Int63() % 13)
 			time.Sleep(time.Duration(ms) * time.Millisecond)
-			fmt.Printf("iter-%d has sleep %d ms.\n", iters, ms)
 		}
 
 		if leader != -1 && (rand.Int()%1000) < int(RaftElectionTimeout/time.Millisecond)/2 {
 			cfg.disconnect(leader)
 			nup -= 1
-			fmt.Printf("iter-%d has disconnect peer-%d.\n", iters, leader)
 		}
 
 		if nup < 3 {
@@ -769,7 +765,6 @@ func TestFigure8Unreliable2C(t *testing.T) {
 			if cfg.connected[s] == false {
 				cfg.connect(s)
 				nup += 1
-				fmt.Printf("iter-%d has disconnect peer-%d.\n", iters, s)
 			}
 		}
 	}
