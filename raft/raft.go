@@ -99,7 +99,7 @@ type Raft struct {
 	matchIndex map[int]int // peer id -> highest index
 
 	// event channel
-	heartbeatChan chan string
+	eventChan chan Event
 	// apply channel
 	applyChan chan ApplyMsg
 
@@ -213,6 +213,9 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 		// begin to update status
 		rf.currentTerm = candidateTerm // find larger term, up to date
 		rf.transitionState(NewTerm)    // transition to Follower.
+		go func() {
+			rf.eventChan <- NewTerm // tell the electionService to change state.
+		}()
 	}
 	// check whose log is up-to-date
 	candiLastLogIndex := args.LastLogIndex
@@ -238,7 +241,7 @@ func (rf *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) {
 	}
 	// heartbeat.
 	go func() {
-		rf.heartbeatChan <- "hb"
+		rf.eventChan <- HeartBeat
 	}()
 	// local log are up-to-date, grant
 	// before grant to candidate, we should reset ourselves state.
@@ -356,6 +359,9 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	} else if localTerm < args.Term {
 		rf.currentTerm = args.Term
 		rf.transitionState(NewTerm)
+		go func() {
+			rf.eventChan <- NewTerm
+		}()
 	}
 	// 2. process heartbeat.
 	appendEntriesLen := 0
@@ -373,7 +379,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 		// B.electionService, B try to hold lock to process, if not, it wait, so can not receive msg.
 		// send message to heartbeat channel.
 		go func() {
-			rf.heartbeatChan <- "hb"
+			rf.eventChan <- HeartBeat
 		}()
 		DPrintf("Peer-%d received heartbeat from peer-%d.", rf.me, args.LeaderId)
 	}
@@ -647,8 +653,15 @@ func (rf *Raft) electionService() {
 				}
 				rf.mu.Unlock()
 				DPrintf("Peer-%d turn state from %v to %v.", rf.me, currentState, rf.state)
-			case <-rf.heartbeatChan:
-				DPrintf("Peer-%d Received heartbeat from leader, reset timer.", rf.me)
+			case event := <-rf.eventChan:
+				switch event {
+				case HeartBeat:
+					DPrintf("Peer-%d Received heartbeat from leader, reset timer.", rf.me)
+				case NewTerm:
+					if rf.currentTerm == currentTerm {
+						DPrintf("Peer-%d, waring: it received a NewTerm event, but term is not changed.", rf.me)
+					}
+				}
 			}
 		case Candidate:
 			// start a election.
@@ -702,12 +715,17 @@ func (rf *Raft) electionService() {
 					rf.mu.Unlock()
 					sleep(rand.Intn(500))
 				}
-			case <-rf.heartbeatChan:
-				// if another is win, we will receive heartbeat, so we shoul
-				DPrintf("Peer-%d received heartbeat when voting, turn to follower, reset timer.", rf.me)
-				rf.mu.Lock()
-				rf.transitionState(NewTerm)
-				rf.mu.Unlock()
+			case event := <-rf.eventChan:
+				switch event {
+				case HeartBeat:
+					// if another is win, we will receive heartbeat, so we shoul
+					DPrintf("Peer-%d received heartbeat when voting, turn to follower, reset timer.", rf.me)
+					rf.mu.Lock()
+					rf.transitionState(NewLeader)
+					rf.mu.Unlock()
+				case NewTerm:
+					DPrintf("Peer-%d received higher term when voting, stop waiting.", rf.me)
+				}
 			}
 		case Leader:
 			// start to send heartbeat.
@@ -1003,7 +1021,7 @@ func Make(peers []*labrpc.ClientEnd, me int,
 	timeout := RaftElectionTimeout
 	rf.heartbeatInterval = time.Duration(timeout / 2)
 	rf.electionTimeout = time.Duration(timeout)
-	rf.heartbeatChan = make(chan string, 1) // heartbeat should have 1 entry for message, this can void deadlock.
+	rf.eventChan = make(chan Event, 1) // heartbeat should have 1 entry for message, this can void deadlock.
 	rf.log = make([]LogEntry, 1)
 	rf.nextIndex = make(map[int]int)
 	rf.matchIndex = make(map[int]int)
