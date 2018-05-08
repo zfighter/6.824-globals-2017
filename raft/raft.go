@@ -412,6 +412,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 				break
 			}
 		}
+		DPrintf("Peer-%d find conflictTerm index, reply=%v, log=%v.", rf.me, reply, rf.log)
 		if reply.FirstIndex == -1 {
 			reply.FirstIndex = rf.commitIndex + 1
 		}
