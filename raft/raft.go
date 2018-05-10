@@ -401,7 +401,7 @@ func (rf *Raft) AppendEntries(args *AppendEntriesArgs, reply *AppendEntriesReply
 	DPrintf("Peer-%d local: prevLogTerm=%d, prevLogIndex=%d.", rf.me, localPrevLogTerm, prevLogIndex)
 	if prevLogTerm != localPrevLogTerm {
 		reply.Success = false
-		// to find the first index of conflict term.
+		// t[MaTo find the first index of conflict term.
 		conflictTerm := localPrevLogTerm
 		reply.ConflictTerm = conflictTerm
 		// TODO: replace this loop with binary search.
@@ -525,6 +525,19 @@ func (rf *Raft) processAppendEntriesReply(nextLogIndex int, reply *AppendEntries
 			if reply.FirstIndex >= 0 {
 				if rf.log[reply.FirstIndex].Term != reply.ConflictTerm {
 					DPrintf("Peer-%d set nextIndex[%d]=%d.", rf.me, reply.PeerId, reply.FirstIndex)
+					rf.nextIndex[reply.PeerId] = reply.FirstIndex
+				} else if reply.FirstIndex <= rf.commitIndex {
+					// case 1:
+					// in AppendEntries, we find the first index of conflictTerm just before its commitIndex,
+					// so there is a condition, the FirstIndex is the commitIndex of follower,
+					// the index may be smaller than leader's commitIndex,
+					// and the FirstIndex's term is the same as leader's term at the same index,
+					// under this condition, we should update the nextIndex to FirstIndex.
+					// case 2:
+					// in AppendEntries, the the first index of confictTerm is larger than its commitIndex,
+					// but the first index is equals to leader's commitIndex.
+					// so rf.log[reply.FirstIndex].Term == reply.ConflictTerm,
+					// under this condition, we should update the nextIndex too.
 					rf.nextIndex[reply.PeerId] = reply.FirstIndex
 				}
 			}
