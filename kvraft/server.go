@@ -17,7 +17,6 @@ func DPrintf(format string, a ...interface{}) (n int, err error) {
 	return
 }
 
-
 type Op struct {
 	// Your definitions here.
 	// Field names must start with capital letters,
@@ -33,8 +32,11 @@ type RaftKV struct {
 	maxraftstate int // snapshot if log grows this big
 
 	// Your definitions here.
-}
+	kvStore    map[string]string // key -> value
+	nonceCache map[int32]int32   // nonce -> time
 
+	stopping bool // stop singal.
+}
 
 func (kv *RaftKV) Get(args *GetArgs, reply *GetReply) {
 	// Your code here.
@@ -42,6 +44,13 @@ func (kv *RaftKV) Get(args *GetArgs, reply *GetReply) {
 
 func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	// Your code here.
+	index, term, isLeader := kv.rf.Start(&args)
+	if !isLeader {
+		reply.WrongLeader = true
+		reply.Err = "WrongLeader"
+	} else {
+		// keep checking before timeout.
+	}
 }
 
 //
@@ -53,6 +62,16 @@ func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 func (kv *RaftKV) Kill() {
 	kv.rf.Kill()
 	// Your code here, if desired.
+	kv.stopping = true
+}
+
+// ====== service ======
+func (kv *RaftKV) applyService() {
+	// TODO: monitor applyCh for new ApplyMsg; but it should try to stop when receive signal from StopCh
+}
+
+func (kv *RaftKV) nonceFlashService() {
+	// TODO: flash nonce cache every ten minutes.
 }
 
 //
@@ -78,11 +97,14 @@ func StartKVServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persiste
 	kv.maxraftstate = maxraftstate
 
 	// You may need initialization code here.
-
+	kv.kvStore = make(map[string]string)
+	kv.stopping = false
 	kv.applyCh = make(chan raft.ApplyMsg)
 	kv.rf = raft.Make(servers, me, persister, kv.applyCh)
 
 	// You may need initialization code here.
+	// start applyService
+	go kv.applyService()
 
 	return kv
 }
