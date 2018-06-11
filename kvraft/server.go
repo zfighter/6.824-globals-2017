@@ -21,6 +21,11 @@ type Op struct {
 	// Your definitions here.
 	// Field names must start with capital letters,
 	// otherwise RPC will break.
+	OpType string
+	Nonce  int32
+	Key    string
+	Value  string    // for put/append
+	GetRep *GetReply // for get
 }
 
 type RaftKV struct {
@@ -44,12 +49,37 @@ func (kv *RaftKV) Get(args *GetArgs, reply *GetReply) {
 
 func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	// Your code here.
-	index, term, isLeader := kv.rf.Start(&args)
+	// check nonce
+	nonceTimestamp := nonceCache[args.Nonce]
+	if nonceTimestamp != nil {
+		reply.Err = "Duplicated request"
+		reply.WrongLeader = false
+		return
+	}
+	// create Op
+	op := Op{}
+	op.OpType = args.Op
+	op.Key = args.Key
+	op.Nonce = args.Nonce
+	op.Value = args.Value
+	index, term, isLeader := kv.rf.Start(op)
 	if !isLeader {
 		reply.WrongLeader = true
 		reply.Err = "WrongLeader"
 	} else {
 		// keep checking before timeout.
+		startTime := time.Now()
+		for time.Since(startTime).Seconds() < electionTimeout {
+			if kv.rf.commitIndex < index {
+				time.Sleep(10 * time.Millisecond)
+				reply.WrongLeader = false
+				reply.Err = "Timeout"
+			} else {
+				reply.WrongLeader = false
+				reply.Err = OK
+				nonceCache[args.Nonce] = time.Now()
+			}
+		}
 	}
 }
 
@@ -68,10 +98,49 @@ func (kv *RaftKV) Kill() {
 // ====== service ======
 func (kv *RaftKV) applyService() {
 	// TODO: monitor applyCh for new ApplyMsg; but it should try to stop when receive signal from StopCh
+	for op := range kv.applyCh {
+		// TODO: should check nonce in store operations?
+		switch opType := op.OpType; opType {
+		case "Put":
+			kv.kvStore[op.Key] = op.Value
+		case "Append":
+			currValue := kv.kvStore[op.Key]
+			if currValue == nil {
+				kv.kvStore[op.Key] = op.Value
+			} else {
+				newValue := currValue + op.Value
+				kv.kvStore[op.Key] = newValue
+			}
+		case "Get":
+			currValue := kv.kvStore[op.Key]
+			op.GetRep.WrongLeader = false
+			if currValue == nil {
+				op.GetRep.Value = nil
+				op.GetRep.Err = ErrNoKey
+			} else {
+				op.GetRep.Value = currValue
+				op.GetRep.Err = OK
+			}
+		default:
+			DPrintf("Don't support op type: %s", opType)
+		}
+	}
 }
 
 func (kv *RaftKV) nonceFlashService() {
 	// TODO: flash nonce cache every ten minutes.
+	for !kv.stopping {
+		nonceCacheSize := size(nonceCache)
+		if nonceCacheSize > 1024*1024 {
+			kv.mu.Lock()
+			currTime := time.Now()
+			for key, value := range nonceCache {
+				// TODO: use time to check timeout and clear the key-values timeouted.
+
+			}
+			kv.mu.Unlock()
+		}
+	}
 }
 
 //
