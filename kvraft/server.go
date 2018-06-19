@@ -22,7 +22,7 @@ type Op struct {
 	// Field names must start with capital letters,
 	// otherwise RPC will break.
 	OpType string
-	Nonce  int32
+	Nonce  int64
 	Key    string
 	Value  string    // for put/append
 	GetRep *GetReply // for get
@@ -35,26 +35,75 @@ type RaftKV struct {
 	applyCh chan raft.ApplyMsg
 
 	maxraftstate int // snapshot if log grows this big
+	appliedIndex int // the index of applied message
 
 	// Your definitions here.
 	kvStore    map[string]string // key -> value
-	nonceCache map[int32]int32   // nonce -> time
+	nonceCache map[int64]int64   // nonce -> time
 
 	stopping bool // stop singal.
 }
 
 func (kv *RaftKV) Get(args *GetArgs, reply *GetReply) {
 	// Your code here.
+	// start nonce
+	doNonce := false
+	if args.Nonce != nil || args.Nonce > 0 {
+		doNonce := startNonce(args.Nonce)
+		if !doNonce {
+			reply.Err = "Duplicated request"
+			reply.WrongLeader = false
+			return
+		}
+	}
+	// create Op
+	op := Op{}
+	op.OpType = "Get"
+	op.Key = args.Key
+	op.Nonce = args.Nonce
+	index, term, isLeader := kv.rf.Start(op)
+	if !isLeader {
+		reply.WrongLeader = true
+		reply.Err = "WrongLeader"
+		if doNonce {
+			kv.deleteNonce(args.Nonce)
+		}
+	} else {
+		startTime := time.Now()
+		reply.WrongLeader = false
+		for time.Since(startTime).Seconds() < electionTimeout {
+			if appliedIndex < index {
+				time.Sleep(10 * time.Millisecond)
+				reply.Err = "Timeout"
+			} else {
+				value := kvStore[args.Key]
+				if value != nil {
+					reply.Err = OK
+					reply.Value = value
+				} else {
+					reply.Err = ErrNoKey
+				}
+			}
+		}
+		if reply.Err != OK && reply.Err != ErrNoKey {
+			if doNonce {
+				kv.deleteNonce(args.Nonce)
+			}
+		}
+	}
 }
 
 func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	// Your code here.
-	// check nonce
-	nonceTimestamp := nonceCache[args.Nonce]
-	if nonceTimestamp != nil {
-		reply.Err = "Duplicated request"
-		reply.WrongLeader = false
-		return
+	// start nonce
+	doNonce := false
+	if args.Nonce != nill || args.Nonce > 0 {
+		doNonce := startNonce(args.Nonce)
+		if !doNonce {
+			reply.Err = "Duplicated request"
+			reply.WrongLeader = false
+			return
+		}
 	}
 	// create Op
 	op := Op{}
@@ -66,6 +115,9 @@ func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	if !isLeader {
 		reply.WrongLeader = true
 		reply.Err = "WrongLeader"
+		if doNonce {
+			kv.deleteNonce(args.Nonce)
+		}
 	} else {
 		// keep checking before timeout.
 		startTime := time.Now()
@@ -77,10 +129,34 @@ func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 			} else {
 				reply.WrongLeader = false
 				reply.Err = OK
-				nonceCache[args.Nonce] = time.Now()
+			}
+		}
+		if reply.Err != OK {
+			if doNonce {
+				kv.deleteNonce(args.Nonce)
 			}
 		}
 	}
+}
+
+func (kv *RaftKV) startNonce(key int64) (success bool) {
+	kv.mu.Lock()
+	defer kv.mu.Unlock()
+	success = false
+	// check nonce
+	nonceTimestamp := kv.nonceCache[args.Nonce]
+	if nonceTimestamp != nil {
+		return
+	}
+	// add nonce to cache
+	kv.nonceCache[args.Nonce] = time.Now().Unix()
+	success = true
+}
+
+func (kv *RaftKV) deleteNonce(key int64) {
+	kv.mu.Lock()
+	defer kv.mu.Unlock()
+	delete(nonceCache, key)
 }
 
 //
@@ -90,6 +166,8 @@ func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 // turn off debug output from this instance.
 //
 func (kv *RaftKV) Kill() {
+	kv.mu.Lock()
+	defer kv.mu.Unlock()
 	kv.rf.Kill()
 	// Your code here, if desired.
 	kv.stopping = true
@@ -99,6 +177,7 @@ func (kv *RaftKV) Kill() {
 func (kv *RaftKV) applyService() {
 	// TODO: monitor applyCh for new ApplyMsg; but it should try to stop when receive signal from StopCh
 	for op := range kv.applyCh {
+		kv.appliedIndex = op.Index
 		// TODO: should check nonce in store operations?
 		switch opType := op.OpType; opType {
 		case "Put":
@@ -127,19 +206,22 @@ func (kv *RaftKV) applyService() {
 	}
 }
 
-func (kv *RaftKV) nonceFlashService() {
-	// TODO: flash nonce cache every ten minutes.
+func (kv *RaftKV) nonceRefreshService() {
+	// refresh nonce cache every ten minutes.
 	for !kv.stopping {
 		nonceCacheSize := size(nonceCache)
-		if nonceCacheSize > 1024*1024 {
-			kv.mu.Lock()
-			currTime := time.Now()
+		if nonceCacheSize >= 1024*1024 {
+			currTime := time.Now().Unix()
+			checkTime := currTime - 600
+			// TODO: is this operation thread-safe?
 			for key, value := range nonceCache {
-				// TODO: use time to check timeout and clear the key-values timeouted.
-
+				// to check timeout and clear the key-values timeouted.
+				if value <= checkTime {
+					kv.deleteNonce(key)
+				}
 			}
-			kv.mu.Unlock()
 		}
+		time.Sleep(time.Duration(600) * time.Second)
 	}
 }
 
@@ -167,6 +249,7 @@ func StartKVServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persiste
 
 	// You may need initialization code here.
 	kv.kvStore = make(map[string]string)
+	kv.nonceCache = make(map[int64]int64)
 	kv.stopping = false
 	kv.applyCh = make(chan raft.ApplyMsg)
 	kv.rf = raft.Make(servers, me, persister, kv.applyCh)
@@ -174,6 +257,8 @@ func StartKVServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persiste
 	// You may need initialization code here.
 	// start applyService
 	go kv.applyService()
+	// start nonceRefreshService
+	go kv.nonceRefreshService()
 
 	return kv
 }

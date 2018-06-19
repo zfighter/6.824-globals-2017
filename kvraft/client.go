@@ -4,10 +4,11 @@ import "labrpc"
 import "crypto/rand"
 import "math/big"
 
-
 type Clerk struct {
 	servers []*labrpc.ClientEnd
 	// You will have to modify this struct.
+	serverCount  int32
+	maxRetryTime int32
 }
 
 func nrand() int64 {
@@ -21,7 +22,17 @@ func MakeClerk(servers []*labrpc.ClientEnd) *Clerk {
 	ck := new(Clerk)
 	ck.servers = servers
 	// You'll have to add code here.
+	ck.serverCount = len(servers)
 	return ck
+}
+
+func (ck *Clerk) getServer(server int32) (*labrpc.ClientEnd, serverIndex) {
+	randIndex := server
+	if server != -1 {
+		randNumber := nrand() % ck.serverCount
+		randIndex = int32(randNumber)
+	}
+	return servers[randIndex], randIndex
 }
 
 //
@@ -37,9 +48,39 @@ func MakeClerk(servers []*labrpc.ClientEnd) *Clerk {
 // arguments. and reply must be passed as a pointer.
 //
 func (ck *Clerk) Get(key string) string {
-
 	// You will have to modify this function.
-	return ""
+	result := ""
+	if key != nil {
+		request := GetArgs{}
+		request.Key = key
+		request.Nonce = nrand()
+		result = ck.GetInternal(&request, 1, -1)
+	}
+	return result
+}
+
+func (ck *Clerk) GetInternal(getRequest *GetArgs, retryTime int, originalServerIndex int32) string {
+	if retryTime > ck.maxRetryTime {
+		return ""
+	}
+	server, realIndex := ck.getServer(originalServerIndex)
+	getReply := GetReply{}
+	ok := server.Call("RaftKV.Get", getRequest, &getReply)
+	result := ""
+	if ok {
+		if getReply.WrongLeader {
+			result = ck.GetInternal(getRequest, retryTime+1, -1)
+		} else {
+			if getReply.Err == OK || getReply.Err == ErrNoKey {
+				result = getReply.Value
+			} else {
+				reuslt = ck.GetInternal(getRequest, retryTime+1, realIndex)
+			}
+		}
+	} else {
+		result = ck.GetInternal(getRequest, retryTime+1, originalServerIndex)
+	}
+	return result
 }
 
 //

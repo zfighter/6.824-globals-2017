@@ -15,7 +15,7 @@ type PutAppendArgs struct {
 	// You'll have to add definitions here.
 	// Field names must start with capital letters,
 	// otherwise RPC will break.
-	Nonce int32
+	Nonce int64
 }
 
 type PutAppendReply struct {
