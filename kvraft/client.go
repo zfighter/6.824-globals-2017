@@ -54,33 +54,36 @@ func (ck *Clerk) Get(key string) string {
 		request := GetArgs{}
 		request.Key = key
 		request.Nonce = nrand()
-		result = ck.GetInternal(&request, 1, -1)
+		// result = ck.GetInternal(&request, 1, -1)
+		needRetry := true
+		result := ""
+		for needRetry {
+			result, needRetry = ck.GetInternal(&request, -1)
+		}
 	}
 	return result
 }
 
-func (ck *Clerk) GetInternal(getRequest *GetArgs, retryTime int, originalServerIndex int32) string {
-	if retryTime > ck.maxRetryTime {
-		return ""
-	}
+func (ck *Clerk) GetInternal(getRequest *GetArgs, originalServerIndex int32) (string, bool) {
 	server, realIndex := ck.getServer(originalServerIndex)
 	getReply := GetReply{}
 	ok := server.Call("RaftKV.Get", getRequest, &getReply)
 	result := ""
+	needRetry := false
 	if ok {
 		if getReply.WrongLeader {
-			result = ck.GetInternal(getRequest, retryTime+1, -1)
+			needRetry = true
 		} else {
 			if getReply.Err == OK || getReply.Err == ErrNoKey {
 				result = getReply.Value
 			} else {
-				reuslt = ck.GetInternal(getRequest, retryTime+1, realIndex)
+				needRetry = true
 			}
 		}
 	} else {
-		result = ck.GetInternal(getRequest, retryTime+1, originalServerIndex)
+		needRetry = true
 	}
-	return result
+	return result, needRetry
 }
 
 //
@@ -95,6 +98,17 @@ func (ck *Clerk) GetInternal(getRequest *GetArgs, retryTime int, originalServerI
 //
 func (ck *Clerk) PutAppend(key string, value string, op string) {
 	// You will have to modify this function.
+	if key != nil {
+		request := PutAppendArgs{}
+		request.Key = key
+		request.Value = value
+		request.Op = op
+		request.Nonce = nrand()
+		needRetry := true
+		for needRetry {
+			// TODO: do real put.
+		}
+	}
 }
 
 func (ck *Clerk) Put(key string, value string) {
