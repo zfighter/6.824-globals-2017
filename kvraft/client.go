@@ -4,6 +4,14 @@ import "labrpc"
 import "crypto/rand"
 import "math/big"
 
+type RetryState int
+
+const (
+	DontRetry RetryState = iota
+	RetryWithNewIndex
+	RetryWithOldIndex
+)
+
 type Clerk struct {
 	servers []*labrpc.ClientEnd
 	// You will have to modify this struct.
@@ -55,35 +63,39 @@ func (ck *Clerk) Get(key string) string {
 		request.Key = key
 		request.Nonce = nrand()
 		// result = ck.GetInternal(&request, 1, -1)
-		needRetry := true
+		needRetry := RetryWithNewIndex
 		result := ""
-		for needRetry {
-			result, needRetry = ck.GetInternal(&request, -1)
+		serverIndex := -1
+		for needRetry != DontRetry {
+			if needRetry == RetryWithNewIndex {
+				serverIndex = ck.getServer(serverIndex)
+			}
+			result, needRetry = ck.GetInternal(&request, serverIndex)
 		}
 	}
 	return result
 }
 
-func (ck *Clerk) GetInternal(getRequest *GetArgs, originalServerIndex int32) (string, bool) {
-	server, realIndex := ck.getServer(originalServerIndex)
+func (ck *Clerk) GetInternal(getRequest *GetArgs, serverIndex int32) (string, RetryState) {
+	server := ck.servers[serverIndex]
 	getReply := GetReply{}
 	ok := server.Call("RaftKV.Get", getRequest, &getReply)
 	result := ""
-	needRetry := false
+	retry := DontRetry
 	if ok {
 		if getReply.WrongLeader {
-			needRetry = true
+			retry = RetryWithNewIndex
 		} else {
 			if getReply.Err == OK || getReply.Err == ErrNoKey {
 				result = getReply.Value
 			} else {
-				needRetry = true
+				retry = RetryWithOldIndex
 			}
 		}
 	} else {
-		needRetry = true
+		retry = RetryWithNewIndex
 	}
-	return result, needRetry
+	return result, retry
 }
 
 //
@@ -104,11 +116,35 @@ func (ck *Clerk) PutAppend(key string, value string, op string) {
 		request.Value = value
 		request.Op = op
 		request.Nonce = nrand()
-		needRetry := true
+		needRetry := RetryWithNewIndex
+		serverIndex := -1
 		for needRetry {
 			// TODO: do real put.
+			if needRetry == RetryWithNexIndex {
+				serverIndex = ck.getServer(serverIndex)
+			}
+			PutInternal(&request, serverIndex)
 		}
 	}
+}
+
+func (ck *Clerk) PutInternal(putAppendArgs *PutAppendArgs, serverIndex int32) RetryState {
+	server := ck.servers[serverIndex]
+	putAppendReply := PutAppendReply{}
+	ok := server.Call("RaftKV.PutAppend", putAppendArgs, &putAppendReply)
+	retry := DontRetry
+	if ok {
+		if putAppendReply.WrongLeader {
+			retry = RetryWithNewIndex
+		} else {
+			if putAppendReply.Err != OK {
+				retry = RetryWithOldIndex
+			}
+		}
+	} else {
+		retry = RetryWithNewIndex
+	}
+	return retry
 }
 
 func (ck *Clerk) Put(key string, value string) {
