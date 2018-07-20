@@ -1,6 +1,6 @@
 package raftkv
 
-import "labrpc"
+import "github.com/6.824/labrpc"
 import "crypto/rand"
 import "math/big"
 
@@ -15,7 +15,7 @@ const (
 type Clerk struct {
 	servers []*labrpc.ClientEnd
 	// You will have to modify this struct.
-	serverCount  int32
+	serverCount  int
 	maxRetryTime int32
 }
 
@@ -34,13 +34,13 @@ func MakeClerk(servers []*labrpc.ClientEnd) *Clerk {
 	return ck
 }
 
-func (ck *Clerk) getServer(server int32) (*labrpc.ClientEnd, serverIndex) {
+func (ck *Clerk) getServer(server int) int {
 	randIndex := server
 	if server != -1 {
-		randNumber := nrand() % ck.serverCount
-		randIndex = int32(randNumber)
+		randNumber := nrand() % int64(ck.serverCount)
+		randIndex = int(randNumber)
 	}
-	return servers[randIndex], randIndex
+	return randIndex
 }
 
 //
@@ -58,25 +58,22 @@ func (ck *Clerk) getServer(server int32) (*labrpc.ClientEnd, serverIndex) {
 func (ck *Clerk) Get(key string) string {
 	// You will have to modify this function.
 	result := ""
-	if key != nil {
-		request := GetArgs{}
-		request.Key = key
-		request.Nonce = nrand()
-		// result = ck.GetInternal(&request, 1, -1)
-		needRetry := RetryWithNewIndex
-		result := ""
-		serverIndex := -1
-		for needRetry != DontRetry {
-			if needRetry == RetryWithNewIndex {
-				serverIndex = ck.getServer(serverIndex)
-			}
-			result, needRetry = ck.GetInternal(&request, serverIndex)
+	request := GetArgs{}
+	request.Key = key
+	request.Nonce = nrand()
+	// result = ck.GetInternal(&request, 1, -1)
+	needRetry := RetryWithNewIndex
+	serverIndex := -1
+	for needRetry != DontRetry {
+		if needRetry == RetryWithNewIndex {
+			serverIndex = ck.getServer(serverIndex)
 		}
+		result, needRetry = ck.GetInternal(&request, serverIndex)
 	}
 	return result
 }
 
-func (ck *Clerk) GetInternal(getRequest *GetArgs, serverIndex int32) (string, RetryState) {
+func (ck *Clerk) GetInternal(getRequest *GetArgs, serverIndex int) (string, RetryState) {
 	server := ck.servers[serverIndex]
 	getReply := GetReply{}
 	ok := server.Call("RaftKV.Get", getRequest, &getReply)
@@ -110,25 +107,23 @@ func (ck *Clerk) GetInternal(getRequest *GetArgs, serverIndex int32) (string, Re
 //
 func (ck *Clerk) PutAppend(key string, value string, op string) {
 	// You will have to modify this function.
-	if key != nil {
-		request := PutAppendArgs{}
-		request.Key = key
-		request.Value = value
-		request.Op = op
-		request.Nonce = nrand()
-		needRetry := RetryWithNewIndex
-		serverIndex := -1
-		for needRetry {
-			// TODO: do real put.
-			if needRetry == RetryWithNexIndex {
-				serverIndex = ck.getServer(serverIndex)
-			}
-			PutInternal(&request, serverIndex)
+	request := PutAppendArgs{}
+	request.Key = key
+	request.Value = value
+	request.Op = op
+	request.Nonce = nrand()
+	needRetry := RetryWithNewIndex
+	serverIndex := -1
+	for needRetry != DontRetry {
+		// TODO: do real put.
+		if needRetry == RetryWithNewIndex {
+			serverIndex = ck.getServer(serverIndex)
 		}
+		needRetry = ck.PutInternal(&request, serverIndex)
 	}
 }
 
-func (ck *Clerk) PutInternal(putAppendArgs *PutAppendArgs, serverIndex int32) RetryState {
+func (ck *Clerk) PutInternal(putAppendArgs *PutAppendArgs, serverIndex int) RetryState {
 	server := ck.servers[serverIndex]
 	putAppendReply := PutAppendReply{}
 	ok := server.Call("RaftKV.PutAppend", putAppendArgs, &putAppendReply)

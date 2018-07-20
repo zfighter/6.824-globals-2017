@@ -2,10 +2,11 @@ package raftkv
 
 import (
 	"encoding/gob"
-	"labrpc"
+	"github.com/6.824/labrpc"
+	"github.com/6.824/raft"
 	"log"
-	"raft"
 	"sync"
+	"time"
 )
 
 const Debug = 0
@@ -48,8 +49,8 @@ func (kv *RaftKV) Get(args *GetArgs, reply *GetReply) {
 	// Your code here.
 	// start nonce
 	doNonce := false
-	if args.Nonce != nil || args.Nonce > 0 {
-		doNonce := startNonce(args.Nonce)
+	if args.Nonce > 0 {
+		doNonce := kv.startNonce(args.Nonce)
 		if !doNonce {
 			reply.Err = "Duplicated request"
 			reply.WrongLeader = false
@@ -71,13 +72,13 @@ func (kv *RaftKV) Get(args *GetArgs, reply *GetReply) {
 	} else {
 		startTime := time.Now()
 		reply.WrongLeader = false
-		for time.Since(startTime).Seconds() < electionTimeout {
-			if appliedIndex < index {
+		for time.Since(startTime).Seconds() < electionTimeout.Seconds() {
+			if kv.appliedIndex < index {
 				time.Sleep(10 * time.Millisecond)
 				reply.Err = "Timeout"
 			} else {
-				value := kvStore[args.Key]
-				if value != nil {
+				value, found := kv.kvStore[args.Key]
+				if found {
 					reply.Err = OK
 					reply.Value = value
 				} else {
@@ -97,8 +98,8 @@ func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	// Your code here.
 	// start nonce
 	doNonce := false
-	if args.Nonce != nill || args.Nonce > 0 {
-		doNonce := startNonce(args.Nonce)
+	if args.Nonce > 0 {
+		doNonce := kv.startNonce(args.Nonce)
 		if !doNonce {
 			reply.Err = "Duplicated request"
 			reply.WrongLeader = false
@@ -121,7 +122,7 @@ func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	} else {
 		// keep checking before timeout.
 		startTime := time.Now()
-		for time.Since(startTime).Seconds() < electionTimeout {
+		for time.Since(startTime).Seconds() < electionTimeout.Seconds() {
 			if kv.rf.commitIndex < index {
 				time.Sleep(10 * time.Millisecond)
 				reply.WrongLeader = false
@@ -144,19 +145,20 @@ func (kv *RaftKV) startNonce(key int64) (success bool) {
 	defer kv.mu.Unlock()
 	success = false
 	// check nonce
-	nonceTimestamp := kv.nonceCache[args.Nonce]
-	if nonceTimestamp != nil {
+	nonceTimestamp, found := kv.nonceCache[key]
+	if !found {
 		return
 	}
 	// add nonce to cache
-	kv.nonceCache[args.Nonce] = time.Now().Unix()
+	kv.nonceCache[key] = time.Now().Unix()
 	success = true
+	return
 }
 
 func (kv *RaftKV) deleteNonce(key int64) {
 	kv.mu.Lock()
 	defer kv.mu.Unlock()
-	delete(nonceCache, key)
+	delete(kv.nonceCache, key)
 }
 
 //
@@ -176,25 +178,26 @@ func (kv *RaftKV) Kill() {
 // ====== service ======
 func (kv *RaftKV) applyService() {
 	// TODO: monitor applyCh for new ApplyMsg; but it should try to stop when receive signal from StopCh
-	for op := range kv.applyCh {
-		kv.appliedIndex = op.Index
+	for applyMsg := range kv.applyCh {
+		kv.appliedIndex = applyMsg.Index
 		// TODO: should check nonce in store operations?
+		op := (applyMsg.Command).(Op)
 		switch opType := op.OpType; opType {
 		case "Put":
 			kv.kvStore[op.Key] = op.Value
 		case "Append":
-			currValue := kv.kvStore[op.Key]
-			if currValue == nil {
+			currValue, has := kv.kvStore[op.Key]
+			if !has {
 				kv.kvStore[op.Key] = op.Value
 			} else {
 				newValue := currValue + op.Value
 				kv.kvStore[op.Key] = newValue
 			}
 		case "Get":
-			currValue := kv.kvStore[op.Key]
+			currValue, has := kv.kvStore[op.Key]
 			op.GetRep.WrongLeader = false
-			if currValue == nil {
-				op.GetRep.Value = nil
+			if !has {
+				op.GetRep.Value = ""
 				op.GetRep.Err = ErrNoKey
 			} else {
 				op.GetRep.Value = currValue
@@ -209,12 +212,12 @@ func (kv *RaftKV) applyService() {
 func (kv *RaftKV) nonceRefreshService() {
 	// refresh nonce cache every ten minutes.
 	for !kv.stopping {
-		nonceCacheSize := size(nonceCache)
+		nonceCacheSize := len(kv.nonceCache)
 		if nonceCacheSize >= 1024*1024 {
 			currTime := time.Now().Unix()
 			checkTime := currTime - 600
 			// TODO: is this operation thread-safe?
-			for key, value := range nonceCache {
+			for key, value := range kv.nonceCache {
 				// to check timeout and clear the key-values timeouted.
 				if value <= checkTime {
 					kv.deleteNonce(key)
