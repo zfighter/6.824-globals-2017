@@ -36,10 +36,8 @@ func MakeClerk(servers []*labrpc.ClientEnd) *Clerk {
 
 func (ck *Clerk) getServer(server int) int {
 	randIndex := server
-	if server != -1 {
-		randNumber := nrand() % int64(ck.serverCount)
-		randIndex = int(randNumber)
-	}
+	randNumber := nrand() % int64(ck.serverCount)
+	randIndex = int(randNumber)
 	return randIndex
 }
 
@@ -115,7 +113,10 @@ func (ck *Clerk) PutAppend(key string, value string, op string) {
 	needRetry := RetryWithNewIndex
 	serverIndex := -1
 	for needRetry != DontRetry {
-		// TODO: do real put.
+		if serverIndex != -1 {
+			Sleep(1000)
+		}
+		// do real put.
 		if needRetry == RetryWithNewIndex {
 			serverIndex = ck.getServer(serverIndex)
 		}
@@ -127,6 +128,7 @@ func (ck *Clerk) PutInternal(putAppendArgs *PutAppendArgs, serverIndex int) Retr
 	server := ck.servers[serverIndex]
 	putAppendReply := PutAppendReply{}
 	ok := server.Call("RaftKV.PutAppend", putAppendArgs, &putAppendReply)
+	DPrintf("retry?%v, reply=%v", ok, &putAppendReply)
 	retry := DontRetry
 	if ok {
 		if putAppendReply.WrongLeader {

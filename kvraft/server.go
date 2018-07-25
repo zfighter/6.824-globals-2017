@@ -4,18 +4,22 @@ import (
 	"encoding/gob"
 	"github.com/6.824/labrpc"
 	"github.com/6.824/raft"
-	"log"
 	"sync"
 	"time"
 )
 
-const Debug = 0
+const Debug = 1
 
 func DPrintf(format string, a ...interface{}) (n int, err error) {
 	if Debug > 0 {
-		log.Printf(format, a...)
+		// raft.Printf(format, a...)
+		raft.DPrintf(format, a...)
 	}
 	return
+}
+
+func Sleep(elapse int) {
+	raft.Sleep(elapse)
 }
 
 type Op struct {
@@ -50,7 +54,7 @@ func (kv *RaftKV) Get(args *GetArgs, reply *GetReply) {
 	// start nonce
 	doNonce := false
 	if args.Nonce > 0 {
-		doNonce := kv.startNonce(args.Nonce)
+		doNonce, _ := kv.startNonce(args.Nonce)
 		if !doNonce {
 			reply.Err = "Duplicated request"
 			reply.WrongLeader = false
@@ -62,7 +66,7 @@ func (kv *RaftKV) Get(args *GetArgs, reply *GetReply) {
 	op.OpType = "Get"
 	op.Key = args.Key
 	op.Nonce = args.Nonce
-	index, term, isLeader := kv.rf.Start(op)
+	index, _, isLeader := kv.rf.Start(op)
 	if !isLeader {
 		reply.WrongLeader = true
 		reply.Err = "WrongLeader"
@@ -99,31 +103,36 @@ func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	// start nonce
 	doNonce := false
 	if args.Nonce > 0 {
-		doNonce := kv.startNonce(args.Nonce)
+		nonceTimestamp := 0
+		doNonce, nonceTimestamp = kv.startNonce(args.Nonce)
 		if !doNonce {
+			DPrintf("nonce=%d, ts=%d", args.Nonce, nonceTimestamp)
 			reply.Err = "Duplicated request"
 			reply.WrongLeader = false
 			return
 		}
 	}
+	DPrintf("args=%v, doNonce=%v", args, doNonce)
 	// create Op
 	op := Op{}
 	op.OpType = args.Op
 	op.Key = args.Key
 	op.Nonce = args.Nonce
 	op.Value = args.Value
-	index, term, isLeader := kv.rf.Start(op)
+	index, _, isLeader := kv.rf.Start(op)
 	if !isLeader {
 		reply.WrongLeader = true
 		reply.Err = "WrongLeader"
 		if doNonce {
 			kv.deleteNonce(args.Nonce)
+			ts, found := kv.nonceCache[args.Nonce]
+			DPrintf("delete nonce. %d, %v", ts, found)
 		}
 	} else {
 		// keep checking before timeout.
 		startTime := time.Now()
 		for time.Since(startTime).Seconds() < electionTimeout.Seconds() {
-			if kv.rf.commitIndex < index {
+			if kv.appliedIndex < index {
 				time.Sleep(10 * time.Millisecond)
 				reply.WrongLeader = false
 				reply.Err = "Timeout"
@@ -140,17 +149,18 @@ func (kv *RaftKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	}
 }
 
-func (kv *RaftKV) startNonce(key int64) (success bool) {
+func (kv *RaftKV) startNonce(key int64) (success bool, nonceTimestamp int64) {
 	kv.mu.Lock()
 	defer kv.mu.Unlock()
 	success = false
 	// check nonce
 	nonceTimestamp, found := kv.nonceCache[key]
-	if !found {
+	if found {
 		return
 	}
 	// add nonce to cache
-	kv.nonceCache[key] = time.Now().Unix()
+	nonceTimestamp = time.Now().Unix()
+	kv.nonceCache[key] = nonceTimestamp
 	success = true
 	return
 }
@@ -179,6 +189,7 @@ func (kv *RaftKV) Kill() {
 func (kv *RaftKV) applyService() {
 	// TODO: monitor applyCh for new ApplyMsg; but it should try to stop when receive signal from StopCh
 	for applyMsg := range kv.applyCh {
+		DPrintf("applyMsg=%v", applyMsg)
 		kv.appliedIndex = applyMsg.Index
 		// TODO: should check nonce in store operations?
 		op := (applyMsg.Command).(Op)
